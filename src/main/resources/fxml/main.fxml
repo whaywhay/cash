@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<TabPane fx:id="tabPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
+  fx:controller="kz.store.cash.fx.controllers.MainViewControllers" stylesheets="@styles.css">
+  <Tab fx:id="salesTab" closable="false" text="Продажи">
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+  </Tab>
+  <Tab fx:id="returnTab" closable="false" text="Возврат">
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+  </Tab>
+  <Tab fx:id="shiftChangeTab" closable="false" text="Смена">
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+  </Tab>
+  <Tab fx:id="salesHistoryTab" closable="false" text="Истоия продаж">
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+  </Tab>
+</TabPane>

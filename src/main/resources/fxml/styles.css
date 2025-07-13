@@ -1,0 +1,50 @@
+.bottom-bar {
+  -fx-background-color: #333;
+}
+
+.summary-box {
+  -fx-background-color: white;
+  -fx-padding: 10;
+  -fx-border-radius: 5;
+  -fx-background-radius: 5;
+}
+
+.summary-label {
+  -fx-font-size: 14px;
+  -fx-text-fill: black;
+}
+
+.summary-value {
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+  -fx-text-fill: black;
+}
+
+.grid-btn {
+  -fx-pref-width: 220;
+  -fx-font-size: 14px;
+}
+
+.btn-delete {
+  -fx-background-color: #f55;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-pref-width: 220;
+}
+
+.btn-pay {
+  -fx-background-color: #0f8;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-pref-width: 220;
+}
+
+.icon-success {
+  -fx-icon-color: green;
+  -fx-icon-size: 20px;
+}
+
+.icon-error {
+  -fx-icon-color: crimson;
+  -fx-icon-size: 20px;
+}
