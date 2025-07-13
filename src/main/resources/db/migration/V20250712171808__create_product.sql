@@ -7,11 +7,14 @@ create table if not exists main.product
     last_upd_by     text                    not null,
     barcode         text                    not null,
     product_name    text                    not null,
-    price           numeric(15, 2)          not null,
+    original_price  numeric(15, 2)          not null,
     wholesale_price numeric(15, 2)          not null
 );
 create unique index if not exists product_u1
     on main.product (barcode);
+
+create index if not exists product_x1
+    on main.product (product_name);
 
 create table if not exists main.sales
 (
@@ -21,7 +24,9 @@ create table if not exists main.sales
     last_upd           timestamp default now() not null,
     last_upd_by        text                    not null,
     barcode            text                    not null,
-    price              numeric(15, 2)          not null,
+    sold_price         numeric(15, 2)          not null,
+    original_price     numeric(15, 2)          not null,
+    wholesale_price    numeric(15, 2)          not null,
     quantity           int                     not null,
     total              numeric(15, 2)          not null,
     payment_receipt_id bigint references main.payment_receipt (id)
