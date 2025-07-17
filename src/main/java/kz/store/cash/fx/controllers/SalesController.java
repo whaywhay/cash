@@ -1,7 +1,9 @@
 package kz.store.cash.fx.controllers;
 
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -9,23 +11,29 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.CustomMenuItem;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.util.Duration;
-import kz.store.cash.fx.dialog.NumericKeyboardDialog;
+import kz.store.cash.fx.controllers.payments.PaymentDialogController;
+import kz.store.cash.fx.model.PaymentSumDetails;
 import kz.store.cash.fx.model.ProductItem;
 import kz.store.cash.fx.scanner.BarcodeScannerListener;
+import kz.store.cash.model.enums.PriceMode;
 import kz.store.cash.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -39,7 +47,7 @@ public class SalesController {
   @FXML
   public TextField barCode;
   @FXML
-  public Button keyBoardButton;
+  public Label priceHeaderLabel;
   @FXML
   private TableView<ProductItem> salesTable;
   @FXML
@@ -59,6 +67,10 @@ public class SalesController {
   @FXML
   private Label totalLabel;
   @FXML
+  public Label changeMoneyLabel;
+  @FXML
+  public Label receivedPaymentLabel;
+  @FXML
   private Label matchStatusIcon;
 
   private final ObservableList<ProductItem> cart = FXCollections.observableArrayList();
@@ -66,6 +78,8 @@ public class SalesController {
   private BarcodeScannerListener scannerListener;
   private final ContextMenu suggestionsPopup = new ContextMenu();
   private final PauseTransition debounceTimer = new PauseTransition(Duration.millis(300));
+  private PriceMode currentPriceMode = PriceMode.ORIGINAL;
+  private PaymentSumDetails paymentSumDetails;
 
 
   @FXML
@@ -92,7 +106,9 @@ public class SalesController {
 
     // Закрытие подсказок при фокусе вне поля
     barCode.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-      if (!isNowFocused) suggestionsPopup.hide();
+      if (!isNowFocused) {
+        suggestionsPopup.hide();
+      }
     });
   }
 
@@ -100,7 +116,14 @@ public class SalesController {
     double total = cart.stream()
         .mapToDouble(ProductItem::getTotal)
         .sum();
-    totalLabel.setText(String.format("%.2f тг", total));
+    paymentSumDetails = new PaymentSumDetails(total, 0);
+    updatePaymentDetailSumLabel(paymentSumDetails);
+  }
+
+  private void updatePaymentDetailSumLabel(PaymentSumDetails paymentSum) {
+    totalLabel.setText(String.format("%.2f тг", paymentSum.getTotalToPay()));
+    receivedPaymentLabel.setText(String.format("%.2f тг", paymentSum.getReceivedPayment()));
+    changeMoneyLabel.setText(String.format("%.2f тг", paymentSum.getChangeMoney()));
   }
 
   private void updateHeaderCheckboxState() {
@@ -226,11 +249,7 @@ public class SalesController {
     });
     cart.forEach(item -> item.selectedProperty()
         .addListener((obs, oldVal, newVal) -> updateHeaderCheckboxState()));
-  }
-
-
-  public void openKeyboard() {
-    NumericKeyboardDialog.show(barCode, () -> System.out.println("Введено: " + barCode.getText()));
+    setupPriceHeaderMenu();
   }
 
   private void showSuggestions(String input) {
@@ -255,4 +274,57 @@ public class SalesController {
       suggestionsPopup.show(barCode, Side.BOTTOM, 0, 0);
     }
   }
+
+  private void setupPriceHeaderMenu() {
+    ContextMenu menu = new ContextMenu();
+    for (PriceMode mode : PriceMode.values()) {
+      MenuItem item = new MenuItem(mode.getDisplayName());
+      item.setOnAction(e -> switchPriceMode(mode));
+      menu.getItems().add(item);
+    }
+
+    priceHeaderLabel.setOnMouseClicked(e -> {
+      if (!menu.isShowing()) {
+        menu.show(priceHeaderLabel, Side.BOTTOM, 0, 0);
+      } else {
+        menu.hide();
+      }
+    });
+    priceHeaderLabel.setText(currentPriceMode.getDisplayName());
+  }
+
+  private void switchPriceMode(PriceMode mode) {
+    this.currentPriceMode = mode;
+    for (ProductItem item : cart) {
+      if (mode == PriceMode.ORIGINAL) {
+        item.setToOriginalPrice();
+      } else {
+        item.setToWholesalePrice();
+      }
+    }
+    priceHeaderLabel.setText(currentPriceMode.getDisplayName());
+    updateTotal();
+    salesTable.refresh();
+  }
+
+  public void showPaymentDialog() {
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/payment/payment_dialog.fxml"));
+    try {
+      DialogPane dialogPane = loader.load();
+      PaymentDialogController controller = loader.getController();
+      controller.setPaymentDetailsSum(paymentSumDetails);
+
+      Dialog<ButtonType> dialog = new Dialog<>();
+      dialog.setDialogPane(dialogPane);
+      dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+      Optional<ButtonType> result = dialog.showAndWait();
+      if (result.isPresent() &&  result.get() == ButtonType.OK) {
+        //getResult of paymentSumDetails after that some operation
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+
 }

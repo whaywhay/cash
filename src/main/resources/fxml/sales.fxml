@@ -14,6 +14,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.layout.ColumnConstraints?>
 <BorderPane xmlns="http://javafx.com/javafx"
   xmlns:fx="http://javafx.com/fxml" fx:controller="kz.store.cash.fx.controllers.SalesController">
   <top>
@@ -21,7 +22,7 @@
       <TextField fx:id="barCode" prefWidth="300.0">
         <padding><Insets top="10.0"/></padding>
       </TextField>
-      <Button fx:id="keyBoardButton" onAction="#openKeyboard" text="KeyBoard" focusTraversable="false"/>
+<!--      <Button fx:id="keyBoardButton" onAction="#" text="KeyBoard" focusTraversable="false"/>-->
       <Label fx:id="matchStatusIcon"/>
       <BorderPane.margin><Insets left="10.0"/></BorderPane.margin>
       <padding><Insets left="10.0" top="10.0"/></padding>
@@ -42,7 +43,11 @@
           </TableColumn>
           <TableColumn fx:id="indexCol" text="#" prefWidth="40"/>
           <TableColumn fx:id="nameCol" text="НАИМЕНОВАНИЕ" prefWidth="300"/>
-          <TableColumn fx:id="priceCol" text="ЦЕНА" prefWidth="100"/>
+          <TableColumn fx:id="priceCol" prefWidth="100" sortable="false">
+            <graphic>
+              <Label fx:id="priceHeaderLabel" text="ЦЕНА"/>
+            </graphic>
+          </TableColumn>
           <TableColumn fx:id="qtyCol" text="КОЛИЧЕСТВО" prefWidth="100"/>
           <TableColumn fx:id="totalCol" text="СУММА" prefWidth="100"/>
         </columns>
@@ -50,21 +55,28 @@
     </StackPane>
   </center>
   <bottom>
-    <HBox fx:id="bottomBar" spacing="20" styleClass="bottom-bar">
+    <HBox spacing="20" styleClass="bottom-bar">
       <padding>
         <Insets top="10" bottom="10" left="20" right="20"/>
       </padding>
-
       <!-- Левая панель -->
-      <VBox fx:id="summaryBox" spacing="10" styleClass="summary-box" prefWidth="200"
+      <VBox spacing="10" styleClass="summary-box" prefWidth="250"
         alignment="CENTER_LEFT">
-        <Label text="ИТОГО" styleClass="summary-label"/>
-        <Label fx:id="totalLabel" text="00.000" styleClass="summary-value"/>
+        <GridPane>
+          <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" halignment="LEFT"/>
+            <ColumnConstraints hgrow="ALWAYS" halignment="CENTER"/>
+          </columnConstraints>
+          <Label GridPane.rowIndex="0" GridPane.columnIndex="0" text="ИТОГО" styleClass="summary-label"/>
+          <Label GridPane.rowIndex="0" GridPane.columnIndex="1" fx:id="totalLabel" text="00.000" styleClass="summary-value"/>
+          <Label text="ПОЛУЧЕНО" styleClass="sub-summary-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+          <Label fx:id="receivedPaymentLabel" text="00.000" styleClass="sub-summary-value"  GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+          <Label text="СДАЧА" styleClass="sub-summary-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+          <Label fx:id="changeMoneyLabel" text="00.000" styleClass="sub-summary-value" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+        </GridPane>
       </VBox>
-
       <!-- Пустой растягиваемый элемент между левым и правым -->
       <Region HBox.hgrow="ALWAYS"/>
-
       <!-- Правая панель -->
       <GridPane hgap="10" vgap="10" alignment="CENTER_RIGHT">
         <Button text="БЫСТРЫЕ ТОВАРЫ" styleClass="grid-btn" GridPane.rowIndex="0"
@@ -89,7 +101,7 @@
         <Button text="УДАЛИТЬ" onAction="#onDeleteSelected" styleClass="btn-delete"
           GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.columnSpan="2"
           focusTraversable="false"/>
-        <Button text="ОПЛАТА" onAction="#onPay" styleClass="btn-pay" GridPane.rowIndex="3"
+        <Button text="ОПЛАТА" onAction="#showPaymentDialog" styleClass="btn-pay" GridPane.rowIndex="3"
           GridPane.columnIndex="2" focusTraversable="false"/>
       </GridPane>
     </HBox>

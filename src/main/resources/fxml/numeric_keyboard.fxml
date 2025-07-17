@@ -1,7 +1,0 @@
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.GridPane?>
-<VBox xmlns:fx="http://javafx.com/fxml"
-  fx:controller="kz.store.cash.fx.controllers.NumericKeyboardController"
-  alignment="CENTER" spacing="10" style="-fx-padding: 20;">
-  <GridPane fx:id="keyGrid" hgap="10" vgap="10"/>
-</VBox>

@@ -1,6 +1,5 @@
 package kz.store.cash.fx.model;
 
-import java.time.LocalDateTime;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -14,14 +13,18 @@ public class ProductItem {
 
   private final StringProperty barcode = new SimpleStringProperty();
   private final StringProperty name = new SimpleStringProperty();
-  private final DoubleProperty price = new SimpleDoubleProperty();
+  private final DoubleProperty originalPrice = new SimpleDoubleProperty();
+  private final DoubleProperty wholesalePrice = new SimpleDoubleProperty();
+  private final DoubleProperty price = new SimpleDoubleProperty(); // текущее отображаемое значение
   private final IntegerProperty quantity = new SimpleIntegerProperty(1);
   private final BooleanProperty selected = new SimpleBooleanProperty(false);
 
-  public ProductItem(String barcode, String name, double price) {
+  public ProductItem(String barcode, String name, double originalPrice, double wholesalePrice) {
     this.barcode.set(barcode);
     this.name.set(name);
-    this.price.set(price);
+    this.originalPrice.set(originalPrice);
+    this.wholesalePrice.set(wholesalePrice);
+    this.price.set(originalPrice); // по умолчанию отображается обычная цена
   }
 
   public String getBarcode() {
@@ -50,6 +53,14 @@ public class ProductItem {
 
   public double getTotal() {
     return getPrice() * getQuantity();
+  }
+
+  public void setToOriginalPrice() {
+    price.set(originalPrice.get());
+  }
+
+  public void setToWholesalePrice() {
+    price.set(wholesalePrice.get());
   }
 
   public synchronized void increaseQuantity() {

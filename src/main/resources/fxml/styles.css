@@ -10,6 +10,11 @@
 }
 
 .summary-label {
+  -fx-font-size: 16px;
+  -fx-text-fill: black;
+  -fx-font-weight:  bold;
+}
+.sub-summary-label {
   -fx-font-size: 14px;
   -fx-text-fill: black;
 }
@@ -17,6 +22,11 @@
 .summary-value {
   -fx-font-size: 18px;
   -fx-font-weight: bold;
+  -fx-text-fill: black;
+}
+
+.sub-summary-value {
+  -fx-font-size: 18px;
   -fx-text-fill: black;
 }
 
@@ -47,4 +57,96 @@
 .icon-error {
   -fx-icon-color: crimson;
   -fx-icon-size: 20px;
+}
+
+/* Labels */
+.label-title {
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-padding: 0 0 10px 0;
+}
+
+.label-amount {
+  -fx-font-size: 14px;
+  -fx-text-fill: #333;
+  -fx-padding: 5px 0;
+}
+
+.label-value {
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #222;
+}
+
+/* Toggle Buttons */
+.toggle-button {
+  -fx-background-radius: 8;
+  -fx-padding: 8 16;
+  -fx-font-size: 13px;
+  -fx-cursor: hand;
+}
+
+.toggle-button:selected {
+  -fx-background-color: #4caf50;
+  -fx-text-fill: white;
+}
+
+/* Payment Quick Add Buttons */
+.payment-amount-button {
+  -fx-background-color: #eeeeee;
+  -fx-background-radius: 6;
+  -fx-padding: 8 12;
+  -fx-font-size: 14px;
+  -fx-cursor: hand;
+}
+
+.payment-amount-button:hover {
+  -fx-background-color: #dcdcdc;
+}
+
+/* Digit Keyboard */
+.digit-button {
+  -fx-background-color: #fafafa;
+  -fx-border-color: #ccc;
+  -fx-border-radius: 5;
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+  -fx-cursor: hand;
+}
+
+.digit-button:hover {
+  -fx-background-color: #eeeeee;
+}
+
+/* Action Buttons */
+.action-button {
+  -fx-background-color: #2196f3;
+  -fx-text-fill: white;
+  -fx-background-radius: 10;
+  -fx-padding: 10 20;
+  -fx-font-size: 14px;
+  -fx-cursor: hand;
+}
+
+.action-button:hover {
+  -fx-background-color: #1976d2;
+}
+
+.action-cancel-button {
+  -fx-background-color: #f44336;
+  -fx-text-fill: white;
+  -fx-background-radius: 10;
+  -fx-padding: 10 20;
+  -fx-font-size: 14px;
+  -fx-cursor: hand;
+}
+
+.action-cancel-button:hover {
+  -fx-background-color: #d32f2f;
+}
+
+/* Mode container spacing */
+#modeContent {
+  -fx-padding: 10;
+  -fx-spacing: 10;
 }

@@ -15,6 +15,19 @@ create unique index if not exists product_u1
 
 create index if not exists product_x1
     on main.product (product_name);
+create table if not exists main.payment_receipt
+(
+    id               bigint generated always as identity primary key,
+    created          timestamp default now() not null,
+    created_by       text                    not null,
+    last_upd         timestamp default now() not null,
+    last_upd_by      text                    not null,
+    return_flag      boolean                 not null default false,
+    return_date      timestamp,
+    payment_type     text                    not null,
+    cash_payment     numeric(15, 2),
+    non_cash_payment numeric(15, 2)
+);
 
 create table if not exists main.sales
 (
@@ -31,19 +44,5 @@ create table if not exists main.sales
     total              numeric(15, 2)          not null,
     payment_receipt_id bigint references main.payment_receipt (id)
 );
-
 create index if not exists sales_x1 on main.sales (payment_receipt_id);
 
-create table if not exists main.payment_receipt
-(
-    id               bigint generated always as identity primary key,
-    created          timestamp default now() not null,
-    created_by       text                    not null,
-    last_upd         timestamp default now() not null,
-    last_upd_by      text                    not null,
-    return_flag      boolean                 not null default false,
-    return_date      timestamp,
-    payment_type     text                    not null,
-    cash_payment     numeric(15, 2),
-    non_cash_payment numeric(15, 2)
-);
