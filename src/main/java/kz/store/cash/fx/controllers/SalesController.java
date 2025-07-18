@@ -3,7 +3,6 @@ package kz.store.cash.fx.controllers;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -28,6 +27,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.layout.BorderPane;
 import javafx.util.Duration;
 import kz.store.cash.fx.controllers.payments.PaymentDialogController;
 import kz.store.cash.fx.model.PaymentSumDetails;
@@ -49,6 +49,8 @@ public class SalesController {
   @FXML
   public Label priceHeaderLabel;
   @FXML
+  public BorderPane rootPane;
+  @FXML
   private TableView<ProductItem> salesTable;
   @FXML
   private TableColumn<ProductItem, Boolean> checkboxCol;
@@ -67,9 +69,9 @@ public class SalesController {
   @FXML
   private Label totalLabel;
   @FXML
-  public Label changeMoneyLabel;
+  private Label changeMoneyLabel;
   @FXML
-  public Label receivedPaymentLabel;
+  private Label receivedPaymentLabel;
   @FXML
   private Label matchStatusIcon;
 
@@ -85,7 +87,6 @@ public class SalesController {
   @FXML
   public void initialize() {
     initTableView();
-
     Platform.runLater(() -> {
       Scene scene = salesTable.getScene();
       if (scene != null) {
@@ -165,6 +166,7 @@ public class SalesController {
     if (selected != null) {
       selected.increaseQuantity();
       updateTotal();
+      salesTable.refresh();
     }
   }
 
@@ -174,6 +176,7 @@ public class SalesController {
     if (selected != null) {
       selected.decreaseQuantity();
       updateTotal();
+      salesTable.refresh();
     }
   }
 
@@ -182,14 +185,6 @@ public class SalesController {
     cart.removeIf(ProductItem::isSelected);
     ProductItem selected = salesTable.getSelectionModel().getSelectedItem();
     cart.remove(selected);
-    updateTotal();
-  }
-
-  @FXML
-  private void onPay() {
-    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Чек оплачен!");
-    alert.showAndWait();
-    cart.clear();
     updateTotal();
   }
 
@@ -310,16 +305,21 @@ public class SalesController {
   public void showPaymentDialog() {
     FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/payment/payment_dialog.fxml"));
     try {
+      //loader.setControllerFactory(context::getBean);
       DialogPane dialogPane = loader.load();
       PaymentDialogController controller = loader.getController();
       controller.setPaymentDetailsSum(paymentSumDetails);
 
       Dialog<ButtonType> dialog = new Dialog<>();
       dialog.setDialogPane(dialogPane);
-      dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-      Optional<ButtonType> result = dialog.showAndWait();
-      if (result.isPresent() &&  result.get() == ButtonType.OK) {
-        //getResult of paymentSumDetails after that some operation
+      dialog.initOwner(rootPane.getScene().getWindow());
+      dialog.setTitle("Оплата");
+      dialog.setResultConverter(button -> null);
+      dialog.showAndWait();
+      if (controller.isPaymentConfirmed()) {
+        paymentSumDetails = controller.getPaymentSumDetails();
+        updatePaymentDetailSumLabel(paymentSumDetails);
+        //processPayment(result); // свой метод обработки результата
       }
     } catch (IOException e) {
       throw new RuntimeException(e);

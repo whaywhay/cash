@@ -18,16 +18,12 @@ public class MainViewControllers {
 
   @FXML
   public TabPane tabPane;
-
   @FXML
   public Tab salesTab;
-
   @FXML
   public Tab shiftChangeTab;
-
   @FXML
   public Tab salesHistoryTab;
-
   @FXML
   public Tab returnTab;
 

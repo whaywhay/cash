@@ -1,6 +1,7 @@
 package kz.store.cash.util;
 
-public class ParseNumbers {
+
+public class UtilNumbers {
 
   public static double parseDoubleAmount(String text) {
     if (text == null) {
@@ -18,4 +19,5 @@ public class ParseNumbers {
       return 0.0;
     }
   }
+
 }

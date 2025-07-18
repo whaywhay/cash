@@ -10,7 +10,7 @@
 <?import javafx.geometry.Insets?>
 <DialogPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
   fx:controller="kz.store.cash.fx.controllers.payments.PaymentDialogController"
-  stylesheets="@styles_payment.css" styleClass="dialog-pane">
+  stylesheets="@styles_payment.css" styleClass="dialog-pane" fx:id="paymentWindow">
 
   <content>
     <VBox spacing="12" alignment="TOP_CENTER">
@@ -80,12 +80,13 @@
             GridPane.columnIndex="1"/>
           <Button text="9" styleClass="digit-button" onAction="#onDigitPress" GridPane.rowIndex="2"
             GridPane.columnIndex="2"/>
-          <Button text="C" styleClass="digit-button" onAction="#onClear" GridPane.rowIndex="3"
+          <Button text="->" styleClass="digit-button" onAction="#onBackspace" GridPane.rowIndex="3"
             GridPane.columnIndex="0"/>
           <Button text="0" styleClass="digit-button" onAction="#onDigitPress" GridPane.rowIndex="3"
             GridPane.columnIndex="1"/>
-          <Button text="←" styleClass="digit-button" onAction="#onBackspace" GridPane.rowIndex="3"
+          <Button text="." styleClass="digit-button" onAction="#onDigitPress" GridPane.rowIndex="3"
             GridPane.columnIndex="2"/>
+
 
           <Button text="+200" styleClass="payment-amount-button"
             onAction="#onAmountAdd" GridPane.rowIndex="0" GridPane.columnIndex="3">

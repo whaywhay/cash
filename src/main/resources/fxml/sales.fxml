@@ -15,7 +15,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.layout.ColumnConstraints?>
-<BorderPane xmlns="http://javafx.com/javafx"
+<BorderPane xmlns="http://javafx.com/javafx" fx:id="rootPane"
   xmlns:fx="http://javafx.com/fxml" fx:controller="kz.store.cash.fx.controllers.SalesController">
   <top>
     <HBox prefHeight="53.0" prefWidth="1002.0" spacing="5.0" BorderPane.alignment="TOP_LEFT">

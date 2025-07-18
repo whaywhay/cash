@@ -3,13 +3,16 @@ package kz.store.cash.fx.controllers.payments;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.TextField;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class CashViewController implements HasRoot {
 
   private Parent root;
 
   @FXML
   public TextField cashAmountField;
+
 
 
   @Override
@@ -21,4 +24,5 @@ public class CashViewController implements HasRoot {
   public Parent getRoot() {
     return root;
   }
+
 }
