@@ -81,7 +81,7 @@
       <GridPane hgap="10" vgap="10" alignment="CENTER_RIGHT">
         <Button text="БЫСТРЫЕ ТОВАРЫ" styleClass="grid-btn" GridPane.rowIndex="0"
           GridPane.columnIndex="0" focusTraversable="false"/>
-        <Button text="КОЛИЧЕСТВО" styleClass="grid-btn" GridPane.rowIndex="0"
+        <Button text="КОЛИЧЕСТВО" onAction="#onQuantityDialog" styleClass="grid-btn" GridPane.rowIndex="0"
           GridPane.columnIndex="1" focusTraversable="false"/>
         <Button text="+" onAction="#onIncreaseQuantity" styleClass="grid-btn" GridPane.rowIndex="0"
           GridPane.columnIndex="2" focusTraversable="false"/>
@@ -101,7 +101,7 @@
         <Button text="УДАЛИТЬ" onAction="#onDeleteSelected" styleClass="btn-delete"
           GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.columnSpan="2"
           focusTraversable="false"/>
-        <Button text="ОПЛАТА" onAction="#showPaymentDialog" styleClass="btn-pay" GridPane.rowIndex="3"
+        <Button text="ОПЛАТА" onAction="#onPaymentDialog" styleClass="btn-pay" GridPane.rowIndex="3"
           GridPane.columnIndex="2" focusTraversable="false"/>
       </GridPane>
     </HBox>

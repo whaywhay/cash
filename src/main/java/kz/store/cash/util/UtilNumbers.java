@@ -2,6 +2,7 @@ package kz.store.cash.util;
 
 
 import java.util.Locale;
+import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
@@ -28,8 +29,8 @@ public class UtilNumbers {
     }
   }
 
-  public  static String formatDouble(double doubleValue) {
-    return String.format(Locale.US,"%.2f", doubleValue);
+  public static String formatDouble(double doubleValue) {
+    return String.format(Locale.US, "%.2f", doubleValue);
   }
 
   public void setupDecimalFilter(TextField textField) {
@@ -40,6 +41,28 @@ public class UtilNumbers {
       } else {
         return null;
       }
+    };
+    textField.setTextFormatter(new TextFormatter<>(filter));
+  }
+
+  public void setupIntegerFilter(TextField textField, Predicate<Integer> rule) {
+    UnaryOperator<Change> filter = change -> {
+      String newText = change.getControlNewText();
+      if (newText.isEmpty()) {
+        return change; // разрешить удаление всего текста
+      }
+      if (!newText.matches("\\d+")) {
+        return null;
+      }
+      try {
+        int value = Integer.parseInt(newText);
+        if (!rule.test(value)) {
+          return null;
+        }
+      } catch (NumberFormatException e) {
+        return null;
+      }
+      return change;
     };
     textField.setTextFormatter(new TextFormatter<>(filter));
   }

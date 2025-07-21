@@ -18,6 +18,7 @@ import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -25,6 +26,7 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import kz.store.cash.fx.dialog.QuantitySetDialogController;
 import kz.store.cash.fx.dialog.lib.DialogBase;
 import kz.store.cash.fx.dialog.payments.PaymentDialogController;
 import kz.store.cash.fx.dialog.EditProductDialogController;
@@ -230,6 +232,17 @@ public class SalesController {
     priceCol.setCellValueFactory(cell -> cell.getValue().priceProperty());
     qtyCol.setCellValueFactory(cell -> cell.getValue().quantityProperty());
     totalCol.setCellValueFactory(cell -> new ReadOnlyObjectWrapper<>(cell.getValue().getTotal()));
+    totalCol.setCellFactory(column -> new TableCell<>() {
+      @Override
+      protected void updateItem(Number value, boolean empty) {
+        super.updateItem(value, empty);
+        if (empty || value == null) {
+          setText(null);
+        } else {
+          setText(String.format("%,.2f", value.doubleValue())); // → 349 996 500.00
+        }
+      }
+    });
     cart.addListener((ListChangeListener<ProductItem>) change -> {
       updateTotal();
       updateHeaderCheckboxState();
@@ -294,7 +307,7 @@ public class SalesController {
     salesTable.refresh();
   }
 
-  public void showPaymentDialog() {
+  public void onPaymentDialog() {
     if (salesTable.getItems().isEmpty()) {
       return;
     }
@@ -329,7 +342,7 @@ public class SalesController {
       var loader = dialogBase.loadFXML("/fxml/sales/edit_product_dialog.fxml");
       VBox openedRoot = loader.load();
       EditProductDialogController controller = loader.getController();
-      controller.setProduct(selected);
+      controller.setProductItem(selected);
       dialogBase.createDialogStage(rootPane, openedRoot, controller);
       if (controller.getUpdatedProduct() != null) {
         updateTotal();
@@ -341,5 +354,26 @@ public class SalesController {
     }
   }
 
+  @FXML
+  public void onQuantityDialog() {
+    ProductItem selected = salesTable.getSelectionModel().getSelectedItem();
+    if (selected == null) {
+      return;
+    }
+    try {
+      var loader = dialogBase.loadFXML("/fxml/sales/quantity_dialog.fxml");
+      VBox openedRoot = loader.load();
+      QuantitySetDialogController controller = loader.getController();
+      controller.setProductItem(selected);
+      dialogBase.createDialogStage(rootPane, openedRoot, controller);
+      if (controller.getUpdatedProduct() != null) {
+        updateTotal();
+        salesTable.refresh();
+      }
+    } catch (IOException e) {
+      log.info("IOException in SalesController.onQuantityDialog()", e);
+      throw new RuntimeException(e);
+    }
+  }
 
 }

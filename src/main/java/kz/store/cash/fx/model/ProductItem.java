@@ -71,8 +71,12 @@ public class ProductItem {
     price.set(wholesalePrice.get());
   }
 
-  public synchronized void increaseQuantity() {
+  public void increaseQuantity() {
     quantity.set(getQuantity() + 1);
+  }
+
+  public void setQuantity(int addedQuantity){
+    quantity.set(addedQuantity);
   }
 
   public void decreaseQuantity() {

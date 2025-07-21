@@ -224,11 +224,11 @@ public class PaymentDialogController implements CancellableDialog {
   }
 
   private void updateLabelValues() {
-    totalLabel.setText(String.format("%.2f тг", paymentSumDetails.getTotalToPay()));
-    receivedPaymentLabel.setText(String.format("%.2f тг", paymentSumDetails.getReceivedPayment()));
+    totalLabel.setText(String.format("%,.2f тг", paymentSumDetails.getTotalToPay()));
+    receivedPaymentLabel.setText(String.format("%,.2f тг", paymentSumDetails.getReceivedPayment()));
     remainingPaymentLabel.setText(
-        String.format("%.2f тг", paymentSumDetails.getRemainingPayment()));
-    changeMoneyLabel.setText(String.format("%.2f тг", paymentSumDetails.getChangeMoney()));
+        String.format("%,.2f тг", paymentSumDetails.getRemainingPayment()));
+    changeMoneyLabel.setText(String.format("%,.2f тг", paymentSumDetails.getChangeMoney()));
   }
 
 

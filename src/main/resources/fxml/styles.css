@@ -128,3 +128,9 @@
   -fx-font-weight: bold;
 }
 
+.label-value {
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #222222;
+}
+

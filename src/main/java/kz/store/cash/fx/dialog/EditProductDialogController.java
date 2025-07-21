@@ -1,5 +1,6 @@
 package kz.store.cash.fx.dialog;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -30,7 +31,7 @@ public class EditProductDialogController implements CancellableDialog {
   private final ProductService productService;
   private final UtilNumbers utilNumbers;
 
-  public void setProduct(ProductItem product) {
+  public void setProductItem(ProductItem product) {
     this.updatedProduct = product;
     productName.setText(product.getProductName());
     retailPriceField.setText(UtilNumbers.formatDouble(product.getOriginalPrice()));
@@ -39,7 +40,10 @@ public class EditProductDialogController implements CancellableDialog {
   }
 
   public void initEvent() {
-    utilNumbers.setupDecimalFilter(retailPriceField);
+    Platform.runLater(() -> {
+      utilNumbers.setupDecimalFilter(retailPriceField);
+      retailPriceField.requestFocus();
+    });
   }
 
   @FXML
@@ -85,13 +89,18 @@ public class EditProductDialogController implements CancellableDialog {
   }
 
   private boolean checkAndInitializeUpdateProduct() {
-    if (!retailPriceField.getText().trim().isEmpty()
-        && Double.parseDouble(retailPriceField.getText()) > 0
-        && Double.parseDouble(retailPriceField.getText()) >= updatedProduct.getWholesalePrice()) {
-      updatedProduct.setPrice(Double.parseDouble(retailPriceField.getText()));
-      return true;
+    try {
+      double price = Double.parseDouble(retailPriceField.getText());
+      if (!retailPriceField.getText().trim().isEmpty()
+          && price > 0
+          && price >= updatedProduct.getWholesalePrice()) {
+        updatedProduct.setPrice(price);
+        return true;
+      }
+      return false;
+    } catch (NumberFormatException e) {
+      return false;
     }
-    return false;
   }
 
   @Override

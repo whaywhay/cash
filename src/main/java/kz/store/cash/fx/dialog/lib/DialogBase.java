@@ -1,9 +1,11 @@
 package kz.store.cash.fx.dialog.lib;
 
 import java.io.IOException;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -38,13 +40,17 @@ public class DialogBase {
       dialogStage.setX(event.getScreenX() - xOffset);
       dialogStage.setY(event.getScreenY() - yOffset);
     });
-    if (controller instanceof CancellableDialog cancelHandler) {
-      openedRootPane.setOnKeyPressed(event -> {
-        if (event.getCode() == KeyCode.ESCAPE) {
-          cancelHandler.handleCancel();
-        }
-      });
-    }
+    Platform.runLater(() -> {
+      if (controller instanceof CancellableDialog cancelHandler) {
+        openedRootPane.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+          if (event.getCode() == KeyCode.ESCAPE) {
+            cancelHandler.handleCancel();
+            event.consume();
+          }
+        });
+      }
+    });
+
     dialogStage.showAndWait();
   }
 

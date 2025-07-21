@@ -1,0 +1,40 @@
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+<VBox xmlns="http://javafx.com/javafx"
+  xmlns:fx="http://javafx.com/fxml"
+  fx:controller="kz.store.cash.fx.dialog.QuantitySetDialogController"
+  alignment="CENTER" spacing="10" styleClass="dialog-pane-product-change" stylesheets="@../styles.css">
+
+  <padding>
+    <Insets top="25" right="25" bottom="25" left="25"/>
+  </padding>
+  <Label text="Количества" styleClass="label-value"/>
+  <TextField fx:id="quantityField" prefWidth="240" styleClass="input-field-product-change"/>
+
+  <GridPane hgap="10" vgap="10" alignment="CENTER">
+    <Button text="1" styleClass="numpad-button" onAction="#onDigitClick" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+    <Button text="2" styleClass="numpad-button" onAction="#onDigitClick" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+    <Button text="3" styleClass="numpad-button" onAction="#onDigitClick" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+    <Button text="4" styleClass="numpad-button" onAction="#onDigitClick" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+    <Button text="5" styleClass="numpad-button" onAction="#onDigitClick" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+    <Button text="6" styleClass="numpad-button" onAction="#onDigitClick" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+    <Button text="7" styleClass="numpad-button" onAction="#onDigitClick" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+    <Button text="8" styleClass="numpad-button" onAction="#onDigitClick" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+    <Button text="9" styleClass="numpad-button" onAction="#onDigitClick" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+    <Button text="-" styleClass="numpad-button"  onAction="#onBackspace" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+    <Button text="." styleClass="numpad-button" onAction="#onDotClick" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+    <Button text="0" styleClass="numpad-button" onAction="#onDigitClick" GridPane.rowIndex="3" GridPane.columnIndex="2"/>
+  </GridPane>
+
+  <HBox spacing="20" alignment="CENTER">
+    <Button text="ОТМЕНА" onAction="#onCancel" styleClass="btn-cancel-product-change" prefWidth="140"/>
+    <Button text="OK" onAction="#onSave" styleClass="btn-save-product-change" prefWidth="140"/>
+  </HBox>
+
+</VBox>
