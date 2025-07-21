@@ -1,7 +1,6 @@
-package kz.store.cash.fx.controllers.payments;
+package kz.store.cash.fx.dialog.payments;
 
 import java.io.IOException;
-import java.util.function.UnaryOperator;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,21 +9,24 @@ import javafx.scene.control.Button;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import kz.store.cash.fx.dialog.lib.CancellableDialog;
 import kz.store.cash.fx.model.PaymentSumDetails;
 import kz.store.cash.util.UtilNumbers;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @RequiredArgsConstructor
 @Getter
-public class PaymentDialogController {
+@Component
+public class PaymentDialogController implements CancellableDialog {
 
   @FXML
   public DialogPane paymentWindow;
@@ -46,14 +48,14 @@ public class PaymentDialogController {
   @FXML
   private StackPane modeContent;
 
+  private final ApplicationContext context;
   private boolean paymentConfirmed = false;
   private CashViewController cashViewController;
   private CardViewController cardViewController;
   private MixedViewController mixedViewController;
-
+  private TextField activePaymentField;
   private PaymentSumDetails paymentSumDetails;
-
-  private StringBuilder currentInput = new StringBuilder();
+  private final UtilNumbers utilNumbers;
 
   public void initData() {
     ToggleGroup group = new ToggleGroup();
@@ -68,9 +70,10 @@ public class PaymentDialogController {
   public void switchToCash() {
     if (cashViewController == null) {
       cashViewController = loadCashView();
-      setupDecimalFilter(cashViewController.cashAmountField);
+      utilNumbers.setupDecimalFilter(cashViewController.cashAmountField);
     }
     modeContent.getChildren().setAll(cashViewController.getRoot());
+    activePaymentField = cashViewController.cashAmountField;
     clearAllInputs();
   }
 
@@ -78,44 +81,44 @@ public class PaymentDialogController {
   public void switchToCard() {
     if (cardViewController == null) {
       cardViewController = loadCardView();
-      setupDecimalFilter(cardViewController.cardAmountField);
+      utilNumbers.setupDecimalFilter(cardViewController.cardAmountField);
     }
     modeContent.getChildren().setAll(cardViewController.getRoot());
     clearAllInputs();
-    log.info("after switchToCard clearAllInputs");
     double total = paymentSumDetails.getTotalToPay();
-    cardViewController.cardAmountField.setText(String.valueOf(total));
+    activePaymentField = cardViewController.cardAmountField;
+    activePaymentField.setText(String.valueOf(total));
     paymentSumDetails.setReceivedPayment(total);
-    updateValues();
-    //currentInput.append(total);
+    updateLabelValues();
   }
 
   @FXML
   public void switchToMixed() {
     if (mixedViewController == null) {
       mixedViewController = loadMixedView();
-      setupDecimalFilter(mixedViewController.mixedCashField);
-      setupDecimalFilter(mixedViewController.mixedCardField);
+      utilNumbers.setupDecimalFilter(mixedViewController.mixedCashField);
     }
     modeContent.getChildren().setAll(mixedViewController.getRoot());
+    activePaymentField = mixedViewController.mixedCashField;
     clearAllInputs();
   }
 
   private CashViewController loadCashView() {
-    return loadView("/fxml/payment/cash_view.fxml", CashViewController.class);
+    return loadView("/fxml/sales/payment/cash_view.fxml");
   }
 
   private CardViewController loadCardView() {
-    return loadView("/fxml/payment/card_view.fxml", CardViewController.class);
+    return loadView("/fxml/sales/payment/card_view.fxml");
   }
 
   private MixedViewController loadMixedView() {
-    return loadView("/fxml/payment/mixed_view.fxml", MixedViewController.class);
+    return loadView("/fxml/sales/payment/mixed_view.fxml");
   }
 
-  private <T> T loadView(String fxmlPath, Class<T> controllerClass) {
+  private <T> T loadView(String fxmlPath) {
     try {
       FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+      loader.setControllerFactory(context::getBean);
       Parent root = loader.load();
       T controller = loader.getController();
       if (controller instanceof HasRoot viewWithRoot) {
@@ -129,18 +132,11 @@ public class PaymentDialogController {
 
   private void clearAllInputs() {
     paymentSumDetails.setReceivedPayment(0);
-    currentInput.setLength(0);
-    if (cashViewController != null) {
-      cashViewController.cashAmountField.clear();
+    activePaymentField.setText("");
+    if(mixedButton.isSelected()) {
+      mixedViewController.mixedCardField.setText("");
     }
-    if (cardViewController != null) {
-      cardViewController.cardAmountField.clear();
-    }
-    if (mixedViewController != null) {
-      mixedViewController.mixedCashField.clear();
-      mixedViewController.mixedCardField.clear();
-    }
-    updateValues();
+    updateLabelValues();
   }
 
   public void setPaymentDetailsSum(PaymentSumDetails paymentSumDetails) {
@@ -151,72 +147,53 @@ public class PaymentDialogController {
 
   @FXML
   private void onDigitPress(ActionEvent event) {
-    String digit = ((Button) event.getSource()).getText();
-    if (digit.equals(".") && currentInput.toString().contains(".")) {
+    if (cardButton.isSelected()) {
       return;
     }
-    currentInput.append(digit);
-    updateFromInput();
-  }
-
-  private void updatePaymentTextField() {
-    if (cashViewController != null) {
-      cashViewController.cashAmountField.setText(currentInput.toString());
-    }
-    if (cardViewController != null) {
-      cardViewController.cardAmountField.setText(currentInput.toString());
-    }
-    if (mixedViewController != null) {
-      mixedViewController.mixedCashField.setText(currentInput.toString());
-      var remainingForCardPayment =
-          paymentSumDetails.getTotalToPay() - paymentSumDetails.getReceivedPayment();
-      if (remainingForCardPayment > 0) {
-        mixedViewController.mixedCardField.setText(String.valueOf(remainingForCardPayment));
-      } else {
-        mixedViewController.mixedCardField.setText(String.valueOf(0));
-      }
-    }
+    String digit = ((Button) event.getSource()).getText();
+    String previousValue = activePaymentField.getText();
+    activePaymentField.setText(previousValue + digit);
+    updateFromInputNew();
   }
 
   private boolean checkPaymentSumEnough() {
     if (mixedButton.isSelected()) {
-      log.info("mixedButton.isSelected(): ");
-      double cash = UtilNumbers.parseDoubleAmount(mixedViewController.mixedCardField.getText());
+      double cash = UtilNumbers.parseDoubleAmount(mixedViewController.mixedCashField.getText());
       double card = UtilNumbers.parseDoubleAmount(mixedViewController.mixedCardField.getText());
-      return (cash + card) >= paymentSumDetails.getTotalToPay();
+      return (cash + card) == paymentSumDetails.getTotalToPay();
     }
-    log.info("cash or card toggle: ");
-    return paymentSumDetails.getTotalToPay() >= paymentSumDetails.getReceivedPayment();
+    return paymentSumDetails.getTotalToPay() <= paymentSumDetails.getReceivedPayment();
   }
-
 
   @FXML
   private void onBackspace() {
-    if (!currentInput.isEmpty()) {
-      currentInput.deleteCharAt(currentInput.length() - 1);
-      updateFromInput();
+    String fieldValue = activePaymentField.getText();
+    if (!fieldValue.isEmpty() && !cardButton.isSelected()) {
+      activePaymentField.setText(fieldValue.substring(0, fieldValue.length() - 1));
+      updateFromInputNew();
     }
   }
 
   @FXML
   private void onAmountAdd(ActionEvent event) {
+    if (cardButton.isSelected()) {
+      return;
+    }
     Button btn = (Button) event.getSource();
     String text = btn.getText().replace("+", "").trim();
     double buttonSum = UtilNumbers.parseDoubleAmount(text);
-    double result = UtilNumbers.parseDoubleAmount(currentInput.toString()) + buttonSum;
-    currentInput.setLength(0);
-    currentInput.append(result);
-    updateFromInput();
+    double result = UtilNumbers.parseDoubleAmount(activePaymentField.getText()) + buttonSum;
+    activePaymentField.setText(String.valueOf(result));
+    updateFromInputNew();
   }
 
   @FXML
   private void onPay() {
     if (checkPaymentSumEnough()) {
-      return;
+      paymentConfirmed = true;
+      Stage stage = (Stage) paymentWindow.getScene().getWindow();
+      stage.close();
     }
-    paymentConfirmed = true;
-    Stage stage = (Stage) paymentWindow.getScene().getWindow();
-    stage.close();
   }
 
   @FXML
@@ -226,18 +203,27 @@ public class PaymentDialogController {
     stage.close();
   }
 
-  private void updateFromInput() {
+  private void updateFromInputNew() {
     try {
-      double receivedAmount = UtilNumbers.parseDoubleAmount(currentInput.toString());
+      double receivedAmount = UtilNumbers.parseDoubleAmount(activePaymentField.getText());
+      if (mixedButton.isSelected()) {
+        var remainingForCardPayment = paymentSumDetails.getTotalToPay() - receivedAmount;
+        if (remainingForCardPayment > 0) {
+          mixedViewController.mixedCardField.setText(String.valueOf(remainingForCardPayment));
+          paymentSumDetails.setReceivedPayment(paymentSumDetails.getTotalToPay());
+          return;
+        } else {
+          mixedViewController.mixedCardField.setText(String.valueOf(0));
+        }
+      }
       paymentSumDetails.setReceivedPayment(receivedAmount);
-      updatePaymentTextField();
     } catch (NumberFormatException e) {
       paymentSumDetails.setReceivedPayment(0);
     }
-    updateValues();
+    updateLabelValues();
   }
 
-  private void updateValues() {
+  private void updateLabelValues() {
     totalLabel.setText(String.format("%.2f тг", paymentSumDetails.getTotalToPay()));
     receivedPaymentLabel.setText(String.format("%.2f тг", paymentSumDetails.getReceivedPayment()));
     remainingPaymentLabel.setText(
@@ -245,17 +231,9 @@ public class PaymentDialogController {
     changeMoneyLabel.setText(String.format("%.2f тг", paymentSumDetails.getChangeMoney()));
   }
 
-  private void setupDecimalFilter(TextField textField) {
-    UnaryOperator<TextFormatter.Change> filter = change -> {
-      String newText = change.getControlNewText();
-      if (newText.matches("\\d*(\\.\\d{0,2})?")) {
-        return change;
-      } else {
-        return null;
-      }
-    };
-    textField.setTextFormatter(new TextFormatter<>(filter));
+
+  @Override
+  public void handleCancel() {
+    onCancel();
   }
-
-
 }

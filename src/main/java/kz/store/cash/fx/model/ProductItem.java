@@ -12,16 +12,16 @@ import javafx.beans.property.StringProperty;
 public class ProductItem {
 
   private final StringProperty barcode = new SimpleStringProperty();
-  private final StringProperty name = new SimpleStringProperty();
+  private final StringProperty productName = new SimpleStringProperty();
   private final DoubleProperty originalPrice = new SimpleDoubleProperty();
   private final DoubleProperty wholesalePrice = new SimpleDoubleProperty();
   private final DoubleProperty price = new SimpleDoubleProperty(); // текущее отображаемое значение
   private final IntegerProperty quantity = new SimpleIntegerProperty(1);
   private final BooleanProperty selected = new SimpleBooleanProperty(false);
 
-  public ProductItem(String barcode, String name, double originalPrice, double wholesalePrice) {
+  public ProductItem(String barcode, String productName, double originalPrice, double wholesalePrice) {
     this.barcode.set(barcode);
-    this.name.set(name);
+    this.productName.set(productName);
     this.originalPrice.set(originalPrice);
     this.wholesalePrice.set(wholesalePrice);
     this.price.set(originalPrice); // по умолчанию отображается обычная цена
@@ -31,12 +31,20 @@ public class ProductItem {
     return barcode.get();
   }
 
-  public String getName() {
-    return name.get();
+  public String getProductName() {
+    return productName.get();
   }
 
   public double getPrice() {
     return price.get();
+  }
+
+  public double getOriginalPrice() {
+    return originalPrice.get();
+  }
+
+  public double getWholesalePrice() {
+    return wholesalePrice.get();
   }
 
   public int getQuantity() {
@@ -73,8 +81,12 @@ public class ProductItem {
     }
   }
 
-  public StringProperty nameProperty() {
-    return name;
+  public void  setPrice(double price) {
+    this.price.set(price);
+  }
+
+  public StringProperty productNameProperty() {
+    return productName;
   }
 
   public DoubleProperty priceProperty() {

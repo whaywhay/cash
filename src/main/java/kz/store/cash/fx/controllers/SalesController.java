@@ -10,16 +10,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.CustomMenuItem;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -28,18 +23,23 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-import kz.store.cash.fx.controllers.payments.PaymentDialogController;
+import kz.store.cash.fx.dialog.lib.DialogBase;
+import kz.store.cash.fx.dialog.payments.PaymentDialogController;
+import kz.store.cash.fx.dialog.EditProductDialogController;
 import kz.store.cash.fx.model.PaymentSumDetails;
 import kz.store.cash.fx.model.ProductItem;
 import kz.store.cash.fx.scanner.BarcodeScannerListener;
 import kz.store.cash.model.enums.PriceMode;
 import kz.store.cash.service.ProductService;
+import kz.store.cash.util.UtilAlert;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.springframework.stereotype.Component;
 
-
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class SalesController {
@@ -77,12 +77,13 @@ public class SalesController {
 
   private final ObservableList<ProductItem> cart = FXCollections.observableArrayList();
   private final ProductService productService;
+  private final DialogBase dialogBase;
+  private final UtilAlert utilAlert;
   private BarcodeScannerListener scannerListener;
   private final ContextMenu suggestionsPopup = new ContextMenu();
   private final PauseTransition debounceTimer = new PauseTransition(Duration.millis(300));
   private PriceMode currentPriceMode = PriceMode.ORIGINAL;
   private PaymentSumDetails paymentSumDetails;
-
 
   @FXML
   public void initialize() {
@@ -188,13 +189,6 @@ public class SalesController {
     updateTotal();
   }
 
-  private void showError(String msg) {
-    Alert alert = new Alert(AlertType.ERROR, msg);
-    alert.setTitle("Ошибка поиска товара");
-    alert.setHeaderText(null);
-    alert.showAndWait();
-  }
-
   private void handleBarcodeScanned(String barcode) {
     ProductItem product = productService.findByBarcode(barcode);
     if (product != null) {
@@ -202,10 +196,8 @@ public class SalesController {
       addOrUpdateProduct(product);
     } else {
       showMatchIndicator(false);
-      showError("Товар не найден: " + barcode);
+      utilAlert.showError("Ошибка поиска товара", "Товар не найден: " + barcode);
     }
-
-//    barCode.setText(barcode);
   }
 
   private void showMatchIndicator(boolean found) {
@@ -234,7 +226,7 @@ public class SalesController {
     checkboxCol.setEditable(true);
     indexCol.setCellValueFactory(
         cell -> new ReadOnlyObjectWrapper<>(salesTable.getItems().indexOf(cell.getValue()) + 1));
-    nameCol.setCellValueFactory(cell -> cell.getValue().nameProperty());
+    nameCol.setCellValueFactory(cell -> cell.getValue().productNameProperty());
     priceCol.setCellValueFactory(cell -> cell.getValue().priceProperty());
     qtyCol.setCellValueFactory(cell -> cell.getValue().quantityProperty());
     totalCol.setCellValueFactory(cell -> new ReadOnlyObjectWrapper<>(cell.getValue().getTotal()));
@@ -254,7 +246,7 @@ public class SalesController {
       return;
     }
     List<CustomMenuItem> menuItems = matches.stream().limit(10).map(item -> {
-      Label suggestionLabel = new Label(item.getBarcode() + " - " + item.getName());
+      Label suggestionLabel = new Label(item.getBarcode() + " - " + item.getProductName());
       suggestionLabel.setStyle("-fx-padding: 5px;");
       CustomMenuItem menuItem = new CustomMenuItem(suggestionLabel, true);
       menuItem.setOnAction(e -> {
@@ -303,25 +295,48 @@ public class SalesController {
   }
 
   public void showPaymentDialog() {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/payment/payment_dialog.fxml"));
+    if (salesTable.getItems().isEmpty()) {
+      return;
+    }
     try {
-      //loader.setControllerFactory(context::getBean);
-      DialogPane dialogPane = loader.load();
+      var loader = dialogBase.loadFXML("/fxml/sales/payment/payment_dialog.fxml");
+      DialogPane openedRoot = loader.load();
       PaymentDialogController controller = loader.getController();
       controller.setPaymentDetailsSum(paymentSumDetails);
-
-      Dialog<ButtonType> dialog = new Dialog<>();
-      dialog.setDialogPane(dialogPane);
-      dialog.initOwner(rootPane.getScene().getWindow());
-      dialog.setTitle("Оплата");
-      dialog.setResultConverter(button -> null);
-      dialog.showAndWait();
+      dialogBase.createDialogStage(rootPane, openedRoot, controller);
       if (controller.isPaymentConfirmed()) {
         paymentSumDetails = controller.getPaymentSumDetails();
-        updatePaymentDetailSumLabel(paymentSumDetails);
-        //processPayment(result); // свой метод обработки результата
+        processPaymentSuccess(paymentSumDetails); // свой метод обработки результата
       }
     } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private void processPaymentSuccess(PaymentSumDetails paymentSumDetails) {
+    updatePaymentDetailSumLabel(paymentSumDetails);
+    //array or list salesTable tableView save to sales table. log and clear salesTable tableView after that
+
+  }
+
+  @FXML
+  private void onEditProduct() {
+    ProductItem selected = salesTable.getSelectionModel().getSelectedItem();
+    if (selected == null) {
+      return;
+    }
+    try {
+      var loader = dialogBase.loadFXML("/fxml/sales/edit_product_dialog.fxml");
+      VBox openedRoot = loader.load();
+      EditProductDialogController controller = loader.getController();
+      controller.setProduct(selected);
+      dialogBase.createDialogStage(rootPane, openedRoot, controller);
+      if (controller.getUpdatedProduct() != null) {
+        updateTotal();
+        salesTable.refresh();
+      }
+    } catch (IOException e) {
+      log.info("IOException in SalesController.onEditProduct()", e);
       throw new RuntimeException(e);
     }
   }

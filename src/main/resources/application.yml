@@ -11,3 +11,7 @@ spring:
     hibernate:
       ddl-auto: validate    # или validate, create, create-drop
     show-sql: true
+
+logging:
+  charset:
+    console: UTF-8

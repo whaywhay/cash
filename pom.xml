@@ -29,7 +29,9 @@
   </scm>
   <properties>
     <java.version>21</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+
 
 
   <dependencies>
@@ -84,7 +86,20 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- MapStruct Core -->
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
+      <version>1.5.5.Final</version>
+    </dependency>
 
+    <!-- Для Spring Boot интеграции (необязательно, но удобно) -->
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct-processor</artifactId>
+      <version>1.5.5.Final</version>
+      <scope>provided</scope>
+    </dependency>
     <!-- JavaFX dependency-->
     <dependency>
       <groupId>org.openjfx</groupId>
@@ -116,7 +131,15 @@
               <groupId>org.projectlombok</groupId>
               <artifactId>lombok</artifactId>
             </path>
+            <path>
+              <groupId>org.mapstruct</groupId>
+              <artifactId>mapstruct-processor</artifactId>
+              <version>1.5.5.Final</version>
+            </path>
           </annotationProcessorPaths>
+          <compilerArgs>
+            <arg>-Amapstruct.defaultComponentModel=spring</arg>
+          </compilerArgs>
           <source>22</source>
           <target>22</target>
         </configuration>

@@ -87,7 +87,7 @@
           GridPane.columnIndex="2" focusTraversable="false"/>
 
         <Button text="ИЗМЕНИТЬ ТОВАР" styleClass="grid-btn" GridPane.rowIndex="1"
-          GridPane.columnIndex="0" focusTraversable="false"/>
+          GridPane.columnIndex="0" focusTraversable="false" onAction="#onEditProduct"/>
         <Button text="ОТЛОЖКА" styleClass="grid-btn" GridPane.rowIndex="1"
           GridPane.columnIndex="1" focusTraversable="false"/>
         <Button text="ДОП. ФУНКЦИИ" styleClass="grid-btn" GridPane.rowIndex="1"

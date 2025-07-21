@@ -1,19 +1,17 @@
-package kz.store.cash.fx.controllers.payments;
+package kz.store.cash.fx.dialog.payments;
 
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.TextField;
-import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-@RequiredArgsConstructor
+@Component
 public class CashViewController implements HasRoot {
 
   private Parent root;
 
   @FXML
   public TextField cashAmountField;
-
-
 
   @Override
   public void setRoot(Parent root) {

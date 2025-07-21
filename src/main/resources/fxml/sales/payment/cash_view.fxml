@@ -4,7 +4,7 @@
 <?import javafx.scene.control.TextField?>
 
 <VBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" spacing="6"
-fx:controller="kz.store.cash.fx.controllers.payments.CashViewController">
+fx:controller="kz.store.cash.fx.dialog.payments.CashViewController">
     <Label text="Наличный счет" styleClass="payment-label"/>
-    <TextField fx:id="cashAmountField" styleClass="payment-input" promptText="Введите сумму"/>
+    <TextField fx:id="cashAmountField" styleClass="payment-input" promptText="Введите сумму" editable="false"/>
 </VBox>

@@ -1,6 +1,14 @@
 package kz.store.cash.util;
 
 
+import java.util.Locale;
+import java.util.function.UnaryOperator;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.control.TextFormatter.Change;
+import org.springframework.stereotype.Component;
+
+@Component
 public class UtilNumbers {
 
   public static double parseDoubleAmount(String text) {
@@ -18,6 +26,22 @@ public class UtilNumbers {
     } catch (NumberFormatException e) {
       return 0.0;
     }
+  }
+
+  public  static String formatDouble(double doubleValue) {
+    return String.format(Locale.US,"%.2f", doubleValue);
+  }
+
+  public void setupDecimalFilter(TextField textField) {
+    UnaryOperator<Change> filter = change -> {
+      String newText = change.getControlNewText();
+      if (newText.matches("\\d*(\\.\\d{0,2})?")) {
+        return change;
+      } else {
+        return null;
+      }
+    };
+    textField.setTextFormatter(new TextFormatter<>(filter));
   }
 
 }

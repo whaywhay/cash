@@ -1,29 +1,48 @@
 package kz.store.cash.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import kz.store.cash.fx.model.ProductItem;
+import kz.store.cash.mapper.ProductMapper;
+import kz.store.cash.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class ProductService {
-  private final List<ProductItem> products = List.of(
-      new ProductItem("123456", "салфетка микро фибер 300", 2500.00, 2000.00),
-      new ProductItem("654321", "перчатки резиновые", 1800.00, 1500.00),
-      new ProductItem("111222", "мыло хозяйственное", 1200.00, 1000.00),
-      new ProductItem("111223", "мыло la de creme", 1600.00, 1400.00),
-      new ProductItem("111224", "мыло с приятным запахом", 1400.00, 1300.00)
-  );
+
+  private final ProductRepository productRepository;
+  private final ProductMapper productMapper;
 
   public ProductItem findByBarcode(String barcode) {
-    return products.stream()
-        .filter(p -> p.getBarcode().equals(barcode))
-        .findFirst()
+    return productRepository.findFirstByBarcode(barcode)
+        .map(productMapper::toProductItem)
         .orElse(null);
   }
 
   public List<ProductItem> searchByPartialBarcode(String partial) {
-    return products.stream()
-        .filter(p -> p.getBarcode().startsWith(partial))
+    String barCode = partial + "%";
+    String productName = "%" + partial + "%";
+    return productRepository.findByBarcodeLikeOrProductNameLikeIgnoreCase(barCode, productName)
+        .stream()
+        .map(productMapper::toProductItem)
         .toList();
+  }
+
+  public void updateRetailPrice(String barcode, double retailPrice) {
+    if (retailPrice <= 0) {
+      return;
+    }
+    productRepository.findFirstByBarcode(barcode)
+        .ifPresent(prod -> {
+          prod.setOriginalPrice(BigDecimal.valueOf(retailPrice));
+          productRepository.save(prod);
+        });
+
+
   }
 }

@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <GridPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" hgap="10" vgap="6"
-  fx:controller="kz.store.cash.fx.controllers.payments.MixedViewController">
+  fx:controller="kz.store.cash.fx.dialog.payments.MixedViewController">
   <columnConstraints>
     <ColumnConstraints percentWidth="50"/>
     <ColumnConstraints percentWidth="50"/>
@@ -13,7 +13,7 @@
   <Label text="Наличный счет" styleClass="payment-label" GridPane.rowIndex="0"
     GridPane.columnIndex="0"/>
   <TextField fx:id="mixedCashField" styleClass="payment-input" promptText="Введите сумму"
-    GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+    GridPane.rowIndex="1" GridPane.columnIndex="0" editable="false"/>
   <Label text="Безналичный счет" styleClass="payment-label" GridPane.rowIndex="0"
     GridPane.columnIndex="1"/>
   <TextField fx:id="mixedCardField" styleClass="payment-input" promptText="Введите сумму"

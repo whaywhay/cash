@@ -32,6 +32,7 @@
 
 .grid-btn {
   -fx-pref-width: 220;
+  -fx-pref-height: 45;
   -fx-font-size: 14px;
 }
 
@@ -40,6 +41,7 @@
   -fx-text-fill: white;
   -fx-font-weight: bold;
   -fx-pref-width: 220;
+  -fx-pref-height: 45;
 }
 
 .btn-pay {
@@ -47,6 +49,7 @@
   -fx-text-fill: white;
   -fx-font-weight: bold;
   -fx-pref-width: 220;
+  -fx-pref-height: 45;
 }
 
 .icon-success {
@@ -57,25 +60,6 @@
 .icon-error {
   -fx-icon-color: crimson;
   -fx-icon-size: 20px;
-}
-
-/* Labels */
-.label-title {
-  -fx-font-size: 16px;
-  -fx-font-weight: bold;
-  -fx-padding: 0 0 10px 0;
-}
-
-.label-amount {
-  -fx-font-size: 14px;
-  -fx-text-fill: #333;
-  -fx-padding: 5px 0;
-}
-
-.label-value {
-  -fx-font-size: 14px;
-  -fx-font-weight: bold;
-  -fx-text-fill: #222;
 }
 
 /* Toggle Buttons */
@@ -91,62 +75,56 @@
   -fx-text-fill: white;
 }
 
-/* Payment Quick Add Buttons */
-.payment-amount-button {
-  -fx-background-color: #eeeeee;
-  -fx-background-radius: 6;
-  -fx-padding: 8 12;
-  -fx-font-size: 14px;
-  -fx-cursor: hand;
-}
-
-.payment-amount-button:hover {
-  -fx-background-color: #dcdcdc;
-}
-
-/* Digit Keyboard */
-.digit-button {
-  -fx-background-color: #fafafa;
+.dialog-pane-product-change {
+  -fx-background-color: white;
   -fx-border-color: #ccc;
+  -fx-border-radius: 10;
+  -fx-background-radius: 10;
+}
+
+.input-field-product-change {
+  -fx-border-color: #00b3a4;
+  -fx-border-width: 1.5;
+  -fx-background-radius: 5;
   -fx-border-radius: 5;
-  -fx-font-size: 18px;
+  -fx-font-size: 16px;
+  -fx-padding: 6 10 6 10;
+}
+
+.numpad-button {
+  -fx-min-width: 80px;
+  -fx-min-height: 60px;
+  -fx-background-color: #28a745;
+  -fx-text-fill: white;
+  -fx-font-size: 20px;
   -fx-font-weight: bold;
-  -fx-cursor: hand;
+  -fx-background-radius: 8;
 }
 
-.digit-button:hover {
-  -fx-background-color: #eeeeee;
+.numpad-button:hover {
+  -fx-background-color: #218838;
 }
 
-/* Action Buttons */
-.action-button {
-  -fx-background-color: #2196f3;
+.numpad-button:pressed {
+  -fx-background-color: #1e7e34;
+}
+
+
+.btn-cancel-product-change {
+  -fx-font-size: 16px;
+  -fx-min-width: 60px;
+  -fx-min-height: 40px;
+  -fx-background-color: #d9534f;
   -fx-text-fill: white;
-  -fx-background-radius: 10;
-  -fx-padding: 10 20;
-  -fx-font-size: 14px;
-  -fx-cursor: hand;
+  -fx-font-weight: bold;
 }
 
-.action-button:hover {
-  -fx-background-color: #1976d2;
-}
-
-.action-cancel-button {
-  -fx-background-color: #f44336;
+.btn-save-product-change {
+  -fx-font-size: 16px;
+  -fx-min-width: 60px;
+  -fx-min-height: 40px;
+  -fx-background-color: #28a745;
   -fx-text-fill: white;
-  -fx-background-radius: 10;
-  -fx-padding: 10 20;
-  -fx-font-size: 14px;
-  -fx-cursor: hand;
+  -fx-font-weight: bold;
 }
 
-.action-cancel-button:hover {
-  -fx-background-color: #d32f2f;
-}
-
-/* Mode container spacing */
-#modeContent {
-  -fx-padding: 10;
-  -fx-spacing: 10;
-}

@@ -1,4 +1,4 @@
-package kz.store.cash.fx.controllers.payments;
+package kz.store.cash.fx.dialog.payments;
 
 import javafx.scene.Parent;
 

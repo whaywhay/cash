@@ -9,7 +9,7 @@
 <?import javafx.scene.control.DialogPane?>
 <?import javafx.geometry.Insets?>
 <DialogPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-  fx:controller="kz.store.cash.fx.controllers.payments.PaymentDialogController"
+  fx:controller="kz.store.cash.fx.dialog.payments.PaymentDialogController"
   stylesheets="@styles_payment.css" styleClass="dialog-pane" fx:id="paymentWindow">
 
   <content>
@@ -80,7 +80,7 @@
             GridPane.columnIndex="1"/>
           <Button text="9" styleClass="digit-button" onAction="#onDigitPress" GridPane.rowIndex="2"
             GridPane.columnIndex="2"/>
-          <Button text="->" styleClass="digit-button" onAction="#onBackspace" GridPane.rowIndex="3"
+          <Button text="-" styleClass="digit-button" onAction="#onBackspace" GridPane.rowIndex="3"
             GridPane.columnIndex="0"/>
           <Button text="0" styleClass="digit-button" onAction="#onDigitPress" GridPane.rowIndex="3"
             GridPane.columnIndex="1"/>
@@ -126,8 +126,8 @@
 
       <!-- Кнопки Отмена/Оплата -->
       <HBox spacing="12" alignment="CENTER_RIGHT">
-        <Button text="Отмена" styleClass="action-cancel-button" onAction="#onCancel"/>
-        <Button text="Оплата" styleClass="action-button" onAction="#onPay"/>
+        <Button text="ОТМЕНА" styleClass="action-cancel-button" onAction="#onCancel"/>
+        <Button text="ОПЛАТА" styleClass="action-button" onAction="#onPay"/>
       </HBox>
     </VBox>
   </content>
