@@ -1,11 +1,14 @@
 package kz.store.cash.fx.dialog;
 
+import static kz.store.cash.util.UtilNumbers.parseDoubleAmount;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import kz.store.cash.config.ProductProperties;
 import kz.store.cash.fx.dialog.lib.CancellableDialog;
 import kz.store.cash.fx.model.ProductItem;
 import kz.store.cash.service.ProductService;
@@ -17,7 +20,8 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class EditProductDialogController implements CancellableDialog {
-
+  @FXML
+  public Button savePriceButton;
   @FXML
   private TextField productName;
   @FXML
@@ -30,6 +34,7 @@ public class EditProductDialogController implements CancellableDialog {
 
   private final ProductService productService;
   private final UtilNumbers utilNumbers;
+  private final ProductProperties  properties;
 
   public void setProductItem(ProductItem product) {
     this.updatedProduct = product;
@@ -43,6 +48,9 @@ public class EditProductDialogController implements CancellableDialog {
     Platform.runLater(() -> {
       utilNumbers.setupDecimalFilter(retailPriceField);
       retailPriceField.requestFocus();
+      if(updatedProduct.getBarcode().equals(properties.universalProductBarcode())) {
+        savePriceButton.setDisable(true);
+      }
     });
   }
 
@@ -90,7 +98,7 @@ public class EditProductDialogController implements CancellableDialog {
 
   private boolean checkAndInitializeUpdateProduct() {
     try {
-      double price = Double.parseDouble(retailPriceField.getText());
+      double price = parseDoubleAmount(retailPriceField.getText());
       if (!retailPriceField.getText().trim().isEmpty()
           && price > 0
           && price >= updatedProduct.getWholesalePrice()) {

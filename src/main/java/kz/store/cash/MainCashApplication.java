@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -26,9 +27,14 @@ public class MainCashApplication extends Application {
     fxmlLoader.setControllerFactory(context::getBean);
 
     Parent root = fxmlLoader.load();
-
+    Scene scene = new Scene(root);
+    scene.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.F12) {
+        primaryStage.setFullScreen(true);
+      }
+    });
     primaryStage.setTitle("YelCashStore");
-    primaryStage.setScene(new Scene(root));
+    primaryStage.setScene(scene);
     primaryStage.setFullScreen(true);
     primaryStage.show();
   }

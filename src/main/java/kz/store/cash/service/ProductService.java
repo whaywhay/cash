@@ -2,6 +2,7 @@ package kz.store.cash.service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import kz.store.cash.config.ProductProperties;
 import kz.store.cash.fx.model.ProductItem;
 import kz.store.cash.mapper.ProductMapper;
 import kz.store.cash.repository.ProductRepository;
@@ -17,10 +18,17 @@ public class ProductService {
 
   private final ProductRepository productRepository;
   private final ProductMapper productMapper;
+  private final ProductProperties productProperties;
 
   public ProductItem findByBarcode(String barcode) {
     return productRepository.findFirstByBarcode(barcode)
         .map(productMapper::toProductItem)
+        .orElse(null);
+  }
+
+  public ProductItem findUniversalProduct(double price) {
+    return productRepository.findFirstByBarcode(productProperties.universalProductBarcode())
+        .map(product -> productMapper.universlProductToProductItem(product, price))
         .orElse(null);
   }
 

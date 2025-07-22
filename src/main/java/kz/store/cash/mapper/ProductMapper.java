@@ -22,4 +22,10 @@ public interface ProductMapper {
   static double mapBigDecimalToDouble(java.math.BigDecimal value) {
     return value != null ? value.doubleValue() : 0.0;
   }
+
+  @Mapping(target = "productName", source = "product.productName")
+  @Mapping(target = "barcode", source = "product.barcode")
+  @Mapping(target = "originalPrice", source = "price")
+  @Mapping(target = "wholesalePrice", source = "price")
+  ProductItem universlProductToProductItem(Product product, double price);
 }

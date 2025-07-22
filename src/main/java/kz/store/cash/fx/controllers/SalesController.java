@@ -27,6 +27,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import kz.store.cash.fx.dialog.QuantitySetDialogController;
+import kz.store.cash.fx.dialog.UniversalProductDialogController;
 import kz.store.cash.fx.dialog.lib.DialogBase;
 import kz.store.cash.fx.dialog.payments.PaymentDialogController;
 import kz.store.cash.fx.dialog.EditProductDialogController;
@@ -157,6 +158,15 @@ public class SalesController {
       existing.increaseQuantity();
       salesTable.getSelectionModel().select(existing);
     } else {
+      cart.add(productItem);
+      salesTable.getSelectionModel().select(productItem);
+    }
+    updateTotal();
+  }
+
+  private void addUniversalProduct(double price) {
+    var productItem = productService.findUniversalProduct(price);
+    if (productItem != null) {
       cart.add(productItem);
       salesTable.getSelectionModel().select(productItem);
     }
@@ -350,6 +360,24 @@ public class SalesController {
       }
     } catch (IOException e) {
       log.info("IOException in SalesController.onEditProduct()", e);
+      throw new RuntimeException(e);
+    }
+  }
+
+  @FXML
+  private void onUniversalProductDialog() {
+    try {
+      var loader = dialogBase.loadFXML("/fxml/sales/universal_product.fxml");
+      VBox openedRoot = loader.load();
+      UniversalProductDialogController controller = loader.getController();
+      controller.initData();
+      dialogBase.createDialogStage(rootPane, openedRoot, controller);
+      double price = controller.getPriceUniversalProduct();
+      if (price > 0) {
+        addUniversalProduct(price);
+      }
+    } catch (IOException e) {
+      log.info("IOException in SalesController.onUniversalProductDialog()", e);
       throw new RuntimeException(e);
     }
   }

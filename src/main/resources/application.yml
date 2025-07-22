@@ -15,3 +15,7 @@ spring:
 logging:
   charset:
     console: UTF-8
+
+app:
+  product:
+    universal-product-barcode: universal-product-200001
