@@ -112,7 +112,7 @@
         <Button text="-" onAction="#onDecreaseQuantity" styleClass="grid-btn" GridPane.rowIndex="2"
           GridPane.columnIndex="2" focusTraversable="false"/>
 
-        <Button text="УДАЛИТЬ" onAction="#onDeleteSelected" styleClass="btn-delete"
+        <Button text="УДАЛИТЬ" onAction="#onDeleteSelectedOrChecked" styleClass="btn-delete"
           GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.columnSpan="2"
           focusTraversable="false"/>
         <Button text="ОПЛАТА" onAction="#onPaymentDialog" styleClass="btn-pay" GridPane.rowIndex="3"

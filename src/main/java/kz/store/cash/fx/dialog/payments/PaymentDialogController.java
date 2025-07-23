@@ -15,6 +15,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import kz.store.cash.fx.dialog.lib.CancellableDialog;
 import kz.store.cash.fx.model.PaymentSumDetails;
+import kz.store.cash.model.enums.PaymentType;
 import kz.store.cash.util.UtilNumbers;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -133,7 +134,7 @@ public class PaymentDialogController implements CancellableDialog {
   private void clearAllInputs() {
     paymentSumDetails.setReceivedPayment(0);
     activePaymentField.setText("");
-    if(mixedButton.isSelected()) {
+    if (mixedButton.isSelected()) {
       mixedViewController.mixedCardField.setText("");
     }
     updateLabelValues();
@@ -157,12 +158,25 @@ public class PaymentDialogController implements CancellableDialog {
   }
 
   private boolean checkPaymentSumEnough() {
-    if (mixedButton.isSelected()) {
+    if (cashButton.isSelected()) {
+      fillPaymentSumDetails(PaymentType.CASH, paymentSumDetails.getTotalToPay(), 0);
+      return paymentSumDetails.getTotalToPay() <= paymentSumDetails.getReceivedPayment();
+    } else if (cardButton.isSelected()) {
+      fillPaymentSumDetails(PaymentType.CARD, 0.0, paymentSumDetails.getTotalToPay());
+      return paymentSumDetails.getTotalToPay() <= paymentSumDetails.getReceivedPayment();
+    } else if (mixedButton.isSelected()) {
       double cash = UtilNumbers.parseDoubleAmount(mixedViewController.mixedCashField.getText());
       double card = UtilNumbers.parseDoubleAmount(mixedViewController.mixedCardField.getText());
+      fillPaymentSumDetails(PaymentType.MIXED, cash, card);
       return (cash + card) == paymentSumDetails.getTotalToPay();
     }
-    return paymentSumDetails.getTotalToPay() <= paymentSumDetails.getReceivedPayment();
+    return false;
+  }
+
+  private void fillPaymentSumDetails(PaymentType paymentType, double cash, double card) {
+    paymentSumDetails.setPaymentType(paymentType);
+    paymentSumDetails.setCashPayment(cash);
+    paymentSumDetails.setCardPayment(card);
   }
 
   @FXML

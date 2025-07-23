@@ -14,9 +14,15 @@ import org.mapstruct.ReportingPolicy;
 public interface SalesMapper {
 
 
+
+//  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "returnDate", ignore = true)
   @Mapping(target = "soldPrice", source = "price", qualifiedByName = "doubleToBigDecimal")
   @Mapping(target = "originalPrice", source = "originalPrice", qualifiedByName = "doubleToBigDecimal")
   @Mapping(target = "wholesalePrice", source = "wholesalePrice", qualifiedByName = "doubleToBigDecimal")
+  @Mapping(target = "total", source = "total", qualifiedByName = "doubleToBigDecimal")
+//  @Mapping(target = "paymentReceipt", ignore = true)
+//  @Mapping(target = "returnFlag", constant = "false")
   Sales fromProductItemToSales(ProductItem productItem);
 
   @Named("doubleToBigDecimal")

@@ -1,4 +1,4 @@
-package kz.store.cash.fx.scanner;
+package kz.store.cash.fx.component;
 
 import javafx.application.Platform;
 import javafx.scene.Scene;

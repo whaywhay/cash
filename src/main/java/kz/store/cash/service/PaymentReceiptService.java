@@ -1,0 +1,36 @@
+package kz.store.cash.service;
+
+import java.util.List;
+import javafx.collections.ObservableList;
+import kz.store.cash.entity.PaymentReceipt;
+import kz.store.cash.entity.Sales;
+import kz.store.cash.fx.model.PaymentSumDetails;
+import kz.store.cash.fx.model.ProductItem;
+import kz.store.cash.mapper.PaymentReceiptMapper;
+import kz.store.cash.mapper.SalesMapper;
+import kz.store.cash.repository.PaymentReceiptRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class PaymentReceiptService {
+
+  private final PaymentReceiptMapper paymentReceiptMapper;
+  private final PaymentReceiptRepository paymentReceiptRepository;
+  private final SalesMapper  salesMapper;
+
+  @Transactional
+  public void processPaymentSave(PaymentSumDetails paymentSumDetails, ObservableList<ProductItem> cart) {
+      PaymentReceipt paymentReceipt = paymentReceiptMapper.toPaymentReceipt(paymentSumDetails);
+      List<Sales> salesList = cart.stream()
+          .map(salesMapper::fromProductItemToSales)
+//        .peek(s -> s.setPaymentReceipt(paymentReceipt)) // Привязка
+          .toList();
+      paymentReceipt.setSalesList(salesList);
+      paymentReceiptRepository.save(paymentReceipt);
+  }
+}

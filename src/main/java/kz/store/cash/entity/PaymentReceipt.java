@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import kz.store.cash.model.enums.PaymentType;
+import kz.store.cash.model.enums.ReceiptStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,9 +38,6 @@ public class PaymentReceipt extends BaseEntity {
   @Column(name = "id", nullable = false)
   private Long id;
 
-  @Column(name = "return_flag", nullable = false)
-  private Boolean returnFlag = false;
-
   @Column(name = "return_date")
   private LocalDateTime returnDate;
 
@@ -50,8 +48,24 @@ public class PaymentReceipt extends BaseEntity {
   @Column(name = "cash_payment")
   private BigDecimal cashPayment;
 
-  @Column(name = "non_cash_payment")
-  private BigDecimal nonCashPayment;
+  @Column(name = "card_payment")
+  private BigDecimal cardPayment;
+
+  @Column(name = "change_money")
+  private BigDecimal changeMoney;
+
+  @Column(name = "remaining_payment")
+  private BigDecimal remainingPayment;
+
+  @Column(name = "received_payment")
+  private BigDecimal receivedPayment;
+
+  @Column(name = "total")
+  private BigDecimal total;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status")
+  private ReceiptStatus receiptStatus;
 
   @OneToMany(mappedBy = "paymentReceipt", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @Exclude

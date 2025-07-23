@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,4 +54,10 @@ public class Sales extends BaseEntity{
   @JoinColumn(name = "payment_receipt_id")
   @Exclude
   private PaymentReceipt paymentReceipt;
+
+  @Column(name = "return_flag")
+  private boolean returnFlag;
+
+  @Column(name = "return_date")
+  private LocalDateTime returnDate;
 }

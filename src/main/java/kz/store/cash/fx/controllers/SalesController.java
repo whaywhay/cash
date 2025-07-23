@@ -26,6 +26,7 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import kz.store.cash.fx.component.SalesCartService;
 import kz.store.cash.fx.dialog.QuantitySetDialogController;
 import kz.store.cash.fx.dialog.UniversalProductDialogController;
 import kz.store.cash.fx.dialog.lib.DialogBase;
@@ -33,8 +34,9 @@ import kz.store.cash.fx.dialog.payments.PaymentDialogController;
 import kz.store.cash.fx.dialog.EditProductDialogController;
 import kz.store.cash.fx.model.PaymentSumDetails;
 import kz.store.cash.fx.model.ProductItem;
-import kz.store.cash.fx.scanner.BarcodeScannerListener;
+import kz.store.cash.fx.component.BarcodeScannerListener;
 import kz.store.cash.model.enums.PriceMode;
+import kz.store.cash.service.PaymentReceiptService;
 import kz.store.cash.service.ProductService;
 import kz.store.cash.util.UtilAlert;
 import lombok.RequiredArgsConstructor;
@@ -82,6 +84,8 @@ public class SalesController {
   private final ProductService productService;
   private final DialogBase dialogBase;
   private final UtilAlert utilAlert;
+  private final PaymentReceiptService paymentReceiptService;
+  private final SalesCartService salesCartService;
   private BarcodeScannerListener scannerListener;
   private final ContextMenu suggestionsPopup = new ContextMenu();
   private final PauseTransition debounceTimer = new PauseTransition(Duration.millis(300));
@@ -92,6 +96,7 @@ public class SalesController {
   public void initialize() {
     initTableView();
     Platform.runLater(() -> {
+      salesTable.requestFocus();
       Scene scene = salesTable.getScene();
       if (scene != null) {
         scannerListener = new BarcodeScannerListener(this::handleBarcodeScanned);
@@ -101,7 +106,7 @@ public class SalesController {
 
     // Ручной ввод через TextField
     barCode.textProperty().addListener((obs, oldText, newText) -> {
-      if (newText.length() >= 5) {
+      if (newText.length() >= 3) {
         debounceTimer.setOnFinished(e -> showSuggestions(newText));
         debounceTimer.playFromStart();
       } else {
@@ -118,9 +123,7 @@ public class SalesController {
   }
 
   private void updateTotal() {
-    double total = cart.stream()
-        .mapToDouble(ProductItem::getTotal)
-        .sum();
+    double total = salesCartService.calculateTotal(cart);
     paymentSumDetails = new PaymentSumDetails(total, 0);
     updatePaymentDetailSumLabel(paymentSumDetails);
   }
@@ -150,17 +153,7 @@ public class SalesController {
   }
 
   public void addOrUpdateProduct(ProductItem productItem) {
-    ProductItem existing = cart.stream()
-        .filter(p -> p.getBarcode().equals(productItem.getBarcode()))
-        .findFirst()
-        .orElse(null);
-    if (existing != null) {
-      existing.increaseQuantity();
-      salesTable.getSelectionModel().select(existing);
-    } else {
-      cart.add(productItem);
-      salesTable.getSelectionModel().select(productItem);
-    }
+    salesCartService.increaseOrAddNewToCart(cart, productItem, salesTable);
     updateTotal();
   }
 
@@ -170,7 +163,6 @@ public class SalesController {
       cart.add(productItem);
       salesTable.getSelectionModel().select(productItem);
     }
-    updateTotal();
   }
 
   @FXML
@@ -194,7 +186,7 @@ public class SalesController {
   }
 
   @FXML
-  private void onDeleteSelected() {
+  private void onDeleteSelectedOrChecked() {
     cart.removeIf(ProductItem::isSelected);
     ProductItem selected = salesTable.getSelectionModel().getSelectedItem();
     cart.remove(selected);
@@ -337,9 +329,15 @@ public class SalesController {
   }
 
   private void processPaymentSuccess(PaymentSumDetails paymentSumDetails) {
-    updatePaymentDetailSumLabel(paymentSumDetails);
-    //array or list salesTable tableView save to sales table. log and clear salesTable tableView after that
-
+    try {
+      paymentReceiptService.processPaymentSave(paymentSumDetails, cart);
+      cart.clear();
+      updatePaymentDetailSumLabel(paymentSumDetails);
+      salesTable.requestFocus();
+    } catch (Exception e) {
+      log.error("Ошибка сохранения продажи", e);
+      utilAlert.showError("Ошибка", "Не удалось сохранить продажу. Попробуйте снова.");
+    }
   }
 
   @FXML
@@ -355,6 +353,7 @@ public class SalesController {
       controller.setProductItem(selected);
       dialogBase.createDialogStage(rootPane, openedRoot, controller);
       if (controller.getUpdatedProduct() != null) {
+        salesTable.getSelectionModel().select(selected);
         updateTotal();
         salesTable.refresh();
       }
