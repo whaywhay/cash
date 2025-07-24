@@ -21,16 +21,16 @@ public class PaymentReceiptService {
 
   private final PaymentReceiptMapper paymentReceiptMapper;
   private final PaymentReceiptRepository paymentReceiptRepository;
-  private final SalesMapper  salesMapper;
+  private final SalesMapper salesMapper;
 
   @Transactional
-  public void processPaymentSave(PaymentSumDetails paymentSumDetails, ObservableList<ProductItem> cart) {
-      PaymentReceipt paymentReceipt = paymentReceiptMapper.toPaymentReceipt(paymentSumDetails);
-      List<Sales> salesList = cart.stream()
-          .map(salesMapper::fromProductItemToSales)
-//        .peek(s -> s.setPaymentReceipt(paymentReceipt)) // Привязка
-          .toList();
-      paymentReceipt.setSalesList(salesList);
-      paymentReceiptRepository.save(paymentReceipt);
+  public void processPaymentSave(PaymentSumDetails paymentSumDetails,
+      ObservableList<ProductItem> cart) {
+    PaymentReceipt paymentReceipt = paymentReceiptMapper.toPaymentReceipt(paymentSumDetails);
+    List<Sales> salesList = cart.stream()
+        .map(sale -> salesMapper.fromProductItemToSales(sale, paymentReceipt))
+        .toList();
+    paymentReceipt.setSalesList(salesList);
+    paymentReceiptRepository.save(paymentReceipt);
   }
 }

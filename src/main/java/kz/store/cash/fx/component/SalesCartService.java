@@ -29,6 +29,7 @@ public class SalesCartService {
       cart.add(productItem);
       salesTable.getSelectionModel().select(productItem);
     }
+    salesTable.refresh();
   }
 
 }

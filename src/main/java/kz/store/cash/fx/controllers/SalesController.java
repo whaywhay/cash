@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.util.List;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Side;
@@ -18,15 +16,14 @@ import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import kz.store.cash.fx.component.SalesCartService;
+import kz.store.cash.fx.component.TableViewProductConfigService;
 import kz.store.cash.fx.dialog.QuantitySetDialogController;
 import kz.store.cash.fx.dialog.UniversalProductDialogController;
 import kz.store.cash.fx.dialog.lib.DialogBase;
@@ -86,6 +83,7 @@ public class SalesController {
   private final UtilAlert utilAlert;
   private final PaymentReceiptService paymentReceiptService;
   private final SalesCartService salesCartService;
+  private final TableViewProductConfigService tableViewProductConfigService;
   private BarcodeScannerListener scannerListener;
   private final ContextMenu suggestionsPopup = new ContextMenu();
   private final PauseTransition debounceTimer = new PauseTransition(Duration.millis(300));
@@ -197,6 +195,7 @@ public class SalesController {
     ProductItem product = productService.findByBarcode(barcode);
     if (product != null) {
       showMatchIndicator(true);
+      switchPriceModeForOneItem(product);
       addOrUpdateProduct(product);
     } else {
       showMatchIndicator(false);
@@ -223,34 +222,13 @@ public class SalesController {
   }
 
   public void initTableView() {
-    salesTable.setItems(cart);
-    salesTable.setEditable(true);
-    checkboxCol.setCellValueFactory(cell -> cell.getValue().selectedProperty());
-    checkboxCol.setCellFactory(CheckBoxTableCell.forTableColumn(checkboxCol));
-    checkboxCol.setEditable(true);
-    indexCol.setCellValueFactory(
-        cell -> new ReadOnlyObjectWrapper<>(salesTable.getItems().indexOf(cell.getValue()) + 1));
-    nameCol.setCellValueFactory(cell -> cell.getValue().productNameProperty());
-    priceCol.setCellValueFactory(cell -> cell.getValue().priceProperty());
-    qtyCol.setCellValueFactory(cell -> cell.getValue().quantityProperty());
-    totalCol.setCellValueFactory(cell -> new ReadOnlyObjectWrapper<>(cell.getValue().getTotal()));
-    totalCol.setCellFactory(column -> new TableCell<>() {
-      @Override
-      protected void updateItem(Number value, boolean empty) {
-        super.updateItem(value, empty);
-        if (empty || value == null) {
-          setText(null);
-        } else {
-          setText(String.format("%,.2f", value.doubleValue())); // → 349 996 500.00
+    tableViewProductConfigService.configure(salesTable, checkboxCol, indexCol, nameCol, priceCol,
+        qtyCol, totalCol, cart,
+        () -> {
+          updateTotal();
+          updateHeaderCheckboxState();
         }
-      }
-    });
-    cart.addListener((ListChangeListener<ProductItem>) change -> {
-      updateTotal();
-      updateHeaderCheckboxState();
-    });
-    cart.forEach(item -> item.selectedProperty()
-        .addListener((obs, oldVal, newVal) -> updateHeaderCheckboxState()));
+    );
     setupPriceHeaderMenu();
   }
 
@@ -265,9 +243,10 @@ public class SalesController {
       suggestionLabel.setStyle("-fx-padding: 5px;");
       CustomMenuItem menuItem = new CustomMenuItem(suggestionLabel, true);
       menuItem.setOnAction(e -> {
-        addOrUpdateProduct(item); // сразу добавляем
-        barCode.clear();                  // очищаем поле
-        suggestionsPopup.hide();         // скрываем меню
+        switchPriceModeForOneItem(item);
+        addOrUpdateProduct(item);
+        barCode.clear();
+        suggestionsPopup.hide();
       });
       return menuItem;
     }).toList();
@@ -284,7 +263,6 @@ public class SalesController {
       item.setOnAction(e -> switchPriceMode(mode));
       menu.getItems().add(item);
     }
-
     priceHeaderLabel.setOnMouseClicked(e -> {
       if (!menu.isShowing()) {
         menu.show(priceHeaderLabel, Side.BOTTOM, 0, 0);
@@ -307,6 +285,16 @@ public class SalesController {
     priceHeaderLabel.setText(currentPriceMode.getDisplayName());
     updateTotal();
     salesTable.refresh();
+  }
+
+  private void switchPriceModeForOneItem(ProductItem productItem) {
+    if (productItem != null) {
+      if (currentPriceMode == PriceMode.WHOLESALE) {
+        productItem.setToWholesalePrice();
+      } else {
+        productItem.setToOriginalPrice();
+      }
+    }
   }
 
   public void onPaymentDialog() {
