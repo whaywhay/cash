@@ -12,12 +12,13 @@
 
 /* Заголовки сумм */
 .label-amount {
-  -fx-font-size: 14px;
+  -fx-font-size: 20px;
   -fx-font-weight: bold;
   -fx-text-fill: #333333;
 }
+
 .label-value {
-  -fx-font-size: 16px;
+  -fx-font-size: 22px;
   -fx-font-weight: bold;
   -fx-text-fill: #222222;
 }
@@ -30,7 +31,7 @@
 
 /* Базовый стиль ToggleButton */
 .toggle-button {
-  -fx-font-size: 14px;
+  -fx-font-size: 20px;
   -fx-cursor: hand;
   -fx-background-color: transparent;
   -fx-text-fill: #333333;
@@ -48,12 +49,13 @@
 /* Расширенный квадратный вид */
 toggle-button.expanded {
   -fx-background-radius: 0;
-  -fx-pref-height: 48px;   /* высота кнопки */
+  -fx-pref-height: 48px; /* высота кнопки */
   -fx-alignment: center;
 }
+
 /* Поле ввода суммы, растянутое на всю ширину */
 .main-amount-field {
-  -fx-font-size: 20px;
+  -fx-font-size: 24px;
   -fx-font-weight: bold;
   -fx-text-fill: #222;
   -fx-alignment: center-left;
@@ -65,6 +67,7 @@ toggle-button.expanded {
   -fx-background-radius: 4;
   -fx-padding: 0 10px;
 }
+
 /* Область подрежимов */
 .mode-content {
   -fx-background-color: white;
@@ -76,14 +79,15 @@ toggle-button.expanded {
 
 /* Цифровая панель */
 .digit-button {
-  -fx-min-width: 80px;
-  -fx-min-height: 80px;
+  -fx-min-width: 84px;
+  -fx-min-height: 84px;
   -fx-background-color: #fafafa;
   -fx-border-color: #bbbbbb;
   -fx-border-radius: 5;
-  -fx-font-size: 22px;
+  -fx-font-size: 26px;
   -fx-cursor: hand;
 }
+
 .digit-button:hover {
   -fx-background-color: #eeeeee;
 }
@@ -92,12 +96,13 @@ toggle-button.expanded {
 .payment-amount-button {
   -fx-background-color: #dddddd;
   -fx-background-radius: 6;
-  -fx-font-size: 22px;
+  -fx-font-size: 26px;
   -fx-cursor: hand;
-  -fx-pref-width: 120px;   /* одинаковая ширина */
-  -fx-pref-height: 80px;  /* одинаковая высота как у digit-button */
+  -fx-pref-width: 140px; /* одинаковая ширина */
+  -fx-pref-height: 84px; /* одинаковая высота как у digit-button */
   -fx-alignment: center;
 }
+
 .payment-amount-button:hover {
   -fx-background-color: #cccccc;
 }
@@ -109,9 +114,10 @@ toggle-button.expanded {
   -fx-text-fill: white;
   -fx-background-radius: 6;
   -fx-padding: 10 20;
-  -fx-font-size: 18px;
+  -fx-font-size: 22px;
   -fx-cursor: hand;
 }
+
 .action-button:hover {
   -fx-background-color: #43a047;
 }
@@ -122,9 +128,10 @@ toggle-button.expanded {
   -fx-text-fill: white;
   -fx-background-radius: 6;
   -fx-padding: 10 20;
-  -fx-font-size: 18px;
+  -fx-font-size: 22px;
   -fx-cursor: hand;
 }
+
 .action-cancel-button:hover {
   -fx-background-color: #d32f2f;
 }
@@ -143,20 +150,20 @@ toggle-button.expanded {
 }
 
 .payment-label {
-  -fx-font-size: 14px;
+  -fx-font-size: 20px;
   -fx-text-fill: #333333;
   -fx-font-weight: bold;
 }
 
 .payment-input {
-  -fx-font-size: 22px;
+  -fx-font-size: 26px;
   -fx-pref-height: 40px;
   -fx-background-color: white;
-  -fx-border-color: #1E90FF;           /* синий цвет */
-  -fx-border-radius: 6px;              /* скруглённые углы */
+  -fx-border-color: #1E90FF; /* синий цвет */
+  -fx-border-radius: 6px; /* скруглённые углы */
   -fx-background-radius: 6px;
   -fx-padding: 0 8 0 8;
   -fx-border-width: 2px;
-  -fx-focus-color: transparent;        /* убрать стандартный эффект фокуса */
+  -fx-focus-color: transparent; /* убрать стандартный эффект фокуса */
   -fx-faint-focus-color: transparent;
 }

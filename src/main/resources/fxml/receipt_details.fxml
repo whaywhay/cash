@@ -1,0 +1,55 @@
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.ScrollPane?>
+<BorderPane xmlns="http://javafx.com/javafx"
+  xmlns:fx="http://javafx.com/fxml"
+  fx:controller="kz.store.cash.fx.dialog.ReceiptDetailsController"
+  prefWidth="300" style="-fx-background-color: white; -fx-padding: 10;"
+  stylesheets="@styles.css">
+
+  <!-- Кнопка закрытия сверху -->
+  <top>
+    <HBox alignment="TOP_RIGHT">
+      <Button fx:id="closeBtn" text="✖" style="-fx-font-size:15;"/>
+    </HBox>
+  </top>
+
+  <!-- Содержимое чека -->
+  <center>
+    <VBox spacing="5">
+      <Label fx:id="cashierLabel" style="-fx-font-weight: bold;"/>
+      <Label fx:id="cashboxLabel"/>
+      <Label fx:id="receiptIdLabel"/>
+      <Label fx:id="dateLabel"/>
+
+      <Separator styleClass="dashed-separator"/>
+
+      <!-- Список товаров -->
+      <ScrollPane fitToWidth="true"
+        style="-fx-background-color: transparent; -fx-border-width: 0;"
+        hbarPolicy="NEVER">
+        <VBox fx:id="itemsContainer" spacing="5"
+          style="-fx-background-color: transparent;"/>
+      </ScrollPane>
+      <Separator styleClass="dashed-separator"/>
+
+      <Label fx:id="totalLabel" style="-fx-font-weight: bold; -fx-font-size:14;"/>
+      <Label fx:id="paymentTypeLabel"/>
+      <Label fx:id="changeLabel"/>
+    </VBox>
+  </center>
+
+  <!-- Кнопки действий -->
+  <bottom>
+    <HBox spacing="10" alignment="CENTER">
+      <Button fx:id="returnBtn" text="ВОЗВРАТ"
+        style="-fx-background-color: #d7d700; -fx-text-fill: black; -fx-font-weight: bold;"/>
+      <Button fx:id="printBtn" text="ПЕЧАТЬ"
+        style="-fx-background-color: #444; -fx-text-fill: white; -fx-font-weight: bold;"/>
+    </HBox>
+  </bottom>
+</BorderPane>

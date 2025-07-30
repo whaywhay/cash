@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class MainViewControllers {
+public class MainViewController {
 
   private final ApplicationContext context;
 

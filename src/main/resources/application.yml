@@ -19,3 +19,6 @@ logging:
 app:
   product:
     universal-product-barcode: universal-product-200001
+    organization-name: "Мир футляров"
+    cashier-name: "Касса-1"
+
