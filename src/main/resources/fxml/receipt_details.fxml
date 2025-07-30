@@ -8,13 +8,13 @@
 <BorderPane xmlns="http://javafx.com/javafx"
   xmlns:fx="http://javafx.com/fxml"
   fx:controller="kz.store.cash.fx.dialog.ReceiptDetailsController"
-  prefWidth="300" style="-fx-background-color: white; -fx-padding: 10;"
+  style="-fx-background-color: white; -fx-padding: 10;"
   stylesheets="@styles.css">
 
   <!-- Кнопка закрытия сверху -->
   <top>
-    <HBox alignment="TOP_RIGHT">
-      <Button fx:id="closeBtn" text="✖" style="-fx-font-size:15;"/>
+    <HBox>
+      <Button fx:id="closeBtn" text="✖" style="-fx-font-size:20;"/>
     </HBox>
   </top>
 

@@ -15,8 +15,10 @@ import kz.store.cash.service.ProductService;
 import kz.store.cash.util.UtilNumbers;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class EditProductDialogController implements CancellableDialog {
@@ -107,6 +109,7 @@ public class EditProductDialogController implements CancellableDialog {
       }
       return false;
     } catch (NumberFormatException e) {
+      log.error("checkAndInitializeUpdateProduct: NumberFormatException", e);
       return false;
     }
   }

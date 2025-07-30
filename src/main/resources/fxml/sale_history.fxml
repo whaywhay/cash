@@ -9,9 +9,8 @@
   stylesheets="@styles.css">
   <top>
     <HBox prefHeight="53.0" prefWidth="1002.0" spacing="5.0" BorderPane.alignment="TOP_LEFT">
-      <TextField prefWidth="300.0" fx:id="searchReceipt">
-      </TextField>
-      <Button text="Очистить" fx:id="cleanSearch"/>
+      <TextField fx:id="searchReceipt" promptText="Введите ID чека"/>
+      <Button fx:id="searchButton" text="Поиск"/>
       <BorderPane.margin>
         <Insets left="10.0"/>
       </BorderPane.margin>
@@ -20,6 +19,7 @@
       </padding>
       <DatePicker prefWidth="300.0" fx:id="dateFilter">
       </DatePicker>
+      <Button fx:id="cleanSearch" text="Очистить"/>
     </HBox>
   </top>
   <center>

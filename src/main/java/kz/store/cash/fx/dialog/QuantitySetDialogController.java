@@ -26,7 +26,6 @@ public class QuantitySetDialogController implements CancellableDialog {
 
   public void setProductItem(ProductItem product) {
     updatedProduct = product;
-    this.quantityField.setText(String.valueOf(product.getQuantity()));
     Platform.runLater(() -> {
       utilNumbers.setupIntegerFilter(quantityField, val -> val >= 1 && val <= 100_000);
       quantityField.requestFocus();

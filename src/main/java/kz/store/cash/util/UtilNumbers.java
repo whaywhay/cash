@@ -68,6 +68,28 @@ public class UtilNumbers {
     textField.setTextFormatter(new TextFormatter<>(filter));
   }
 
+  public void setupLongFilter(TextField textField, Predicate<Long> rule) {
+    UnaryOperator<Change> filter = change -> {
+      String newText = change.getControlNewText();
+      if (newText.isEmpty()) {
+        return change; // разрешить удаление всего текста
+      }
+      if (!newText.matches("\\d+")) {
+        return null;
+      }
+      try {
+        long value = Long.parseLong(newText);
+        if (!rule.test(value)) {
+          return null;
+        }
+      } catch (NumberFormatException e) {
+        return null;
+      }
+      return change;
+    };
+    textField.setTextFormatter(new TextFormatter<>(filter));
+  }
+
   public String formatPrice(BigDecimal value) {
     if (value.stripTrailingZeros().scale() <= 0) {
       // Нет дробной части → печатаем целое

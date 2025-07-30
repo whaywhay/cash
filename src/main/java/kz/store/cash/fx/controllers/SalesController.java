@@ -124,6 +124,7 @@ public class SalesController {
     double total = salesCartService.calculateTotal(cart);
     paymentSumDetails = new PaymentSumDetails(total, 0);
     updatePaymentDetailSumLabel(paymentSumDetails);
+    barCode.clear();
   }
 
   private void updatePaymentDetailSumLabel(PaymentSumDetails paymentSum) {

@@ -14,4 +14,9 @@ public interface PaymentReceiptRepository extends JpaRepository<PaymentReceipt, 
       WHERE p.created >= :start and p.created < :end ORDER BY p.created DESC
       """)
   Page<PaymentReceipt> findByCreatedDate(LocalDateTime start, LocalDateTime end, Pageable pageable);
+
+  @Query("""
+      SELECT p FROM PaymentReceipt p WHERE p.id = :searchId
+      """)
+  Page<PaymentReceipt> findById(Long searchId, Pageable pageable);
 }

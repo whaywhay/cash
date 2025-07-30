@@ -1,11 +1,14 @@
 package kz.store.cash.fx.controllers;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import kz.store.cash.fx.controllers.lib.TabController;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -27,43 +30,56 @@ public class MainViewController {
   @FXML
   public Tab returnTab;
 
-  private Node salesContent;
-  private Node returnContent;
-  private Node shiftContent;
-  private Node saleHistoryContent;
+  // Кэшируем контент и контроллеры для каждой вкладки
+  private final Map<Tab, Node> tabContentCache = new HashMap<>();
+  private final Map<Tab, Object> tabControllerCache = new HashMap<>();
 
   @FXML
   public void initialize() {
     tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab)
         -> tabInitialize(newTab));
+
+    // Инициализация первой вкладки
     tabInitialize(tabPane.getSelectionModel().getSelectedItem());
-
-
   }
 
   private void tabInitialize(Tab newTab) {
+    if (newTab == null) return;
+
     try {
-      if (newTab == salesTab && salesContent == null) {
-        salesContent = loadFXML("/fxml/sales.fxml");
-        salesTab.setContent(salesContent);
-      } else if (newTab == returnTab && returnContent == null) {
-        returnContent = loadFXML("/fxml/transaction_return_view.fxml");
-        returnTab.setContent(returnContent);
-      } else if (newTab == shiftChangeTab && shiftContent == null) {
-        shiftContent = loadFXML("/fxml/shift_change.fxml");
-        shiftChangeTab.setContent(shiftContent);
-      } else if (newTab == salesHistoryTab && saleHistoryContent == null) {
-        saleHistoryContent = loadFXML("/fxml/sale_history.fxml");
-        salesHistoryTab.setContent(saleHistoryContent);
+      // Загружаем FXML и контроллер, если вкладка ещё не инициализирована
+      if (!tabContentCache.containsKey(newTab)) {
+        String fxmlPath = getFxmlPath(newTab);
+        if (fxmlPath == null) return;
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+        loader.setControllerFactory(context::getBean);
+
+        Node content = loader.load();
+        Object controller = loader.getController();
+        tabContentCache.put(newTab, content);
+        tabControllerCache.put(newTab, controller);
+
+        newTab.setContent(content);
+      }
+      // Вызываем onTabSelected() у контроллера (если он реализует интерфейс)
+      Object controller = tabControllerCache.get(newTab);
+      if (controller instanceof TabController tabController) {
+        tabController.onTabSelected();
       }
     } catch (IOException e) {
-      System.out.println(e.getMessage());
+      System.out.println("Ошибка загрузки вкладки: " + e.getMessage());
     }
   }
 
-  private Node loadFXML(String path) throws IOException {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
-    loader.setControllerFactory(context::getBean);
-    return loader.load();
+  /**
+   * Возвращает путь к FXML для конкретной вкладки
+   */
+  private String getFxmlPath(Tab tab) {
+    if (tab == salesTab) return "/fxml/sales.fxml";
+    if (tab == returnTab) return "/fxml/transaction_return_view.fxml";
+    if (tab == shiftChangeTab) return "/fxml/shift_change.fxml";
+    if (tab == salesHistoryTab) return "/fxml/sale_history.fxml";
+    return null;
   }
 }
