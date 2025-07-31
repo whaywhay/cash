@@ -35,6 +35,7 @@ import kz.store.cash.fx.component.BarcodeScannerListener;
 import kz.store.cash.model.enums.PriceMode;
 import kz.store.cash.service.PaymentReceiptService;
 import kz.store.cash.service.ProductService;
+import kz.store.cash.util.TableUtils;
 import kz.store.cash.util.UtilAlert;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -93,6 +94,11 @@ public class SalesController {
   @FXML
   public void initialize() {
     initTableView();
+    TableUtils.bindColumnWidths(
+        salesTable,
+        new double[]{0.04, 0.06, 0.42, 0.15, 0.15, 0.18},
+        // размер для колонок 1 = 100% процент размеру
+        checkboxCol, indexCol, nameCol, priceCol, qtyCol, totalCol);
     Platform.runLater(() -> {
       salesTable.requestFocus();
       Scene scene = salesTable.getScene();
@@ -131,24 +137,6 @@ public class SalesController {
     totalLabel.setText(String.format("%.2f тг", paymentSum.getTotalToPay()));
     receivedPaymentLabel.setText(String.format("%.2f тг", paymentSum.getReceivedPayment()));
     changeMoneyLabel.setText(String.format("%.2f тг", paymentSum.getChangeMoney()));
-  }
-
-  private void updateHeaderCheckboxState() {
-    if (cart.isEmpty()) {
-      headerCheckBox.setSelected(false);
-      headerCheckBox.setIndeterminate(false);
-      return;
-    }
-    long selectedCount = cart.stream().filter(ProductItem::isSelected).count();
-    if (selectedCount == cart.size()) {
-      headerCheckBox.setSelected(true);
-      headerCheckBox.setIndeterminate(false);
-    } else if (selectedCount == 0) {
-      headerCheckBox.setSelected(false);
-      headerCheckBox.setIndeterminate(false);
-    } else {
-      headerCheckBox.setIndeterminate(true);
-    }
   }
 
   public void addOrUpdateProduct(ProductItem productItem) {
@@ -223,12 +211,10 @@ public class SalesController {
   }
 
   public void initTableView() {
+    //          updateHeaderCheckboxState();
     tableViewProductConfigService.configure(salesTable, checkboxCol, indexCol, nameCol, priceCol,
-        qtyCol, totalCol, cart,
-        () -> {
-          updateTotal();
-          updateHeaderCheckboxState();
-        }
+        qtyCol, totalCol, cart, headerCheckBox,
+        this::updateTotal
     );
     setupPriceHeaderMenu();
   }
@@ -387,7 +373,7 @@ public class SalesController {
         salesTable.refresh();
       }
     } catch (IOException e) {
-      log.info("IOException in SalesController.onQuantityDialog()", e);
+      log.error("IOException in SalesController.onQuantityDialog()", e);
       throw new RuntimeException(e);
     }
   }

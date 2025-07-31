@@ -1,8 +1,10 @@
 package kz.store.cash.fx.component;
 
+import java.util.List;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -21,6 +23,7 @@ public class TableViewProductConfigService {
       TableColumn<ProductItem, Number> qtyCol,
       TableColumn<ProductItem, Number> totalCol,
       ObservableList<ProductItem> cart,
+      CheckBox headerCheckBox,
       Runnable updateTotalAndHeaderCheckbox) {
 
     table.setItems(cart);
@@ -52,8 +55,29 @@ public class TableViewProductConfigService {
 
     // Обновление тотала и чекбокса при изменении списка
     cart.addListener(
-        (ListChangeListener<ProductItem>) change -> updateTotalAndHeaderCheckbox.run());
+        (ListChangeListener<ProductItem>) change -> {
+          updateTotalAndHeaderCheckbox.run();
+          updateHeaderCheckboxState(cart, headerCheckBox);
+        });
     cart.forEach(item -> item.selectedProperty()
         .addListener((obs, oldVal, newVal) -> updateTotalAndHeaderCheckbox.run()));
+  }
+
+  private void updateHeaderCheckboxState(List<ProductItem> cart, CheckBox headerCheckBox) {
+    if (cart.isEmpty()) {
+      headerCheckBox.setSelected(false);
+      headerCheckBox.setIndeterminate(false);
+      return;
+    }
+    long selectedCount = cart.stream().filter(ProductItem::isSelected).count();
+    if (selectedCount == cart.size()) {
+      headerCheckBox.setSelected(true);
+      headerCheckBox.setIndeterminate(false);
+    } else if (selectedCount == 0) {
+      headerCheckBox.setSelected(false);
+      headerCheckBox.setIndeterminate(false);
+    } else {
+      headerCheckBox.setIndeterminate(true);
+    }
   }
 }

@@ -42,31 +42,28 @@
           <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
         </columnResizePolicy>
         <columns>
-          <TableColumn fx:id="checkboxCol" prefWidth="40">
+          <TableColumn fx:id="checkboxCol">
             <graphic>
               <CheckBox fx:id="headerCheckBox" onAction="#selectHeaderCheckBox"/>
             </graphic>
           </TableColumn>
-          <TableColumn fx:id="indexCol" text="#" prefWidth="40"/>
-          <TableColumn fx:id="nameCol" text="НАИМЕНОВАНИЕ" prefWidth="300"/>
-          <TableColumn fx:id="priceCol" prefWidth="100" sortable="false">
+          <TableColumn fx:id="indexCol" text="#" />
+          <TableColumn fx:id="nameCol" text="НАИМЕНОВАНИЕ" />
+          <TableColumn fx:id="priceCol" sortable="false">
             <graphic>
               <Label fx:id="priceHeaderLabel" text="ЦЕНА"/>
             </graphic>
           </TableColumn>
-          <TableColumn fx:id="qtyCol" text="КОЛИЧЕСТВО" prefWidth="100"/>
-          <TableColumn fx:id="totalCol" text="СУММА" prefWidth="100"/>
+          <TableColumn fx:id="qtyCol" text="КОЛИЧЕСТВО"/>
+          <TableColumn fx:id="totalCol" text="СУММА"/>
         </columns>
       </TableView>
     </StackPane>
   </center>
   <bottom>
     <HBox spacing="20" styleClass="bottom-bar">
-      <padding>
-        <Insets top="10" bottom="10" left="20" right="20"/>
-      </padding>
       <!-- Левая панель -->
-      <VBox spacing="10" styleClass="summary-box" prefWidth="250"
+      <VBox spacing="10" styleClass="summary-box"
         alignment="CENTER_LEFT">
         <GridPane>
           <columnConstraints>

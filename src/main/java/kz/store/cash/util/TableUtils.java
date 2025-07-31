@@ -2,7 +2,9 @@ package kz.store.cash.util;
 
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class TableUtils {
   /**
    * Привязывает ширину колонок к ширине таблицы на основе весов.
@@ -19,6 +21,7 @@ public class TableUtils {
     double total = 0;
     for (double w : weights) total += w;
     if (Math.abs(total - 1.0) > 0.001) {
+      log.error("Сумма весов должна быть равна 1.0");
       throw new IllegalArgumentException("Сумма весов должна быть равна 1.0");
     }
 

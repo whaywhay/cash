@@ -5,6 +5,8 @@
 
 .bottom-bar {
   -fx-background-color: #333;
+  -fx-padding: 15 25 25 25;
+  -fx-alignment: center;
 }
 
 .summary-box {
