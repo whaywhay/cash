@@ -113,11 +113,11 @@
     </dependency>
     <!-- End  JavaFX dependency-->
     <!-- https://mvnrepository.com/artifact/org.comtel2000/fx-onscreen-keyboard -->
-    <dependency>
-      <groupId>org.comtel2000</groupId>
-      <artifactId>fx-onscreen-keyboard</artifactId>
-      <version>17.0.0</version>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.comtel2000</groupId>-->
+<!--      <artifactId>fx-onscreen-keyboard</artifactId>-->
+<!--      <version>17.0.0</version>-->
+<!--    </dependency>-->
   </dependencies>
 
   <build>
