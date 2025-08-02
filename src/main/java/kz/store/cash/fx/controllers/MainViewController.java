@@ -2,13 +2,16 @@ package kz.store.cash.fx.controllers;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import kz.store.cash.entity.PaymentReceipt;
 import kz.store.cash.fx.controllers.lib.TabController;
+import kz.store.cash.fx.model.SalesWithProductName;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -42,6 +45,19 @@ public class MainViewController {
     // Инициализация первой вкладки
     tabInitialize(tabPane.getSelectionModel().getSelectedItem());
   }
+
+  public void openReturnTab(PaymentReceipt receipt, List<SalesWithProductName> sales) {
+    // Загружаем вкладку Возврат, если она не инициализирована
+    if (!tabControllerCache.containsKey(returnTab)) {
+      tabInitialize(returnTab);
+    }
+    Object controller = tabControllerCache.get(returnTab);
+    if (controller instanceof TransactionReturnController returnController) {
+      returnController.loadReceiptData(receipt, sales);
+    }
+    tabPane.getSelectionModel().select(returnTab);
+  }
+
 
   private void tabInitialize(Tab newTab) {
     if (newTab == null) return;

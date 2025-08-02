@@ -9,6 +9,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
@@ -21,8 +23,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.ToString.Exclude;
-
 
 @Getter
 @Setter
@@ -67,7 +67,18 @@ public class PaymentReceipt extends BaseEntity {
   @Column(name = "status")
   private ReceiptStatus receiptStatus;
 
+  /** Ссылка на исходный чек (для возвратов по чеку) */
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "original_receipt_id")
+  @ToString.Exclude
+  private PaymentReceipt originalReceipt;
+
   @OneToMany(mappedBy = "paymentReceipt", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  @Exclude
+  @ToString.Exclude
   private List<Sales> salesList;
+
+  /** Возвратные чеки, которые ссылаются на этот чек */
+  @OneToMany(mappedBy = "originalReceipt", fetch = FetchType.LAZY)
+  @ToString.Exclude
+  private List<PaymentReceipt> returnReceipts;
 }

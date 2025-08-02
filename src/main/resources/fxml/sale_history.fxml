@@ -8,7 +8,7 @@
   fx:controller="kz.store.cash.fx.controllers.SalesHistoryController" fx:id="rootPane"
   stylesheets="@styles.css">
   <top>
-    <HBox prefHeight="53.0" prefWidth="1002.0" spacing="5.0" BorderPane.alignment="TOP_LEFT">
+    <HBox spacing="5.0" BorderPane.alignment="TOP_LEFT">
       <TextField fx:id="searchReceipt" promptText="Введите ID чека"/>
       <Button fx:id="searchButton" text="Поиск"/>
       <BorderPane.margin>

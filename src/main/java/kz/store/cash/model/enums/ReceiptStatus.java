@@ -1,8 +1,8 @@
 package kz.store.cash.model.enums;
 
 public enum ReceiptStatus {
-  COMPLETED,
-  RETURNED,
-  PARTIALLY_RETURNED,
+  SALE,
+  RETURN,
+  RETURN_NO_RECEIPT,
   PENDING
 }

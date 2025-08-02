@@ -1,5 +1,6 @@
 package kz.store.cash.fx.controllers;
 
+import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -11,18 +12,24 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
+import kz.store.cash.entity.PaymentReceipt;
 import kz.store.cash.fx.component.SalesCartService;
 import kz.store.cash.fx.component.TableViewProductConfigService;
+import kz.store.cash.fx.controllers.lib.TabController;
 import kz.store.cash.fx.model.ProductItem;
+import kz.store.cash.fx.model.SalesWithProductName;
 import kz.store.cash.util.TableUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
-public class TransactionReturnController {
+public class TransactionReturnController implements TabController {
 
-
+  @FXML
+  public Label receiptPaymentIdLabel;
   @FXML
   private BorderPane returnPane;
   @FXML
@@ -55,6 +62,7 @@ public class TransactionReturnController {
   @FXML
   private ToggleGroup toggleGroup;
 
+  private boolean openedFromReceipt = false;
   private final ObservableList<ProductItem> cart = FXCollections.observableArrayList();
   private final SalesCartService salesCartService;
   private final TableViewProductConfigService tableViewProductConfigService;
@@ -76,6 +84,7 @@ public class TransactionReturnController {
     // Состояние по умолчанию
     withPaymentReceiptRadio.setSelected(true);
     searchFieldById.setVisible(true);
+    withoutPaymentReceiptRadio.setDisable(false);
 
     // Слушатель для изменения видимости поля поиска
     toggleGroup.selectedToggleProperty().addListener((obs, old, selected) -> {
@@ -121,5 +130,42 @@ public class TransactionReturnController {
 
   @FXML
   public void onReturnDialog() {
+  }
+
+  /**
+   * Метод вызова при переходе из кнопки Возврат в ReceiptDetailsController
+   */
+  public void loadReceiptData(PaymentReceipt receipt, List<SalesWithProductName> sales) {
+    openedFromReceipt = true;
+    withoutPaymentReceiptRadio.setDisable(true);
+    withPaymentReceiptRadio.setSelected(true);
+    // Прячем поиск по товарам, показываем по чеку
+    searchFieldById.setVisible(false);
+    searchFieldByProduct.setVisible(false);
+    receiptPaymentIdLabel.setText(receipt.getId().toString());
+    receiptPaymentIdLabel.setVisible(true);
+    // Здесь заполняем таблицу cart -> ProductItem (маппинг MapStruct будет отдельно)
+    cart.clear();
+    log.info("receipt load receipt data: {}", receipt);
+    sales.forEach(s -> log.info("salesWithProductName: {}", s));
+  }
+
+  /**
+   * Метод TabController для сброса состояния по умолчанию,
+   * если зашли в таб через UI (не из чека)
+   */
+  @Override
+  public void onTabSelected() {
+    if (!openedFromReceipt) {
+      // Состояние по умолчанию
+      withoutPaymentReceiptRadio.setDisable(false);
+      withPaymentReceiptRadio.setSelected(true);
+      searchFieldById.setVisible(true);
+      searchFieldByProduct.setVisible(false);
+      receiptPaymentIdLabel.setText("");
+      receiptPaymentIdLabel.setVisible(false);
+      cart.clear();
+    }
+    openedFromReceipt = false; // сбрасываем флаг после применения
   }
 }

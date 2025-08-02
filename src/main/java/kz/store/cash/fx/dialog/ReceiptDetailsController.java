@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import kz.store.cash.config.ProductProperties;
 import kz.store.cash.entity.PaymentReceipt;
 import kz.store.cash.fx.component.ReceiptPrintService;
+import kz.store.cash.fx.controllers.MainViewController;
 import kz.store.cash.fx.dialog.lib.CancellableDialog;
 import kz.store.cash.fx.model.SalesWithProductName;
 import kz.store.cash.repository.SalesRepository;
@@ -46,6 +47,7 @@ public class ReceiptDetailsController implements CancellableDialog {
   private final SalesRepository salesRepository;
   private final ProductProperties productProperties;
   private final ReceiptPrintService receiptPrintService;
+  private final MainViewController mainViewController;
 
   public void sendReceipt(PaymentReceipt receipt) {
     var sales = salesRepository.findSalesWithProductNames(receipt.getId());
@@ -71,7 +73,10 @@ public class ReceiptDetailsController implements CancellableDialog {
     changeLabel.setText("СДАЧА: " + receipt.getChangeMoney());
 
     closeBtn.setOnAction(e -> handleCancel());
-    returnBtn.setOnAction(e -> System.out.println("ВОЗВРАТ по чеку " + receipt));
+    returnBtn.setOnAction(e -> {
+      handleCancel(); // Закрыть диалог
+      mainViewController.openReturnTab(receipt, sales);
+    });
     printBtn.setOnAction(e -> receiptPrintService.printReceiptRawWithLine(receipt));
   }
 

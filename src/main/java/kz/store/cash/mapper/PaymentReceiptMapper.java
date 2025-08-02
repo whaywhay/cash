@@ -21,7 +21,7 @@ public interface PaymentReceiptMapper {
   @Mapping(target = "remainingPayment", source = "remainingPayment", qualifiedByName = "doubleToBigDecimal")
   @Mapping(target = "receivedPayment", source = "receivedPayment", qualifiedByName = "doubleToBigDecimal")
   @Mapping(target = "total", source = "totalToPay", qualifiedByName = "doubleToBigDecimal")
-  @Mapping(target = "receiptStatus", constant = "COMPLETED")
+  @Mapping(target = "receiptStatus", constant = "SALE")
   PaymentReceipt toPaymentReceipt(PaymentSumDetails paymentSumDetails);
 
   @Named("doubleToBigDecimal")

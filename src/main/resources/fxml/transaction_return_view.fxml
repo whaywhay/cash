@@ -26,6 +26,7 @@
         <TextField fx:id="searchFieldById" promptText="Поиск чека по #" prefWidth="350"/>
         <TextField fx:id="searchFieldByProduct" promptText="Поиск товара" prefWidth="350"
           visible="false"/>
+        <Label fx:id="receiptPaymentIdLabel" styleClass="sub-summary-label" visible="false"/>
         <padding>
           <Insets top="10.0"/>
         </padding>
