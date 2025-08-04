@@ -3,8 +3,8 @@ package kz.store.cash.mapper;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import java.math.BigDecimal;
-import kz.store.cash.entity.PaymentReceipt;
-import kz.store.cash.entity.Sales;
+import kz.store.cash.model.entity.PaymentReceipt;
+import kz.store.cash.model.entity.Sales;
 import kz.store.cash.fx.model.ProductItem;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

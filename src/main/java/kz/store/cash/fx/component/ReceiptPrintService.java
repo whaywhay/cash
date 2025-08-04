@@ -12,8 +12,9 @@ import javax.print.SimpleDoc;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import kz.store.cash.config.ProductProperties;
-import kz.store.cash.entity.PaymentReceipt;
+import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.fx.model.SalesWithProductName;
+import kz.store.cash.model.enums.PaymentType;
 import kz.store.cash.repository.SalesRepository;
 import kz.store.cash.util.UtilAlert;
 import kz.store.cash.util.UtilNumbers;
@@ -117,12 +118,19 @@ public class ReceiptPrintService {
       }
       sb.append(repeatChar('-')).append("\n");
       // --- Итого ---
-      sb.append(
-              rightText("ИТОГО: " + String.format("%.2f тг", currentReceipt.getTotal())))
+      sb.append("ИТОГО: ").append(String.format("%.2f тг", currentReceipt.getTotal()))
           .append("\n");
-      sb.append(rightText(currentReceipt.getPaymentType().getDisplayName()
-          + ": " + currentReceipt.getReceivedPayment())).append("\n");
-      sb.append(rightText("СДАЧА: " + currentReceipt.getChangeMoney())).append("\n");
+      sb.append(currentReceipt.getPaymentType().getDisplayName()).append(": ")
+          .append(String.format("%.2f тг", currentReceipt.getReceivedPayment())).append("\n");
+
+      if (currentReceipt.getPaymentType() == PaymentType.MIXED) {
+        sb.append("Наличные: ").append(String.format("%.2f тг", currentReceipt.getCashPayment()))
+            .append("\n");
+        sb.append("Карта: ").append(String.format("%.2f тг", currentReceipt.getCardPayment()))
+            .append("\n");
+      }
+
+      sb.append("СДАЧА: ").append(currentReceipt.getChangeMoney()).append("\n");
       // --- Протяжка бумаги и обрезка ---
       feed(sb);
       cutPaper(sb, false); // true = полная, false = частичная
@@ -152,7 +160,6 @@ public class ReceiptPrintService {
     PrintRequestAttributeSet attr = new HashPrintRequestAttributeSet();
     job.print(doc, attr);
   }
-
   // ===================== ESC/POS команды =====================
 
   /**
@@ -183,13 +190,6 @@ public class ReceiptPrintService {
     }
     int left = (LINE_WIDTH - text.length()) / 2;
     return " ".repeat(left) + text;
-  }
-
-  private String rightText(String text) {
-    if (text.length() >= LINE_WIDTH) {
-      return text;
-    }
-    return " ".repeat(LINE_WIDTH - text.length()) + text;
   }
 
   /**

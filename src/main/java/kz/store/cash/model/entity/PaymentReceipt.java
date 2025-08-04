@@ -1,4 +1,4 @@
-package kz.store.cash.entity;
+package kz.store.cash.model.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -67,7 +67,9 @@ public class PaymentReceipt extends BaseEntity {
   @Column(name = "status")
   private ReceiptStatus receiptStatus;
 
-  /** Ссылка на исходный чек (для возвратов по чеку) */
+  /**
+   * Ссылка на исходный чек (для возвратов по чеку)
+   */
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "original_receipt_id")
   @ToString.Exclude
@@ -77,7 +79,9 @@ public class PaymentReceipt extends BaseEntity {
   @ToString.Exclude
   private List<Sales> salesList;
 
-  /** Возвратные чеки, которые ссылаются на этот чек */
+  /**
+   * Возвратные чеки, которые ссылаются на этот чек
+   */
   @OneToMany(mappedBy = "originalReceipt", fetch = FetchType.LAZY)
   @ToString.Exclude
   private List<PaymentReceipt> returnReceipts;

@@ -16,7 +16,7 @@
   <Tab fx:id="shiftChangeTab" closable="false" text="Смена" styleClass="toggle-button">
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
   </Tab>
-  <Tab fx:id="salesHistoryTab" closable="false" text="Истоия продаж" styleClass="toggle-button">
+  <Tab fx:id="salesHistoryTab" closable="false" text="История продаж" styleClass="toggle-button">
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
   </Tab>
 </TabPane>

@@ -37,7 +37,7 @@
       </ScrollPane>
       <Separator styleClass="dashed-separator"/>
 
-      <Label fx:id="totalLabel" style="-fx-font-weight: bold; -fx-font-size:14;"/>
+      <Label fx:id="totalLabel" style="-fx-font-weight: bold; -fx-font-size:18;"/>
       <Label fx:id="paymentTypeLabel"/>
       <Label fx:id="changeLabel"/>
     </VBox>

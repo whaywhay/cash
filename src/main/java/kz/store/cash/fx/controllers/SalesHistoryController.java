@@ -17,7 +17,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import kz.store.cash.entity.PaymentReceipt;
+import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.fx.controllers.lib.TabController;
 import kz.store.cash.fx.dialog.ReceiptDetailsController;
 import kz.store.cash.fx.dialog.lib.DialogBase;
@@ -99,6 +99,7 @@ public class SalesHistoryController implements TabController {
       refreshData();
     });
   }
+
   /**
    * Полный сброс фильтров + загрузка дефолтных данных (используем при открытии вкладки или кнопке
    * Очистить)
@@ -109,12 +110,14 @@ public class SalesHistoryController implements TabController {
     dateFilter.setValue(currentFilterDate);
     refreshDataInternal();
   }
+
   /**
    * Обновляем данные с текущими значениями фильтров (используется поиском и датой)
    */
   public void refreshData() {
     refreshDataInternal();
   }
+
   /**
    * Общий метод для установки пагинации и вызова createPage()
    */
@@ -122,6 +125,7 @@ public class SalesHistoryController implements TabController {
     pagination.setCurrentPageIndex(0);
     pagination.setPageFactory(this::createPage);
   }
+
   /**
    * Создание страницы данных
    */
@@ -146,6 +150,7 @@ public class SalesHistoryController implements TabController {
     pagination.setPageCount(page.getTotalPages() > 0 ? page.getTotalPages() : 1);
     return new StackPane();
   }
+
   /**
    * Настройка колонок таблицы
    */
@@ -165,6 +170,7 @@ public class SalesHistoryController implements TabController {
 
     fiscalCol.setCellFactory(col -> new TableCell<>() {
       private final Label link = new Label("Открыть чек");
+
       {
         link.setStyle("-fx-text-fill: teal; -fx-underline: true; -fx-cursor: hand;");
         link.setOnMouseClicked(e -> {

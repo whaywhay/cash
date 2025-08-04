@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import kz.store.cash.config.ProductProperties;
 import kz.store.cash.fx.dialog.lib.CancellableDialog;
 import kz.store.cash.fx.model.ProductItem;
+import kz.store.cash.handler.ValidationException;
 import kz.store.cash.service.ProductService;
 import kz.store.cash.util.UtilNumbers;
 import lombok.Getter;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class EditProductDialogController implements CancellableDialog {
+
   @FXML
   public Button savePriceButton;
   @FXML
@@ -36,7 +38,7 @@ public class EditProductDialogController implements CancellableDialog {
 
   private final ProductService productService;
   private final UtilNumbers utilNumbers;
-  private final ProductProperties  properties;
+  private final ProductProperties properties;
 
   public void setProductItem(ProductItem product) {
     this.updatedProduct = product;
@@ -50,7 +52,7 @@ public class EditProductDialogController implements CancellableDialog {
     Platform.runLater(() -> {
       utilNumbers.setupDecimalFilter(retailPriceField);
       retailPriceField.requestFocus();
-      if(updatedProduct.getBarcode().equals(properties.universalProductBarcode())) {
+      if (updatedProduct.getBarcode().equals(properties.universalProductBarcode())) {
         savePriceButton.setDisable(true);
       }
     });
@@ -88,6 +90,8 @@ public class EditProductDialogController implements CancellableDialog {
     if (checkAndInitializeUpdateProduct()) {
       productService.updateRetailPrice(updatedProduct.getBarcode(), updatedProduct.getPrice());
       ((Stage) productName.getScene().getWindow()).close();
+    } else {
+      throw new ValidationException("Розничная цена должна быть больше чем оптовая цена");
     }
   }
 
@@ -95,6 +99,8 @@ public class EditProductDialogController implements CancellableDialog {
   private void onApply() {
     if (checkAndInitializeUpdateProduct()) {
       ((Stage) productName.getScene().getWindow()).close();
+    } else {
+      throw new ValidationException("Розничная цена должна быть больше чем оптовая цена");
     }
   }
 

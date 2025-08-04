@@ -1,4 +1,4 @@
-package kz.store.cash.entity;
+package kz.store.cash.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,7 +27,7 @@ import lombok.ToString.Exclude;
 @ToString
 @Entity
 @Table(name = "sales", schema = "main")
-public class Sales extends BaseEntity{
+public class Sales extends BaseEntity {
 
   @Id
   @Column(name = "id")
@@ -63,13 +63,17 @@ public class Sales extends BaseEntity{
   @Column(name = "return_date")
   private LocalDateTime returnDate;
 
-  /** Ссылка на оригинальную строку продажи (если это возврат по чеку) */
+  /**
+   * Ссылка на оригинальную строку продажи (если это возврат по чеку)
+   */
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "original_sale_id")
   @ToString.Exclude
   private Sales originalSale;
 
-  /** Список возвратных строк, которые ссылаются на эту продажу */
+  /**
+   * Список возвратных строк, которые ссылаются на эту продажу
+   */
   @OneToMany(mappedBy = "originalSale", fetch = FetchType.LAZY)
   @ToString.Exclude
   private List<Sales> returnSales;

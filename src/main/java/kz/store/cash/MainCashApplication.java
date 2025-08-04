@@ -8,6 +8,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
+import kz.store.cash.fx.component.UiNotificationService;
+import kz.store.cash.handler.GlobalExceptionHandler;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -23,6 +25,13 @@ public class MainCashApplication extends Application {
 
   @Override
   public void start(Stage primaryStage) throws Exception {
+    UiNotificationService notificationService = context.getBean(UiNotificationService.class);
+    notificationService.setPrimaryStage(primaryStage);
+
+    GlobalExceptionHandler exceptionHandler = context.getBean(GlobalExceptionHandler.class);
+    Thread.setDefaultUncaughtExceptionHandler(
+        (thread, throwable) -> exceptionHandler.handleJavaFxException(throwable));
+
     FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
     fxmlLoader.setControllerFactory(context::getBean);
 
@@ -46,7 +55,6 @@ public class MainCashApplication extends Application {
     Platform.exit();
     System.out.println("stop: exiting");
   }
-
 
 
   public static void main(String[] args) {

@@ -32,6 +32,16 @@ public class QuantitySetDialogController implements CancellableDialog {
     });
   }
 
+  public void setProductItem(ProductItem product, int quantity) {
+    updatedProduct = product;
+    Platform.runLater(() -> {
+      utilNumbers.setupIntegerFilter(quantityField,
+          val -> val >= 1 && val <= quantity);
+      quantityField.requestFocus();
+      quantityField.setText(String.valueOf(quantity));
+    });
+  }
+
   @FXML
   public void onDigitClick(ActionEvent actionEvent) {
     String digit = ((Button) actionEvent.getSource()).getText();

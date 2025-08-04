@@ -15,6 +15,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import kz.store.cash.fx.dialog.lib.CancellableDialog;
 import kz.store.cash.fx.model.PaymentSumDetails;
+import kz.store.cash.handler.ValidationException;
 import kz.store.cash.model.enums.PaymentType;
 import kz.store.cash.util.UtilNumbers;
 import lombok.Getter;
@@ -203,11 +204,12 @@ public class PaymentDialogController implements CancellableDialog {
 
   @FXML
   private void onPay() {
-    if (checkPaymentSumEnough()) {
-      paymentConfirmed = true;
-      Stage stage = (Stage) paymentWindow.getScene().getWindow();
-      stage.close();
+    if (!checkPaymentSumEnough()) {
+      throw new ValidationException("Недостаточно суммы для оплаты");
     }
+    paymentConfirmed = true;
+    Stage stage = (Stage) paymentWindow.getScene().getWindow();
+    stage.close();
   }
 
   @FXML

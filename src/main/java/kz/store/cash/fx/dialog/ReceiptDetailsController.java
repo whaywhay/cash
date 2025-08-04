@@ -1,16 +1,18 @@
 package kz.store.cash.fx.dialog;
 
+import java.math.BigDecimal;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import kz.store.cash.config.ProductProperties;
-import kz.store.cash.entity.PaymentReceipt;
+import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.fx.component.ReceiptPrintService;
 import kz.store.cash.fx.controllers.MainViewController;
 import kz.store.cash.fx.dialog.lib.CancellableDialog;
 import kz.store.cash.fx.model.SalesWithProductName;
+import kz.store.cash.model.enums.PaymentType;
 import kz.store.cash.repository.SalesRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,9 +70,20 @@ public class ReceiptDetailsController implements CancellableDialog {
     }
 
     totalLabel.setText("ИТОГО: " + receipt.getTotal() + " тг");
-    paymentTypeLabel.setText(
-        receipt.getPaymentType().getDisplayName() + ": " + receipt.getReceivedPayment());
-    changeLabel.setText("СДАЧА: " + receipt.getChangeMoney());
+    if (receipt.getPaymentType() == PaymentType.MIXED) {
+      String mixedDetails =
+          "Смешанная оплата: " + receipt.getReceivedPayment() + "\n" + "Наличные: "
+              + (receipt.getCashPayment() != null ? receipt.getCashPayment() : BigDecimal.ZERO)
+              + " тг\n"
+              + "Карта: "
+              + (receipt.getCardPayment() != null ? receipt.getCardPayment() : BigDecimal.ZERO)
+              + " тг";
+      paymentTypeLabel.setText(mixedDetails);
+    } else {
+      paymentTypeLabel.setText(
+          receipt.getPaymentType().getDisplayName() + ": " + receipt.getReceivedPayment());
+    }
+    changeLabel.setText("Сдача: " + receipt.getChangeMoney());
 
     closeBtn.setOnAction(e -> handleCancel());
     returnBtn.setOnAction(e -> {

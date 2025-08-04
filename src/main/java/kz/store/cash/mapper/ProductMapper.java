@@ -2,8 +2,10 @@ package kz.store.cash.mapper;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-import kz.store.cash.entity.Product;
+import java.math.BigDecimal;
+import kz.store.cash.model.entity.Product;
 import kz.store.cash.fx.model.ProductItem;
+import kz.store.cash.fx.model.SalesWithProductName;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -19,7 +21,7 @@ public interface ProductMapper {
   ProductItem toProductItem(Product product);
 
   @Named("bigDecimalToDouble")
-  static double mapBigDecimalToDouble(java.math.BigDecimal value) {
+  static double mapBigDecimalToDouble(BigDecimal value) {
     return value != null ? value.doubleValue() : 0.0;
   }
 
@@ -28,4 +30,14 @@ public interface ProductMapper {
   @Mapping(target = "originalPrice", source = "price")
   @Mapping(target = "wholesalePrice", source = "price")
   ProductItem universlProductToProductItem(Product product, double price);
+
+  // -------- SalesWithProductName → ProductItem ----------
+  @Mapping(target = "productName", source = "productName")
+  @Mapping(target = "barcode", source = "barcode")
+  @Mapping(target = "originalPrice", source = "originalPrice", qualifiedByName = "bigDecimalToDouble")
+  @Mapping(target = "wholesalePrice", source = "wholesalePrice", qualifiedByName = "bigDecimalToDouble")
+  @Mapping(target = "price", source = "soldPrice", qualifiedByName = "bigDecimalToDouble")
+  @Mapping(target = "quantity", source = "quantity")
+  ProductItem toProductItem(SalesWithProductName sale);
+
 }

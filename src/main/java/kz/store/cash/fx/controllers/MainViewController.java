@@ -9,7 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import kz.store.cash.entity.PaymentReceipt;
+import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.fx.controllers.lib.TabController;
 import kz.store.cash.fx.model.SalesWithProductName;
 import lombok.RequiredArgsConstructor;
@@ -60,13 +60,17 @@ public class MainViewController {
 
 
   private void tabInitialize(Tab newTab) {
-    if (newTab == null) return;
+    if (newTab == null) {
+      return;
+    }
 
     try {
       // Загружаем FXML и контроллер, если вкладка ещё не инициализирована
       if (!tabContentCache.containsKey(newTab)) {
         String fxmlPath = getFxmlPath(newTab);
-        if (fxmlPath == null) return;
+        if (fxmlPath == null) {
+          return;
+        }
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
         loader.setControllerFactory(context::getBean);
@@ -92,10 +96,18 @@ public class MainViewController {
    * Возвращает путь к FXML для конкретной вкладки
    */
   private String getFxmlPath(Tab tab) {
-    if (tab == salesTab) return "/fxml/sales.fxml";
-    if (tab == returnTab) return "/fxml/transaction_return_view.fxml";
-    if (tab == shiftChangeTab) return "/fxml/shift_change.fxml";
-    if (tab == salesHistoryTab) return "/fxml/sale_history.fxml";
+    if (tab == salesTab) {
+      return "/fxml/sales.fxml";
+    }
+    if (tab == returnTab) {
+      return "/fxml/transaction_return_view.fxml";
+    }
+    if (tab == shiftChangeTab) {
+      return "/fxml/shift_change.fxml";
+    }
+    if (tab == salesHistoryTab) {
+      return "/fxml/sale_history.fxml";
+    }
     return null;
   }
 }

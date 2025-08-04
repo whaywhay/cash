@@ -2,8 +2,8 @@ package kz.store.cash.service;
 
 import java.util.List;
 import javafx.collections.ObservableList;
-import kz.store.cash.entity.PaymentReceipt;
-import kz.store.cash.entity.Sales;
+import kz.store.cash.model.entity.PaymentReceipt;
+import kz.store.cash.model.entity.Sales;
 import kz.store.cash.fx.model.PaymentSumDetails;
 import kz.store.cash.fx.model.ProductItem;
 import kz.store.cash.mapper.PaymentReceiptMapper;

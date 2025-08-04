@@ -1,9 +1,11 @@
 package kz.store.cash.fx.controllers;
 
+import java.io.IOException;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -12,12 +14,17 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
-import kz.store.cash.entity.PaymentReceipt;
+import javafx.scene.layout.VBox;
+import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.fx.component.SalesCartService;
 import kz.store.cash.fx.component.TableViewProductConfigService;
 import kz.store.cash.fx.controllers.lib.TabController;
+import kz.store.cash.fx.dialog.QuantitySetDialogController;
+import kz.store.cash.fx.dialog.lib.DialogBase;
 import kz.store.cash.fx.model.ProductItem;
 import kz.store.cash.fx.model.SalesWithProductName;
+import kz.store.cash.mapper.ProductMapper;
+import kz.store.cash.model.enums.PaymentType;
 import kz.store.cash.util.TableUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +37,12 @@ public class TransactionReturnController implements TabController {
 
   @FXML
   public Label receiptPaymentIdLabel;
+  @FXML
+  public Button quantityButton;
+  @FXML
+  public Button deleteButton;
+  @FXML
+  public Button searchButton;
   @FXML
   private BorderPane returnPane;
   @FXML
@@ -59,13 +72,14 @@ public class TransactionReturnController implements TabController {
   @FXML
   private Label returnSumLabel;
 
-  @FXML
-  private ToggleGroup toggleGroup;
-
   private boolean openedFromReceipt = false;
   private final ObservableList<ProductItem> cart = FXCollections.observableArrayList();
+  private List<SalesWithProductName> returnSales;
+  private PaymentReceipt returnPayment;
   private final SalesCartService salesCartService;
   private final TableViewProductConfigService tableViewProductConfigService;
+  private final ProductMapper productMapper;
+  private final DialogBase dialogBase;
 
   @FXML
   public void initialize() {
@@ -77,7 +91,7 @@ public class TransactionReturnController implements TabController {
         // размер для колонок 1 = 100% процент размеру
         checkboxCol, indexCol, nameCol, priceCol, qtyCol, totalCol);
     // Создаем группу и добавляем радиокнопки
-    toggleGroup = new ToggleGroup();
+    ToggleGroup toggleGroup = new ToggleGroup();
     withPaymentReceiptRadio.setToggleGroup(toggleGroup);
     withoutPaymentReceiptRadio.setToggleGroup(toggleGroup);
 
@@ -89,8 +103,7 @@ public class TransactionReturnController implements TabController {
     // Слушатель для изменения видимости поля поиска
     toggleGroup.selectedToggleProperty().addListener((obs, old, selected) -> {
       boolean isWithReceipt = selected == withPaymentReceiptRadio;
-      searchFieldById.setVisible(isWithReceipt);
-      searchFieldByProduct.setVisible(!isWithReceipt);
+      configureRadioMenu(isWithReceipt);
     });
   }
 
@@ -105,7 +118,6 @@ public class TransactionReturnController implements TabController {
     double total = salesCartService.calculateTotal(cart);
     returnSumLabel.setText(String.format("%.2f тг", total));
   }
-
 
   @FXML
   public void selectHeaderCheckBox() {
@@ -125,6 +137,21 @@ public class TransactionReturnController implements TabController {
   public void onQuantityDialog() {
     ProductItem selected = salesReturnTable.getSelectionModel().getSelectedItem();
     if (selected == null) {
+      return;
+    }
+    try {
+      var loader = dialogBase.loadFXML("/fxml/sales/quantity_dialog.fxml");
+      VBox openedRoot = loader.load();
+      QuantitySetDialogController controller = loader.getController();
+      controller.setProductItem(selected, getLimitQuantity(selected));
+      dialogBase.createDialogStage(returnPane, openedRoot, controller);
+      if (controller.getUpdatedProduct() != null) {
+        updateReturnTotal();
+        salesReturnTable.refresh();
+      }
+    } catch (IOException e) {
+      log.error("IOException in SalesController.onQuantityDialog()", e);
+      throw new RuntimeException(e);
     }
   }
 
@@ -132,27 +159,54 @@ public class TransactionReturnController implements TabController {
   public void onReturnDialog() {
   }
 
+  private int getLimitQuantity(ProductItem productItem) {
+    return returnSales.stream()
+        .filter(sale -> sale.barcode().equals(productItem.getBarcode()))
+        .findFirst()
+        .map(SalesWithProductName::quantity)
+        .orElse(productItem.getQuantity());
+  }
+
   /**
    * Метод вызова при переходе из кнопки Возврат в ReceiptDetailsController
    */
-  public void loadReceiptData(PaymentReceipt receipt, List<SalesWithProductName> sales) {
+  public void loadReceiptData(PaymentReceipt receipt,
+      List<SalesWithProductName> salesWithProductNames) {
+    configureUIDuringReturn(receipt, salesWithProductNames);
+    log.info("receipt load receipt data: {}", receipt);
+    cart.addAll(returnSales.stream().map(productMapper::toProductItem).toList());
+    salesWithProductNames.forEach(s -> log.info("salesWithProductName: {}", s));
+  }
+
+  private void configureUIDuringReturn(PaymentReceipt receipt,
+      List<SalesWithProductName> salesWithProductNames) {
     openedFromReceipt = true;
     withoutPaymentReceiptRadio.setDisable(true);
     withPaymentReceiptRadio.setSelected(true);
     // Прячем поиск по товарам, показываем по чеку
     searchFieldById.setVisible(false);
+    searchButton.setVisible(false);
     searchFieldByProduct.setVisible(false);
     receiptPaymentIdLabel.setText(receipt.getId().toString());
     receiptPaymentIdLabel.setVisible(true);
-    // Здесь заполняем таблицу cart -> ProductItem (маппинг MapStruct будет отдельно)
     cart.clear();
-    log.info("receipt load receipt data: {}", receipt);
-    sales.forEach(s -> log.info("salesWithProductName: {}", s));
+    returnSales = salesWithProductNames;
+    returnPayment = receipt;
+    configureButton(receipt);
+  }
+
+  private void configureButton(PaymentReceipt receipt) {
+    if (receipt != null && !receipt.getPaymentType().equals(PaymentType.CASH)) {
+      quantityButton.setDisable(true);
+      deleteButton.setDisable(true);
+    } else {
+      quantityButton.setDisable(false);
+      deleteButton.setDisable(false);
+    }
   }
 
   /**
-   * Метод TabController для сброса состояния по умолчанию,
-   * если зашли в таб через UI (не из чека)
+   * Метод TabController для сброса состояния по умолчанию, если зашли в таб через UI (не из чека)
    */
   @Override
   public void onTabSelected() {
@@ -160,12 +214,22 @@ public class TransactionReturnController implements TabController {
       // Состояние по умолчанию
       withoutPaymentReceiptRadio.setDisable(false);
       withPaymentReceiptRadio.setSelected(true);
-      searchFieldById.setVisible(true);
-      searchFieldByProduct.setVisible(false);
+      configureRadioMenu(true);
       receiptPaymentIdLabel.setText("");
       receiptPaymentIdLabel.setVisible(false);
       cart.clear();
+      if (returnSales != null && !returnSales.isEmpty()) {
+        returnSales.clear();
+      }
+      returnPayment = null;
+      configureButton(null);
     }
     openedFromReceipt = false; // сбрасываем флаг после применения
+  }
+
+  private void configureRadioMenu(boolean flag) {
+    searchFieldById.setVisible(flag);
+    searchButton.setVisible(flag);
+    searchFieldByProduct.setVisible(!flag);
   }
 }

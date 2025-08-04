@@ -1,7 +1,7 @@
 package kz.store.cash.repository;
 
 import java.time.LocalDateTime;
-import kz.store.cash.entity.PaymentReceipt;
+import kz.store.cash.model.entity.PaymentReceipt;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

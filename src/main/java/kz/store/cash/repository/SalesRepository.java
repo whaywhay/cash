@@ -1,7 +1,7 @@
 package kz.store.cash.repository;
 
 import java.util.List;
-import kz.store.cash.entity.Sales;
+import kz.store.cash.model.entity.Sales;
 import kz.store.cash.fx.model.SalesWithProductName;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
