@@ -82,14 +82,14 @@ public class EditProductDialogController implements CancellableDialog {
   @FXML
   private void onCancel() {
     updatedProduct = null;
-    ((Stage) productName.getScene().getWindow()).close();
+    handleClose();
   }
 
   @FXML
   private void onSave() {
     if (checkAndInitializeUpdateProduct()) {
       productService.updateRetailPrice(updatedProduct.getBarcode(), updatedProduct.getPrice());
-      ((Stage) productName.getScene().getWindow()).close();
+      handleClose();
     } else {
       throw new ValidationException("Розничная цена должна быть больше чем оптовая цена");
     }
@@ -121,7 +121,7 @@ public class EditProductDialogController implements CancellableDialog {
   }
 
   @Override
-  public void handleCancel() {
-    onCancel();
+  public void handleClose() {
+    ((Stage) productName.getScene().getWindow()).close();
   }
 }

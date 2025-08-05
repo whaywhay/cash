@@ -85,16 +85,16 @@ public class ReceiptDetailsController implements CancellableDialog {
     }
     changeLabel.setText("Сдача: " + receipt.getChangeMoney());
 
-    closeBtn.setOnAction(e -> handleCancel());
+    closeBtn.setOnAction(e -> handleClose());
     returnBtn.setOnAction(e -> {
-      handleCancel(); // Закрыть диалог
+      handleClose(); // Закрыть диалог
       mainViewController.openReturnTab(receipt, sales);
     });
     printBtn.setOnAction(e -> receiptPrintService.printReceiptRawWithLine(receipt));
   }
 
   @Override
-  public void handleCancel() {
+  public void handleClose() {
     ((Stage) closeBtn.getScene().getWindow()).close();
   }
 }

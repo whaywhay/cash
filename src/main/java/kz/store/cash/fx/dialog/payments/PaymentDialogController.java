@@ -208,15 +208,13 @@ public class PaymentDialogController implements CancellableDialog {
       throw new ValidationException("Недостаточно суммы для оплаты");
     }
     paymentConfirmed = true;
-    Stage stage = (Stage) paymentWindow.getScene().getWindow();
-    stage.close();
+    handleClose();
   }
 
   @FXML
   private void onCancel() {
     paymentConfirmed = false;
-    Stage stage = (Stage) paymentWindow.getScene().getWindow();
-    stage.close();
+    handleClose();
   }
 
   private void updateFromInputNew() {
@@ -249,7 +247,8 @@ public class PaymentDialogController implements CancellableDialog {
 
 
   @Override
-  public void handleCancel() {
-    onCancel();
+  public void handleClose() {
+    Stage stage = (Stage) paymentWindow.getScene().getWindow();
+    stage.close();
   }
 }

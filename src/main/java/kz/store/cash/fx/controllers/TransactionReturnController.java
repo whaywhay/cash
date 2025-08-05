@@ -15,6 +15,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import kz.store.cash.fx.dialog.ReturnDialogController;
+import kz.store.cash.fx.model.PaymentSumDetails;
 import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.fx.component.SalesCartService;
 import kz.store.cash.fx.component.TableViewProductConfigService;
@@ -28,6 +30,7 @@ import kz.store.cash.model.enums.PaymentType;
 import kz.store.cash.util.TableUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -80,6 +83,7 @@ public class TransactionReturnController implements TabController {
   private final TableViewProductConfigService tableViewProductConfigService;
   private final ProductMapper productMapper;
   private final DialogBase dialogBase;
+  private final ApplicationContext context;
 
   @FXML
   public void initialize() {
@@ -114,9 +118,10 @@ public class TransactionReturnController implements TabController {
     );
   }
 
-  private void updateReturnTotal() {
+  private double updateReturnTotal() {
     double total = salesCartService.calculateTotal(cart);
     returnSumLabel.setText(String.format("%.2f тг", total));
+    return total;
   }
 
   @FXML
@@ -150,13 +155,31 @@ public class TransactionReturnController implements TabController {
         salesReturnTable.refresh();
       }
     } catch (IOException e) {
-      log.error("IOException in SalesController.onQuantityDialog()", e);
+      log.error("IOException in TransactionReturnController.onQuantityDialog()", e);
       throw new RuntimeException(e);
     }
   }
 
   @FXML
   public void onReturnDialog() {
+    if (cart.isEmpty()) {
+      return;
+    }
+    try {
+      var loader = dialogBase.loadFXML("/fxml/return_dialog.fxml");
+      BorderPane openedRoot = loader.load();
+      ReturnDialogController controller = loader.getController();
+      controller.initData(returnPayment, updateReturnTotal());
+      dialogBase.createDialogStage(returnPane, openedRoot, controller);
+      PaymentSumDetails returnPayment = controller.getPaymentSumDetails();
+      if (returnPayment != null && controller.isReturnFlag()) {
+        log.info("Return Button Clicked");
+        log.info("returnPayment = {}", returnPayment);
+      }
+    } catch (IOException e) {
+      log.error("IOException in TransactionReturnController.onReturnDialog()", e);
+      throw new RuntimeException(e);
+    }
   }
 
   private int getLimitQuantity(ProductItem productItem) {

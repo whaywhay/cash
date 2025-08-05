@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+  fx:controller="kz.store.cash.fx.dialog.ReturnDialogController"
+  fx:id="rootPane"
+  prefWidth="520"
+  prefHeight="400"
+  stylesheets="@styles.css"
+  styleClass="dialog-pane-product-change">
+
+  <!-- Шапка -->
+  <top>
+    <VBox alignment="CENTER"
+      spacing="10"
+      style="-fx-background-color: #FBC02D; -fx-padding: 20;">
+      <Label text="Возврат"
+        style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+    </VBox>
+  </top>
+
+  <!-- Центр -->
+  <center>
+    <VBox spacing="20" style="-fx-padding: 30;">
+      <GridPane hgap="20" vgap="20">
+        <columnConstraints>
+          <ColumnConstraints halignment="LEFT"/>
+          <ColumnConstraints halignment="RIGHT"/>
+        </columnConstraints>
+        <Label text="Сумма возврата:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <Label fx:id="totalReturnLabel" styleClass="label-value" GridPane.rowIndex="0"
+          GridPane.columnIndex="1"/>
+
+        <Label text="Возврат денежных средств:" fx:id="cashReturnText" GridPane.rowIndex="1"
+          GridPane.columnIndex="0"/>
+        <Label fx:id="cashReturnLabel" styleClass="label-value" GridPane.rowIndex="1"
+          GridPane.columnIndex="1"/>
+
+        <Label text="Возврат банковских средств:" fx:id="cardReturnText" GridPane.rowIndex="2"
+          GridPane.columnIndex="0"/>
+        <Label fx:id="cardReturnLabel" styleClass="label-value" GridPane.rowIndex="2"
+          GridPane.columnIndex="1"/>
+
+        <Label text="Наличный счет:" fx:id="cashText" GridPane.rowIndex="3"
+          GridPane.columnIndex="0"/>
+        <Label fx:id="cashLabel" styleClass="label-value" GridPane.rowIndex="3"
+          GridPane.columnIndex="1"/>
+
+        <Label text="Банковский счет:" fx:id="cardText" GridPane.rowIndex="4"
+          GridPane.columnIndex="0"/>
+        <Label fx:id="cardLabel" styleClass="label-value" GridPane.rowIndex="4"
+          GridPane.columnIndex="1"/>
+      </GridPane>
+    </VBox>
+  </center>
+
+  <!-- Кнопки -->
+  <bottom>
+    <HBox spacing="20"
+      alignment="CENTER"
+      style="-fx-padding: 20;">
+      <Button fx:id="closeBtn"
+        text="ОТМЕНА"
+        onAction="#onCancel"
+        styleClass="btn-cancel-product-change"
+        prefWidth="160"/>
+
+      <Button text="Возврат"
+        onAction="#onReturn"
+        styleClass="btn-save-product-change"
+        prefWidth="160"/>
+    </HBox>
+  </bottom>
+
+</BorderPane>

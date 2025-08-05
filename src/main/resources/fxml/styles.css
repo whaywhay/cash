@@ -85,9 +85,11 @@
 
 .dialog-pane-product-change {
   -fx-background-color: white;
-  -fx-border-color: #ccc;
-  -fx-border-radius: 10;
-  -fx-background-radius: 10;
+  -fx-background-radius: 20;
+  -fx-border-radius: 20;
+  -fx-padding: 25;
+  -fx-border-color: #dddddd;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2);
 }
 
 .input-field-product-change {

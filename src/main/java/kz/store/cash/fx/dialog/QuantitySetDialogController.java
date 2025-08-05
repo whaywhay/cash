@@ -63,14 +63,14 @@ public class QuantitySetDialogController implements CancellableDialog {
   @FXML
   public void onCancel() {
     updatedProduct = null;
-    ((Stage) quantityField.getScene().getWindow()).close();
+    handleClose();
   }
 
   public void onSave() {
     if (!checkAndInitializeUpdateProduct()) {
       return;
     }
-    ((Stage) quantityField.getScene().getWindow()).close();
+    handleClose();
   }
 
   private boolean checkAndInitializeUpdateProduct() {
@@ -87,7 +87,7 @@ public class QuantitySetDialogController implements CancellableDialog {
   }
 
   @Override
-  public void handleCancel() {
-    onCancel();
+  public void handleClose() {
+    ((Stage) quantityField.getScene().getWindow()).close();
   }
 }

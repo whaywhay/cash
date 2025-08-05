@@ -19,7 +19,7 @@
   <TextField fx:id="productName" prefWidth="320" styleClass="input-field-product-change"
     editable="false"/>
 
-  <Label text="Продажная цена" styleClass="label-value"/>
+  <Label text="Розничная цена" styleClass="label-value"/>
   <TextField fx:id="retailPriceField" prefWidth="320" styleClass="input-field-product-change"/>
 
   <Label text="Оптовая цена" styleClass="label-value"/>
@@ -56,9 +56,10 @@
   <HBox spacing="20" alignment="CENTER">
     <Button text="Отменить" onAction="#onCancel" styleClass="btn-cancel-product-change"
       prefWidth="140"/>
-    <Button text="Применить на эту продажу" onAction="#onApply" styleClass="btn-save-product-change"
+    <Button text="Применить на продажу" onAction="#onApply" styleClass="btn-save-product-change"
       prefWidth="280"/>
-    <Button text="Сохранить" fx:id="savePriceButton" onAction="#onSave" styleClass="btn-save-product-change"
+    <Button text="Сохранить" fx:id="savePriceButton" onAction="#onSave"
+      styleClass="btn-save-product-change"
       prefWidth="140"/>
   </HBox>
 </VBox>

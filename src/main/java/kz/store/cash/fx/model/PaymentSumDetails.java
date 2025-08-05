@@ -24,7 +24,7 @@ public class PaymentSumDetails {
     this.receivedPayment = receivedPayment;
     this.remainingPayment =
         (totalToPay > receivedPayment) ? totalToPay - receivedPayment : 0;
-    this.changeMoney = receivedPayment > totalToPay ? receivedPayment - totalToPay: 0;
+    this.changeMoney = receivedPayment > totalToPay ? receivedPayment - totalToPay : 0;
   }
 
   public void setCalculate(double totalToPay, double receivedPayment) {
@@ -32,7 +32,7 @@ public class PaymentSumDetails {
     this.receivedPayment = receivedPayment;
     this.remainingPayment =
         (totalToPay > receivedPayment) ? totalToPay - receivedPayment : 0;
-    this.changeMoney = receivedPayment > totalToPay ? receivedPayment - totalToPay: 0;
+    this.changeMoney = receivedPayment > totalToPay ? receivedPayment - totalToPay : 0;
   }
 
   public void setReceivedPayment(double receivedPayment) {

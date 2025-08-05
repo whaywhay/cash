@@ -56,14 +56,14 @@ public class UniversalProductDialogController implements CancellableDialog {
   @FXML
   public void onCancel() {
     priceUniversalProduct = 0;
-    ((Stage) priceField.getScene().getWindow()).close();
+    handleClose();
   }
 
   public void onSave() {
     if (!checkAndInitializePrice()) {
       return;
     }
-    ((Stage) priceField.getScene().getWindow()).close();
+    handleClose();
   }
 
   private boolean checkAndInitializePrice() {
@@ -80,7 +80,7 @@ public class UniversalProductDialogController implements CancellableDialog {
   }
 
   @Override
-  public void handleCancel() {
-    onCancel();
+  public void handleClose() {
+    ((Stage) priceField.getScene().getWindow()).close();
   }
 }
