@@ -74,7 +74,7 @@ public class ReturnDialogController implements CancellableDialog {
         setVisibility(true, cashReturnText, cashReturnLabel, cashText, cashLabel);
         cashReturnLabel.setText(String.format("%.2f тг", totalToReturn));
         cashLabel.setText(String.format("%.2f тг", cash));
-        setPaymentSumDetails(totalToReturn, cash, card, PaymentType.CASH);
+        setPaymentSumDetails(totalToReturn, totalToReturn, card, PaymentType.CASH);
       }
       case CARD -> {
         setVisibility(true, cardReturnText, cardReturnLabel, cardText, cardLabel);

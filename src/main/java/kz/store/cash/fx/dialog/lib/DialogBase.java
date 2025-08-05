@@ -47,6 +47,7 @@ public class DialogBase {
     dialogStage.initStyle(StageStyle.UNDECORATED);
     dialogStage.setScene(openedSceneWindow);
     dialogStage.initModality(Modality.APPLICATION_MODAL);
+
     openedRootPane.setOnMousePressed(event -> {
       xOffset = event.getSceneX();
       yOffset = event.getSceneY();
@@ -59,7 +60,7 @@ public class DialogBase {
       if (controller instanceof CancellableDialog cancelHandler) {
         openedRootPane.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
           if (event.getCode() == KeyCode.ESCAPE) {
-            cancelHandler.handleCancel();
+            cancelHandler.handleClose();
             event.consume();
           }
         });
