@@ -27,11 +27,12 @@
         <TextField fx:id="searchFieldByProduct" promptText="Поиск товара" prefWidth="350"
           visible="false"/>
         <Label fx:id="receiptPaymentIdLabel" styleClass="sub-summary-label" visible="false"/>
-        <padding>
-          <Insets top="10.0"/>
-        </padding>
       </StackPane>
+      <Label fx:id="receiptPaymentDateLabel" styleClass="sub-summary-label" visible="false"/>
       <Button text="Поиск" fx:id="searchButton"/>
+      <padding>
+        <Insets top="10.0"/>
+      </padding>
     </HBox>
   </top>
 

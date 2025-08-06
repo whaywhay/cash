@@ -35,42 +35,6 @@ public class ReceiptPrintService {
   private static final int LINE_WIDTH = 44;
   private final UtilNumbers utilNumbers;
 
-  public void printReceiptRaw(PaymentReceipt currentReceipt) {
-    if (currentReceipt == null) {
-      return;
-    }
-    try {
-      StringBuilder sb = new StringBuilder();
-      sb.append("КАССИР: ").append(productProperties.organizationName()).append("\n");
-      sb.append(productProperties.cashierName()).append("\n");
-      sb.append("ЧЕК #").append(currentReceipt.getId()).append("\n");
-      sb.append(currentReceipt.getCreated()).append("\n");
-      sb.append(repeatChar('-')).append("\n");
-      var sales = salesRepository.findSalesWithProductNames(currentReceipt.getId());
-      for (SalesWithProductName sale : sales) {
-        sb.append(sale.productName()).append("\n")
-            .append(String.format("%d x %.2f = %.2f\n",
-                sale.quantity(), sale.soldPrice(), sale.total()));
-      }
-      sb.append(repeatChar('-')).append("\n");
-      sb.append(String.format("ИТОГО: %.2f тг\n", currentReceipt.getTotal()));
-      sb.append(currentReceipt.getPaymentType().getDisplayName())
-          .append(": ").append(currentReceipt.getReceivedPayment()).append("\n");
-      sb.append("СДАЧА: ").append(currentReceipt.getChangeMoney()).append("\n");
-
-      // Feed бумаги (протяжка вниз)
-      feed(sb);
-      // Обрезка бумаги (полная или частичная)
-      cutPaper(sb, false); // true = полная, false = частичная
-      // Отправляем в принтер
-      sendToPrinter(sb.toString().getBytes("CP1251"));
-    } catch (Exception e) {
-      log.error(e.getMessage());
-      utilAlert.showError("Ошибка печати",
-          "Не удалось отправить чек в принтер.\n" + e.getMessage());
-    }
-  }
-
   /**
    * Основной метод печати чека в ESC/POS
    */
@@ -87,11 +51,12 @@ public class ReceiptPrintService {
       sb.append(centerText(productProperties.cashierName())).append("\n");
       sb.append(centerText("ЧЕК #" + currentReceipt.getId())).append("\n");
       sb.append(centerText(currentReceipt.getCreated().toString())).append("\n");
-      sb.append(repeatChar('-')).append("\n");
+      sb.append(centerText(currentReceipt.getPaymentType().getDisplayName())).append("\n");
+      sb.append(repeatLineChar()).append("\n");
 
       // --- Заголовки таблицы ---
       sb.append(formatRow("Товар", "Кол-во", "Цена", "Сумма")).append("\n");
-      sb.append(repeatChar('-')).append("\n");
+      sb.append(repeatLineChar()).append("\n");
 
       // --- Список товаров ---
       List<SalesWithProductName> sales = salesRepository.findSalesWithProductNames(
@@ -116,7 +81,7 @@ public class ReceiptPrintService {
               .append("\n");
         }
       }
-      sb.append(repeatChar('-')).append("\n");
+      sb.append(repeatLineChar()).append("\n");
       // --- Итого ---
       sb.append("ИТОГО: ").append(String.format("%.2f тг", currentReceipt.getTotal()))
           .append("\n");
@@ -180,8 +145,8 @@ public class ReceiptPrintService {
   }
 
   // ===================== Форматирование текста =====================
-  private String repeatChar(char ch) {
-    return String.valueOf(ch).repeat(LINE_WIDTH);
+  private String repeatLineChar() {
+    return ("-").repeat(LINE_WIDTH);
   }
 
   private String centerText(String text) {

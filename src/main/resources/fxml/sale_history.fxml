@@ -33,6 +33,7 @@
           <TableColumn fx:id="dateCol" text="Время"/>
           <TableColumn fx:id="totalCol" text="Сумма"/>
           <TableColumn fx:id="paymentTypeCol" text="Тип оплаты"/>
+          <TableColumn fx:id="receiptStatusCol" text="Статус операции"/>
           <TableColumn fx:id="fiscalCol" text="Фиск."/>
         </columns>
       </TableView>

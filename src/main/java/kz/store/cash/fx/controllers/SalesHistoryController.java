@@ -59,9 +59,11 @@ public class SalesHistoryController implements TabController {
   @FXML
   private TableColumn<PaymentReceipt, String> paymentTypeCol;
   @FXML
+  private TableColumn<PaymentReceipt, String> receiptStatusCol;
+  @FXML
   private TableColumn<PaymentReceipt, ReceiptStatus> fiscalCol;
 
-  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm");
+  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm:ss");
   private static final int ROWS_PER_PAGE = 25;
   private LocalDate currentFilterDate;
   private final PaymentReceiptRepository receiptRepository;
@@ -80,9 +82,9 @@ public class SalesHistoryController implements TabController {
     // Привязываем ширину колонок через TableUtils
     TableUtils.bindColumnWidths(
         salesHistoryTable,
-        new double[]{0.10, 0.15, 0.15, 0.20, 0.40}, // размер для колонок 1 = 100% процент размеру
-        idCol, dateCol, totalCol, paymentTypeCol, fiscalCol
-    );
+        new double[]{0.17, 0.15, 0.16, 0.17, 0.16, 0.19},
+        // размер для колонок 1 = 100% процент размеру
+        idCol, dateCol, totalCol, paymentTypeCol, receiptStatusCol, fiscalCol);
     // Устанавливаем сегодняшнюю дату по умолчанию
     currentFilterDate = LocalDate.now();
     dateFilter.setValue(currentFilterDate);
@@ -168,6 +170,11 @@ public class SalesHistoryController implements TabController {
       return new ReadOnlyObjectWrapper<>(type != null ? type.getDisplayName() : "");
     });
 
+    receiptStatusCol.setCellValueFactory(data -> {
+      ReceiptStatus type = data.getValue().getReceiptStatus();
+      return new ReadOnlyObjectWrapper<>(type != null ? type.getDisplayName() : "");
+    });
+
     fiscalCol.setCellFactory(col -> new TableCell<>() {
       private final Label link = new Label("Открыть чек");
 
@@ -212,7 +219,8 @@ public class SalesHistoryController implements TabController {
   }
 
   private LocationSize setReceptionDialogLocation() {
-    double width = fiscalCol.getWidth();
+    double width =
+        fiscalCol.getWidth() + receiptStatusCol.getWidth() + paymentTypeCol.getWidth();
     double x = salesHistoryTable.getScene().getWindow().getX()
         + salesHistoryTable.getScene().getWindow().getWidth() - width;
     double y = salesHistoryTable.getScene().getWindow().getY();

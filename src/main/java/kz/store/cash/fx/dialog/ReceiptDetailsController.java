@@ -1,6 +1,7 @@
 package kz.store.cash.fx.dialog;
 
 import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -13,6 +14,7 @@ import kz.store.cash.fx.controllers.MainViewController;
 import kz.store.cash.fx.dialog.lib.CancellableDialog;
 import kz.store.cash.fx.model.SalesWithProductName;
 import kz.store.cash.model.enums.PaymentType;
+import kz.store.cash.model.enums.ReceiptStatus;
 import kz.store.cash.repository.SalesRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class ReceiptDetailsController implements CancellableDialog {
 
+  @FXML
+  public Label receiptStatusLabel;
   @FXML
   private Label cashierLabel;
   @FXML
@@ -46,6 +50,7 @@ public class ReceiptDetailsController implements CancellableDialog {
   @FXML
   private Button printBtn;
 
+  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm:ss");
   private final SalesRepository salesRepository;
   private final ProductProperties productProperties;
   private final ReceiptPrintService receiptPrintService;
@@ -57,7 +62,8 @@ public class ReceiptDetailsController implements CancellableDialog {
     cashierLabel.setText("КАССИР: " + productProperties.organizationName());
     cashboxLabel.setText(productProperties.cashierName());
     receiptIdLabel.setText("ЧЕК #" + receipt.getId());
-    dateLabel.setText(receipt.getCreated().toString());
+    dateLabel.setText(formatter.format(receipt.getCreated()));
+    receiptStatusLabel.setText(receipt.getReceiptStatus().getDisplayName());
 
     itemsContainer.getChildren().clear();
     for (SalesWithProductName sale : sales) {
@@ -91,6 +97,11 @@ public class ReceiptDetailsController implements CancellableDialog {
       mainViewController.openReturnTab(receipt, sales);
     });
     printBtn.setOnAction(e -> receiptPrintService.printReceiptRawWithLine(receipt));
+    if (receipt.getReceiptStatus().equals(ReceiptStatus.RETURN)
+        || receipt.getReceiptStatus().equals(ReceiptStatus.RETURN_NO_RECEIPT)) {
+      returnBtn.setDisable(true);
+    }
+
   }
 
   @Override

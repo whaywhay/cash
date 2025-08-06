@@ -1,6 +1,7 @@
 package kz.store.cash.fx.controllers;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -27,10 +28,10 @@ import kz.store.cash.fx.model.ProductItem;
 import kz.store.cash.fx.model.SalesWithProductName;
 import kz.store.cash.mapper.ProductMapper;
 import kz.store.cash.model.enums.PaymentType;
+import kz.store.cash.service.PaymentReceiptService;
 import kz.store.cash.util.TableUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -46,6 +47,8 @@ public class TransactionReturnController implements TabController {
   public Button deleteButton;
   @FXML
   public Button searchButton;
+  @FXML
+  public Label receiptPaymentDateLabel;
   @FXML
   private BorderPane returnPane;
   @FXML
@@ -75,6 +78,7 @@ public class TransactionReturnController implements TabController {
   @FXML
   private Label returnSumLabel;
 
+  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm:ss");
   private boolean openedFromReceipt = false;
   private final ObservableList<ProductItem> cart = FXCollections.observableArrayList();
   private List<SalesWithProductName> returnSales;
@@ -83,7 +87,7 @@ public class TransactionReturnController implements TabController {
   private final TableViewProductConfigService tableViewProductConfigService;
   private final ProductMapper productMapper;
   private final DialogBase dialogBase;
-  private final ApplicationContext context;
+  private final PaymentReceiptService paymentReceiptService;
 
   @FXML
   public void initialize() {
@@ -171,10 +175,12 @@ public class TransactionReturnController implements TabController {
       ReturnDialogController controller = loader.getController();
       controller.initData(returnPayment, updateReturnTotal());
       dialogBase.createDialogStage(returnPane, openedRoot, controller);
-      PaymentSumDetails returnPayment = controller.getPaymentSumDetails();
-      if (returnPayment != null && controller.isReturnFlag()) {
-        log.info("Return Button Clicked");
-        log.info("returnPayment = {}", returnPayment);
+      PaymentSumDetails returnPaymentDetails = controller.getPaymentSumDetails();
+      if (returnPaymentDetails != null && controller.isReturnFlag()) {
+        paymentReceiptService.processReturnSave(returnPaymentDetails, cart, returnPayment);
+        cart.clear();
+        returnPayment = null;
+        returnSales.clear();
       }
     } catch (IOException e) {
       log.error("IOException in TransactionReturnController.onReturnDialog()", e);
@@ -196,9 +202,7 @@ public class TransactionReturnController implements TabController {
   public void loadReceiptData(PaymentReceipt receipt,
       List<SalesWithProductName> salesWithProductNames) {
     configureUIDuringReturn(receipt, salesWithProductNames);
-    log.info("receipt load receipt data: {}", receipt);
     cart.addAll(returnSales.stream().map(productMapper::toProductItem).toList());
-    salesWithProductNames.forEach(s -> log.info("salesWithProductName: {}", s));
   }
 
   private void configureUIDuringReturn(PaymentReceipt receipt,
@@ -212,6 +216,8 @@ public class TransactionReturnController implements TabController {
     searchFieldByProduct.setVisible(false);
     receiptPaymentIdLabel.setText(receipt.getId().toString());
     receiptPaymentIdLabel.setVisible(true);
+    receiptPaymentDateLabel.setText(formatter.format(receipt.getCreated()));
+    receiptPaymentDateLabel.setVisible(true);
     cart.clear();
     returnSales = salesWithProductNames;
     returnPayment = receipt;
@@ -240,14 +246,20 @@ public class TransactionReturnController implements TabController {
       configureRadioMenu(true);
       receiptPaymentIdLabel.setText("");
       receiptPaymentIdLabel.setVisible(false);
-      cart.clear();
-      if (returnSales != null && !returnSales.isEmpty()) {
-        returnSales.clear();
-      }
-      returnPayment = null;
+      receiptPaymentDateLabel.setText("");
+      receiptPaymentDateLabel.setVisible(false);
+      resetValues();
       configureButton(null);
     }
     openedFromReceipt = false; // сбрасываем флаг после применения
+  }
+
+  private void resetValues() {
+    cart.clear();
+    if (returnSales != null && !returnSales.isEmpty()) {
+      returnSales.clear();
+    }
+    returnPayment = null;
   }
 
   private void configureRadioMenu(boolean flag) {

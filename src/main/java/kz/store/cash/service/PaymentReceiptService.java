@@ -33,4 +33,16 @@ public class PaymentReceiptService {
     paymentReceipt.setSalesList(salesList);
     paymentReceiptRepository.save(paymentReceipt);
   }
+
+  @Transactional
+  public void processReturnSave(PaymentSumDetails paymentSumDetails,
+      ObservableList<ProductItem> cart, PaymentReceipt paymentOriginal) {
+    PaymentReceipt paymentReceipt = paymentReceiptMapper.toReturnPaymentReceipt(paymentSumDetails,
+        paymentOriginal);
+    List<Sales> salesList = cart.stream()
+        .map(sale -> salesMapper.fromProductItemToReturnSales(sale, paymentReceipt))
+        .toList();
+    paymentReceipt.setSalesList(salesList);
+    paymentReceiptRepository.save(paymentReceipt);
+  }
 }
