@@ -8,11 +8,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -63,18 +61,4 @@ public class Sales extends BaseEntity {
   @Column(name = "return_date")
   private LocalDateTime returnDate;
 
-  /**
-   * Ссылка на оригинальную строку продажи (если это возврат по чеку)
-   */
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "original_sale_id")
-  @ToString.Exclude
-  private Sales originalSale;
-
-  /**
-   * Список возвратных строк, которые ссылаются на эту продажу
-   */
-  @OneToMany(mappedBy = "originalSale", fetch = FetchType.LAZY)
-  @ToString.Exclude
-  private List<Sales> returnSales;
 }
