@@ -21,4 +21,5 @@ app:
     universal-product-barcode: universal-product-200001
     organization-name: "Мир футляров"
     cashier-name: "Касса-1"
+    product-return-period: 14
 

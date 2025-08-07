@@ -1,6 +1,7 @@
 package kz.store.cash.fx.dialog;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -58,7 +59,8 @@ public class ReceiptDetailsController implements CancellableDialog {
 
   public void sendReceipt(PaymentReceipt receipt) {
     var sales = salesRepository.findSalesWithProductNames(receipt.getId());
-
+    LocalDateTime returnPeriodDate = LocalDateTime.now()
+        .minusDays(productProperties.productReturnPeriod());
     cashierLabel.setText("КАССИР: " + productProperties.organizationName());
     cashboxLabel.setText(productProperties.cashierName());
     receiptIdLabel.setText("ЧЕК #" + receipt.getId());
@@ -98,10 +100,10 @@ public class ReceiptDetailsController implements CancellableDialog {
     });
     printBtn.setOnAction(e -> receiptPrintService.printReceiptRawWithLine(receipt));
     if (receipt.getReceiptStatus().equals(ReceiptStatus.RETURN)
-        || receipt.getReceiptStatus().equals(ReceiptStatus.RETURN_NO_RECEIPT)) {
+        || receipt.getReceiptStatus().equals(ReceiptStatus.RETURN_NO_RECEIPT)
+        || returnPeriodDate.isAfter(receipt.getCreated())) {
       returnBtn.setDisable(true);
     }
-
   }
 
   @Override

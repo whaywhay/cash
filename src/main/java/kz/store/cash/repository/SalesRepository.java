@@ -1,6 +1,8 @@
 package kz.store.cash.repository;
 
+import java.util.Collection;
 import java.util.List;
+import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.model.entity.Sales;
 import kz.store.cash.fx.model.SalesWithProductName;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,4 +29,7 @@ public interface SalesRepository extends JpaRepository<Sales, Long> {
           where s.paymentReceipt.id = :receiptId
       """)
   List<SalesWithProductName> findSalesWithProductNames(Long receiptId);
+
+
+  List<Sales> getSalesByPaymentReceiptIn(Collection<PaymentReceipt> paymentReceipts);
 }

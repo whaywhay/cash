@@ -6,7 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record ProductProperties(
     String universalProductBarcode,
     String organizationName,
-    String cashierName
+    String cashierName,
+    int productReturnPeriod
 ) {
 
 }

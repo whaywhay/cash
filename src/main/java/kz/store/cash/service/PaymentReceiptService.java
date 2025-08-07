@@ -1,5 +1,9 @@
 package kz.store.cash.service;
 
+import static kz.store.cash.model.enums.ReceiptStatus.PENDING;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import javafx.collections.ObservableList;
 import kz.store.cash.model.entity.PaymentReceipt;
@@ -44,5 +48,14 @@ public class PaymentReceiptService {
         .toList();
     paymentReceipt.setSalesList(salesList);
     paymentReceiptRepository.save(paymentReceipt);
+  }
+
+  public List<PaymentReceipt> getReturnPaymentReceipt(PaymentReceipt paymentReceipt) {
+    return paymentReceiptRepository.getPaymentReceiptByOriginalReceipt(paymentReceipt);
+  }
+
+  public List<PaymentReceipt> getDeferredPaymentReceipts() {
+    LocalDateTime todayAtMidnight = LocalDate.now().atStartOfDay();
+    return paymentReceiptRepository.getAllByReceiptStatusAndCreatedAfter(PENDING, todayAtMidnight);
   }
 }

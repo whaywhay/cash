@@ -19,20 +19,27 @@
 
   <!-- Верхняя панель -->
   <top>
-    <HBox spacing="10" style="-fx-padding: 5; -fx-background-color: #ffcc00;">
-      <RadioButton fx:id="withPaymentReceiptRadio" text="С ЧЕКОМ" selected="true"/>
-      <RadioButton fx:id="withoutPaymentReceiptRadio" text="БЕЗ ЧЕКА"/>
-      <StackPane>
-        <TextField fx:id="searchFieldById" promptText="Поиск чека по #" prefWidth="350"/>
-        <TextField fx:id="searchFieldByProduct" promptText="Поиск товара" prefWidth="350"
-          visible="false"/>
-        <Label fx:id="receiptPaymentIdLabel" styleClass="sub-summary-label" visible="false"/>
-      </StackPane>
-      <Label fx:id="receiptPaymentDateLabel" styleClass="sub-summary-label" visible="false"/>
-      <Button text="Поиск" fx:id="searchButton"/>
-      <padding>
-        <Insets top="10.0"/>
-      </padding>
+    <HBox prefHeight="53.0" style="-fx-background-color: #ffcc00;">
+      <HBox spacing="5" BorderPane.alignment="TOP_LEFT">
+        <!--Начало, Пока данный блок не будет работать -->
+        <RadioButton fx:id="withPaymentReceiptRadio" text="С ЧЕКОМ" selected="true"/>
+        <RadioButton fx:id="withoutPaymentReceiptRadio" text="БЕЗ ЧЕКА"/>
+        <StackPane>
+          <TextField fx:id="searchFieldById" promptText="Поиск чека по #" prefWidth="350"/>
+          <TextField fx:id="searchFieldByProduct" promptText="Поиск товара" prefWidth="350"
+            visible="false"/>
+          <Label fx:id="receiptPaymentIdLabel" styleClass="sub-summary-label" visible="false"/>
+        </StackPane>
+        <Label fx:id="receiptPaymentDateLabel" styleClass="sub-summary-label" visible="false"/>
+        <Button text="Поиск" fx:id="searchButton"/>
+        <!--Конец, Пока данный блок не будет работать -->
+        <BorderPane.margin>
+          <Insets left="10.0"/>
+        </BorderPane.margin>
+        <padding>
+          <Insets left="10.0" top="10.0"/>
+        </padding>
+      </HBox>
     </HBox>
   </top>
 

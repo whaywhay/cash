@@ -24,6 +24,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import kz.store.cash.fx.component.SalesCartService;
 import kz.store.cash.fx.component.TableViewProductConfigService;
+import kz.store.cash.fx.dialog.DeferredReceiptsDialogController;
 import kz.store.cash.fx.dialog.QuantitySetDialogController;
 import kz.store.cash.fx.dialog.UniversalProductDialogController;
 import kz.store.cash.fx.dialog.lib.DialogBase;
@@ -32,6 +33,7 @@ import kz.store.cash.fx.dialog.EditProductDialogController;
 import kz.store.cash.fx.model.PaymentSumDetails;
 import kz.store.cash.fx.model.ProductItem;
 import kz.store.cash.fx.component.BarcodeScannerListener;
+import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.model.enums.PriceMode;
 import kz.store.cash.service.PaymentReceiptService;
 import kz.store.cash.service.ProductService;
@@ -378,4 +380,22 @@ public class SalesController {
     }
   }
 
+  @FXML
+  public void onDeferredReceiptsDialog() {
+    try {
+      var loader = dialogBase.loadFXML("/fxml/deferred_receipts_dialog.fxml");
+      VBox openedRoot = loader.load();
+      DeferredReceiptsDialogController controller = loader.getController();
+      controller.init(null, cart, getDeferredPaymentReceipts());
+      dialogBase.createDialogStage(rootPane, openedRoot, controller);
+      //To-Do something
+    } catch (IOException e) {
+      log.error("IOException in SalesController.onDeferredReceiptsDialog()", e);
+      throw new RuntimeException(e);
+    }
+  }
+
+  private List<PaymentReceipt> getDeferredPaymentReceipts() {
+    return paymentReceiptService.getDeferredPaymentReceipts();
+  }
 }

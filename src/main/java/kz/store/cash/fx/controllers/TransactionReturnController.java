@@ -18,6 +18,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import kz.store.cash.fx.dialog.ReturnDialogController;
 import kz.store.cash.fx.model.PaymentSumDetails;
+import kz.store.cash.handler.ValidationException;
 import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.fx.component.SalesCartService;
 import kz.store.cash.fx.component.TableViewProductConfigService;
@@ -29,6 +30,7 @@ import kz.store.cash.fx.model.SalesWithProductName;
 import kz.store.cash.mapper.ProductMapper;
 import kz.store.cash.model.enums.PaymentType;
 import kz.store.cash.service.PaymentReceiptService;
+import kz.store.cash.service.SalesService;
 import kz.store.cash.util.TableUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -88,6 +90,7 @@ public class TransactionReturnController implements TabController {
   private final ProductMapper productMapper;
   private final DialogBase dialogBase;
   private final PaymentReceiptService paymentReceiptService;
+  private final SalesService salesService;
 
   @FXML
   public void initialize() {
@@ -219,9 +222,12 @@ public class TransactionReturnController implements TabController {
     receiptPaymentDateLabel.setText(formatter.format(receipt.getCreated()));
     receiptPaymentDateLabel.setVisible(true);
     cart.clear();
-    returnSales = salesWithProductNames;
+    returnSales = salesService.subtractReturnedSales(receipt, salesWithProductNames);
     returnPayment = receipt;
     configureButton(receipt);
+    if (returnSales != null && returnSales.isEmpty()) {
+      throw new ValidationException("По чеку все товары были возвращены");
+    }
   }
 
   private void configureButton(PaymentReceipt receipt) {
