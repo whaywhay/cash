@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 
 public record SalesWithProductName(
-    Integer id,
+    Long id,
     String barcode,
     String productName,
     BigDecimal soldPrice,

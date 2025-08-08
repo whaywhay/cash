@@ -24,7 +24,7 @@ import kz.store.cash.fx.dialog.lib.DialogBase;
 import kz.store.cash.fx.model.LocationSize;
 import kz.store.cash.model.enums.PaymentType;
 import kz.store.cash.model.enums.ReceiptStatus;
-import kz.store.cash.repository.PaymentReceiptRepository;
+import kz.store.cash.service.PaymentReceiptService;
 import kz.store.cash.util.TableUtils;
 import kz.store.cash.util.UtilNumbers;
 import lombok.RequiredArgsConstructor;
@@ -66,7 +66,7 @@ public class SalesHistoryController implements TabController {
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm:ss");
   private static final int ROWS_PER_PAGE = 25;
   private LocalDate currentFilterDate;
-  private final PaymentReceiptRepository receiptRepository;
+  private final PaymentReceiptService paymentReceiptService;
   private final DialogBase dialogBase;
   private final UtilNumbers utilNumbers;
 
@@ -138,14 +138,14 @@ public class SalesHistoryController implements TabController {
     Page<PaymentReceipt> page;
     if (searchText != null && !searchText.isBlank()) {
       // Точный поиск по ID чека (без учета даты)
-      page = receiptRepository.findById(Long.valueOf(searchText),
+      page = paymentReceiptService.findById(Long.valueOf(searchText),
           PageRequest.of(pageIndex, ROWS_PER_PAGE));
     } else {
       // Фильтрация по дате (последние продажи за выбранный день)
       LocalDateTime startOfDay = currentFilterDate.atStartOfDay();
       LocalDateTime endOfDay = currentFilterDate.plusDays(1).atStartOfDay();
 
-      page = receiptRepository.findByCreatedDate(startOfDay, endOfDay,
+      page = paymentReceiptService.findByCreatedDate(startOfDay, endOfDay,
           PageRequest.of(pageIndex, ROWS_PER_PAGE));
     }
     salesHistoryTable.getItems().setAll(page.getContent());

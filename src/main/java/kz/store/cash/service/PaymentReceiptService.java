@@ -15,6 +15,8 @@ import kz.store.cash.mapper.SalesMapper;
 import kz.store.cash.repository.PaymentReceiptRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +36,10 @@ public class PaymentReceiptService {
     List<Sales> salesList = cart.stream()
         .map(sale -> salesMapper.fromProductItemToSales(sale, paymentReceipt))
         .toList();
+    saveSalesWithPaymentRecipe(paymentReceipt, salesList);
+  }
+
+  private void saveSalesWithPaymentRecipe(PaymentReceipt paymentReceipt, List<Sales> salesList) {
     paymentReceipt.setSalesList(salesList);
     paymentReceiptRepository.save(paymentReceipt);
   }
@@ -57,5 +63,24 @@ public class PaymentReceiptService {
   public List<PaymentReceipt> getDeferredPaymentReceipts() {
     LocalDateTime todayAtMidnight = LocalDate.now().atStartOfDay();
     return paymentReceiptRepository.getAllByReceiptStatusAndCreatedAfter(PENDING, todayAtMidnight);
+  }
+
+  public PaymentReceipt createDeferredPaymentReceipt() {
+    PaymentReceipt paymentReceipt = new PaymentReceipt();
+    paymentReceipt.setReceiptStatus(PENDING);
+    return paymentReceiptRepository.save(paymentReceipt);
+  }
+
+  public void deleteDeferredPaymentReceipt(PaymentReceipt paymentReceipt) {
+    paymentReceiptRepository.deleteById(paymentReceipt.getId());
+  }
+
+  public Page<PaymentReceipt> findByCreatedDate(LocalDateTime start, LocalDateTime end,
+      Pageable pageable) {
+    return paymentReceiptRepository.findByCreatedDate(start, end, pageable);
+  }
+
+  public Page<PaymentReceipt> findById(Long searchId, Pageable pageable) {
+    return paymentReceiptRepository.findById(searchId, pageable);
   }
 }

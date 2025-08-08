@@ -16,7 +16,7 @@ import kz.store.cash.fx.dialog.lib.CancellableDialog;
 import kz.store.cash.fx.model.SalesWithProductName;
 import kz.store.cash.model.enums.PaymentType;
 import kz.store.cash.model.enums.ReceiptStatus;
-import kz.store.cash.repository.SalesRepository;
+import kz.store.cash.service.SalesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -52,13 +52,13 @@ public class ReceiptDetailsController implements CancellableDialog {
   private Button printBtn;
 
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm:ss");
-  private final SalesRepository salesRepository;
+  private final SalesService salesService;
   private final ProductProperties productProperties;
   private final ReceiptPrintService receiptPrintService;
   private final MainViewController mainViewController;
 
   public void sendReceipt(PaymentReceipt receipt) {
-    var sales = salesRepository.findSalesWithProductNames(receipt.getId());
+    var sales = salesService.getSalesByPaymentReceipt(receipt);
     LocalDateTime returnPeriodDate = LocalDateTime.now()
         .minusDays(productProperties.productReturnPeriod());
     cashierLabel.setText("КАССИР: " + productProperties.organizationName());

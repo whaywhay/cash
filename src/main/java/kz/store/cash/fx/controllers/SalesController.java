@@ -92,9 +92,11 @@ public class SalesController {
   private final PauseTransition debounceTimer = new PauseTransition(Duration.millis(300));
   private PriceMode currentPriceMode = PriceMode.ORIGINAL;
   private PaymentSumDetails paymentSumDetails;
+  private PaymentReceipt paymentReceipt;
 
   @FXML
   public void initialize() {
+    log.info("paymentReceipt: {}", paymentReceipt);
     initTableView();
     TableUtils.bindColumnWidths(
         salesTable,
@@ -386,9 +388,16 @@ public class SalesController {
       var loader = dialogBase.loadFXML("/fxml/deferred_receipts_dialog.fxml");
       VBox openedRoot = loader.load();
       DeferredReceiptsDialogController controller = loader.getController();
-      controller.init(null, cart, getDeferredPaymentReceipts());
+      controller.init(paymentReceipt, cart, getDeferredPaymentReceipts());
       dialogBase.createDialogStage(rootPane, openedRoot, controller);
       //To-Do something
+      if(!controller.isDialogClosed()){
+        if(controller.isOpenDeferredPaymentReceipts()){
+          // Переход по отложенному чеку
+        }else{
+          // Создать отложенный чек
+        }
+      }
     } catch (IOException e) {
       log.error("IOException in SalesController.onDeferredReceiptsDialog()", e);
       throw new RuntimeException(e);

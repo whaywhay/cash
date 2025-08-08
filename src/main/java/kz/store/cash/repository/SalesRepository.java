@@ -30,6 +30,10 @@ public interface SalesRepository extends JpaRepository<Sales, Long> {
       """)
   List<SalesWithProductName> findSalesWithProductNames(Long receiptId);
 
-
   List<Sales> getSalesByPaymentReceiptIn(Collection<PaymentReceipt> paymentReceipts);
+
+  void deleteSalesByIdNotInAndPaymentReceipt(Collection<Long> ids, PaymentReceipt paymentReceipt);
+
+  void deleteSalesByPaymentReceipt(PaymentReceipt paymentReceipt);
+
 }

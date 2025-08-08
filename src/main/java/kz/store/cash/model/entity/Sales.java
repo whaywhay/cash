@@ -30,7 +30,7 @@ public class Sales extends BaseEntity {
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+  private Long id;
 
   @Column(name = "barcode")
   private String barcode;

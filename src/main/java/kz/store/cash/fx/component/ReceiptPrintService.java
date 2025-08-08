@@ -15,7 +15,7 @@ import kz.store.cash.config.ProductProperties;
 import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.fx.model.SalesWithProductName;
 import kz.store.cash.model.enums.PaymentType;
-import kz.store.cash.repository.SalesRepository;
+import kz.store.cash.service.SalesService;
 import kz.store.cash.util.UtilAlert;
 import kz.store.cash.util.UtilNumbers;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ReceiptPrintService {
 
-  private final SalesRepository salesRepository;
+  private final SalesService salesService;
   private final ProductProperties productProperties;
   private final UtilAlert utilAlert;
   // Константы ширины строки (для 80мм ленты ≈ 42 символа) - Но я добавил два символа,
@@ -59,8 +59,7 @@ public class ReceiptPrintService {
       sb.append(repeatLineChar()).append("\n");
 
       // --- Список товаров ---
-      List<SalesWithProductName> sales = salesRepository.findSalesWithProductNames(
-          currentReceipt.getId());
+      List<SalesWithProductName> sales = salesService.getSalesByPaymentReceipt(currentReceipt);
       for (SalesWithProductName sale : sales) {
         String productName = sale.productName();
         // Разбиваем название на части по ширине колонки (21 символов)

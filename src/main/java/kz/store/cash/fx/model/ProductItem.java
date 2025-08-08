@@ -8,6 +8,8 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -20,6 +22,10 @@ public class ProductItem {
   private final DoubleProperty price = new SimpleDoubleProperty(); // текущее отображаемое значение
   private final IntegerProperty quantity = new SimpleIntegerProperty(1);
   private final BooleanProperty selected = new SimpleBooleanProperty(false);
+
+  @Getter
+  @Setter
+  private Long salesId;
 
   public ProductItem(String barcode, String productName, double originalPrice, double wholesalePrice) {
     this.barcode.set(barcode);
