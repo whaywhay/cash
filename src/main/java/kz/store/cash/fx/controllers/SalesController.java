@@ -33,8 +33,10 @@ import kz.store.cash.fx.dialog.EditProductDialogController;
 import kz.store.cash.fx.model.PaymentSumDetails;
 import kz.store.cash.fx.model.ProductItem;
 import kz.store.cash.fx.component.BarcodeScannerListener;
+import kz.store.cash.model.CategoryDto;
 import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.model.enums.PriceMode;
+import kz.store.cash.service.CategoryAndProduct1C;
 import kz.store.cash.service.PaymentReceiptService;
 import kz.store.cash.service.ProductService;
 import kz.store.cash.service.SalesService;
@@ -97,6 +99,7 @@ public class SalesController {
   private PaymentSumDetails paymentSumDetails;
   private PaymentReceipt paymentReceipt;
   private final SalesService salesService;
+  private final CategoryAndProduct1C categoryAndProduct1C;
 
   @FXML
   public void initialize() {
@@ -429,5 +432,15 @@ public class SalesController {
   private void setDeferredPaymentReceiptsToUI(PaymentReceipt paymentReceipt) {
     this.paymentReceipt = paymentReceipt;
     deferredPaymentReceipt.setText("Отложенный чек: #" + paymentReceipt.getId());
+  }
+
+  public void onCategoryProductDialog() {
+    var list = categoryAndProduct1C.getCategoryDto();
+    int i = 0;
+    for (CategoryDto category : list) {
+      log.info("#{} - category: {}", i, category);
+      i++;
+    }
+    categoryAndProduct1C.syncCategory();
   }
 }

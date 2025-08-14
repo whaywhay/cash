@@ -17,9 +17,24 @@ logging:
     console: UTF-8
 
 app:
+  http:
+    enable-timeout: true   # отключить таймауты -> false
+    connect-timeout: 10s   # формат Duration: 500ms, 5s, 1m
+    read-timeout: 30s
   product:
     universal-product-barcode: universal-product-200001
-    organization-name: "Мир футляров"
-    cashier-name: "Касса-1"
+    organization-name: ${ORGANIZATION_NAME}
+    cashier-name: ${CASHIER_NAME}
     product-return-period: 14
+
+api:
+  url-basic:
+    category1c:
+      base-url: ${API_CATEGORIES_URL}
+      username: ${API_USERNAME}
+      password: ${API_PASSWORD}
+    product1c:
+      base-url: ${API_PRODUCTS_URL}
+      username: ${API_USERNAME}
+      password: ${API_PASSWORD}
 

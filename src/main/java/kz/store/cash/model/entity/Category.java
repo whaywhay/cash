@@ -26,9 +26,6 @@ public class Category extends BaseEntity {
   @Column(name = "category_name", nullable = false)
   private String categoryName;
 
-  @Column(name = "full_path", nullable = false)
-  private String fullPath;
-
   @Column(name = "parent_category_id")
   private String parentCategoryId;
 

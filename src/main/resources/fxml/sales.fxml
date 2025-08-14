@@ -108,8 +108,11 @@
           GridPane.columnIndex="2" focusTraversable="false"/>
 
         <Button text="УНИВЕРСАЛЬНЫЙ ПРОДУКТ" onAction="#onUniversalProductDialog"
-          styleClass="grid-btn" GridPane.rowIndex="2"
-          GridPane.columnIndex="0" GridPane.columnSpan="2" focusTraversable="false"/>
+          styleClass="grid-btn" GridPane.rowIndex="2" GridPane.columnIndex="0"
+          focusTraversable="false"/>
+        <Button text="КАТЕГОРИЯ ТОВАРОВ" onAction="#onCategoryProductDialog"
+          styleClass="grid-btn" GridPane.rowIndex="2" GridPane.columnIndex="1"
+          focusTraversable="false"/>
         <Button text="-" onAction="#onDecreaseQuantity" styleClass="grid-btn" GridPane.rowIndex="2"
           GridPane.columnIndex="2" focusTraversable="false"/>
 
