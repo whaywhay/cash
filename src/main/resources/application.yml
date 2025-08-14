@@ -19,7 +19,7 @@ logging:
 app:
   http:
     enable-timeout: true   # отключить таймауты -> false
-    connect-timeout: 10s   # формат Duration: 500ms, 5s, 1m
+    connect-timeout: 10s
     read-timeout: 30s
   product:
     universal-product-barcode: universal-product-200001
