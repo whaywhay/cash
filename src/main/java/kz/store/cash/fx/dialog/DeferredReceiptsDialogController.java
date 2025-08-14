@@ -10,7 +10,7 @@ import kz.store.cash.fx.dialog.lib.CancellableDialog;
 import kz.store.cash.fx.model.ProductItem;
 import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.model.entity.Sales;
-import kz.store.cash.service.SalesService;
+import kz.store.cash.service.PaymentReceiptService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,27 +35,32 @@ public class DeferredReceiptsDialogController implements CancellableDialog {
   private PaymentReceipt paymentReceipt;
   private boolean openDeferredPaymentReceipts = false;
   private boolean dialogClosed = false;
-  private final SalesService salesService;
+  private final PaymentReceiptService paymentReceiptService;
 
 
-  public void init(PaymentReceipt currentPaymentReceiptId, List<ProductItem> currentCart,
+  public void init(PaymentReceipt currentPaymentReceipt, List<ProductItem> currentCart,
       List<PaymentReceipt> deferredReceipts) {
     paymentReceipt = null;
     salesList = null;
     plusButton.setOnAction(e -> {
       openDeferredPaymentReceipts = false;
-      salesService.mergeDeferredPaymentReceipts(currentPaymentReceiptId, currentCart);
-      log.info("Добавление нового отложенного чека");
+      dialogClosed = false;
+      paymentReceiptService.mergeDeferredPaymentReceipts(currentPaymentReceipt, currentCart);
       handleClose();
     });
 
     for (PaymentReceipt deferredPaymentReceipt : deferredReceipts) {
-      Button receiptButton = createDeferredReceiptButton(deferredPaymentReceipt);
-      buttonPane.getChildren().add(receiptButton);
+      if (currentPaymentReceipt == null || !currentPaymentReceipt.getId()
+          .equals(deferredPaymentReceipt.getId())) {
+        Button receiptButton = createDeferredReceiptButton(deferredPaymentReceipt,
+            currentPaymentReceipt, currentCart);
+        buttonPane.getChildren().add(receiptButton);
+      }
     }
   }
 
-  private Button createDeferredReceiptButton(PaymentReceipt deferredPaymentReceipt) {
+  private Button createDeferredReceiptButton(PaymentReceipt deferredPaymentReceipt,
+      PaymentReceipt currentPaymentReceipt, List<ProductItem> currentCart) {
     String title = "Чек : " + deferredPaymentReceipt.getId();
     Button receiptButton = new Button(title);
     receiptButton.setPrefSize(120, 60);
@@ -66,7 +71,8 @@ public class DeferredReceiptsDialogController implements CancellableDialog {
       // логика загрузки отложенного чека
       paymentReceipt = deferredPaymentReceipt;
       openDeferredPaymentReceipts = true;
-      log.info("Открытие чека: {}", deferredPaymentReceipt.getId());
+      dialogClosed = false;
+      paymentReceiptService.mergeDeferredPaymentReceipts(currentPaymentReceipt, currentCart);
       handleClose();
     });
     return receiptButton;

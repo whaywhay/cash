@@ -30,7 +30,6 @@ import kz.store.cash.fx.model.SalesWithProductName;
 import kz.store.cash.mapper.ProductMapper;
 import kz.store.cash.model.enums.PaymentType;
 import kz.store.cash.service.PaymentReceiptService;
-import kz.store.cash.service.SalesService;
 import kz.store.cash.util.TableUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -90,7 +89,6 @@ public class TransactionReturnController implements TabController {
   private final ProductMapper productMapper;
   private final DialogBase dialogBase;
   private final PaymentReceiptService paymentReceiptService;
-  private final SalesService salesService;
 
   @FXML
   public void initialize() {
@@ -222,7 +220,7 @@ public class TransactionReturnController implements TabController {
     receiptPaymentDateLabel.setText(formatter.format(receipt.getCreated()));
     receiptPaymentDateLabel.setVisible(true);
     cart.clear();
-    returnSales = salesService.subtractReturnedSales(receipt, salesWithProductNames);
+    returnSales = paymentReceiptService.subtractReturnedSales(receipt, salesWithProductNames);
     returnPayment = receipt;
     configureButton(receipt);
     if (returnSales != null && returnSales.isEmpty()) {

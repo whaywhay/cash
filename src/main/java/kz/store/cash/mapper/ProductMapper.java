@@ -38,6 +38,7 @@ public interface ProductMapper {
   @Mapping(target = "wholesalePrice", source = "wholesalePrice", qualifiedByName = "bigDecimalToDouble")
   @Mapping(target = "price", source = "soldPrice", qualifiedByName = "bigDecimalToDouble")
   @Mapping(target = "quantity", source = "quantity")
+  @Mapping(target = "salesId", source = "id")
   ProductItem toProductItem(SalesWithProductName sale);
 
 }

@@ -26,6 +26,7 @@
       </TextField>
       <!--      <Button fx:id="keyBoardButton" onAction="#" text="KeyBoard" focusTraversable="false"/>-->
       <Label fx:id="matchStatusIcon"/>
+      <Label fx:id="deferredPaymentReceipt"/>
       <BorderPane.margin>
         <Insets left="10.0"/>
       </BorderPane.margin>

@@ -37,6 +37,7 @@ import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.model.enums.PriceMode;
 import kz.store.cash.service.PaymentReceiptService;
 import kz.store.cash.service.ProductService;
+import kz.store.cash.service.SalesService;
 import kz.store.cash.util.TableUtils;
 import kz.store.cash.util.UtilAlert;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +56,8 @@ public class SalesController {
   public Label priceHeaderLabel;
   @FXML
   public BorderPane rootPane;
+  @FXML
+  public Label deferredPaymentReceipt;
   @FXML
   private TableView<ProductItem> salesTable;
   @FXML
@@ -93,6 +96,7 @@ public class SalesController {
   private PriceMode currentPriceMode = PriceMode.ORIGINAL;
   private PaymentSumDetails paymentSumDetails;
   private PaymentReceipt paymentReceipt;
+  private final SalesService salesService;
 
   @FXML
   public void initialize() {
@@ -309,7 +313,13 @@ public class SalesController {
 
   private void processPaymentSuccess(PaymentSumDetails paymentSumDetails) {
     try {
-      paymentReceiptService.processPaymentSave(paymentSumDetails, cart);
+      if (paymentReceipt == null) {
+        paymentReceiptService.processPaymentSave(paymentSumDetails, cart);
+      } else {
+        paymentReceiptService.processPaymentSaveWithDeferredPayment(paymentReceipt,
+            paymentSumDetails, cart);
+        refreshDeferredPaymentReceiptsUI();
+      }
       cart.clear();
       updatePaymentDetailSumLabel(paymentSumDetails);
       salesTable.requestFocus();
@@ -390,12 +400,15 @@ public class SalesController {
       DeferredReceiptsDialogController controller = loader.getController();
       controller.init(paymentReceipt, cart, getDeferredPaymentReceipts());
       dialogBase.createDialogStage(rootPane, openedRoot, controller);
-      //To-Do something
-      if(!controller.isDialogClosed()){
-        if(controller.isOpenDeferredPaymentReceipts()){
-          // Переход по отложенному чеку
-        }else{
-          // Создать отложенный чек
+      if (!controller.isDialogClosed()) {
+        if (controller.isOpenDeferredPaymentReceipts()) {
+          var saleList = salesService.getSalesByPaymentReceipt(controller.getPaymentReceipt());
+          cart.clear();
+          cart.addAll(salesCartService.getMapSalesToProductItem(saleList));
+          setDeferredPaymentReceiptsToUI(controller.getPaymentReceipt());
+        } else {
+          cart.clear();
+          refreshDeferredPaymentReceiptsUI();
         }
       }
     } catch (IOException e) {
@@ -406,5 +419,15 @@ public class SalesController {
 
   private List<PaymentReceipt> getDeferredPaymentReceipts() {
     return paymentReceiptService.getDeferredPaymentReceipts();
+  }
+
+  private void refreshDeferredPaymentReceiptsUI() {
+    paymentReceipt = null;
+    deferredPaymentReceipt.setText("");
+  }
+
+  private void setDeferredPaymentReceiptsToUI(PaymentReceipt paymentReceipt) {
+    this.paymentReceipt = paymentReceipt;
+    deferredPaymentReceipt.setText("Отложенный чек: #" + paymentReceipt.getId());
   }
 }
