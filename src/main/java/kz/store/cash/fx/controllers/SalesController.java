@@ -24,6 +24,8 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import kz.store.cash.fx.component.SalesCartService;
 import kz.store.cash.fx.component.TableViewProductConfigService;
+import kz.store.cash.fx.dialog.AdditionalFunctionDialogController;
+import kz.store.cash.fx.dialog.CategoryProductDialogController;
 import kz.store.cash.fx.dialog.DeferredReceiptsDialogController;
 import kz.store.cash.fx.dialog.QuantitySetDialogController;
 import kz.store.cash.fx.dialog.UniversalProductDialogController;
@@ -33,10 +35,8 @@ import kz.store.cash.fx.dialog.EditProductDialogController;
 import kz.store.cash.fx.model.PaymentSumDetails;
 import kz.store.cash.fx.model.ProductItem;
 import kz.store.cash.fx.component.BarcodeScannerListener;
-import kz.store.cash.model.CategoryDto;
 import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.model.enums.PriceMode;
-import kz.store.cash.service.CategoryAndProduct1C;
 import kz.store.cash.service.PaymentReceiptService;
 import kz.store.cash.service.ProductService;
 import kz.store.cash.service.SalesService;
@@ -99,7 +99,6 @@ public class SalesController {
   private PaymentSumDetails paymentSumDetails;
   private PaymentReceipt paymentReceipt;
   private final SalesService salesService;
-  private final CategoryAndProduct1C categoryAndProduct1C;
 
   @FXML
   public void initialize() {
@@ -398,7 +397,7 @@ public class SalesController {
   @FXML
   public void onDeferredReceiptsDialog() {
     try {
-      var loader = dialogBase.loadFXML("/fxml/deferred_receipts_dialog.fxml");
+      var loader = dialogBase.loadFXML("/fxml/sales/deferred_receipts_dialog.fxml");
       VBox openedRoot = loader.load();
       DeferredReceiptsDialogController controller = loader.getController();
       controller.init(paymentReceipt, cart, getDeferredPaymentReceipts());
@@ -435,12 +434,27 @@ public class SalesController {
   }
 
   public void onCategoryProductDialog() {
-    var list = categoryAndProduct1C.getCategoryDto();
-    int i = 0;
-    for (CategoryDto category : list) {
-      log.info("#{} - category: {}", i, category);
-      i++;
+    try {
+      var loader = dialogBase.loadFXML("/fxml/sales/category_product_browser.fxml");
+      VBox openedRoot = loader.load();
+      CategoryProductDialogController controller = loader.getController();
+      controller.init(currentPriceMode, this::addOrUpdateProduct); // передаём режим цен и коллбек
+      dialogBase.createDialogStage(rootPane, openedRoot, controller);
+    } catch (IOException e) {
+      log.error("IOException in SalesController.onCategoryProductDialog()", e);
+      throw new RuntimeException(e);
     }
-    categoryAndProduct1C.syncCategory();
+  }
+
+  public void onAdditionalFunctionDialog() {
+    try {
+      var loader = dialogBase.loadFXML("/fxml/sales/additional_function_dialog.fxml");
+      VBox openedRoot = loader.load();
+      AdditionalFunctionDialogController controller = loader.getController();
+      dialogBase.createDialogStage(rootPane, openedRoot, controller);
+    } catch (IOException e) {
+      log.error("IOException in SalesController.onAdditionalFunctionDialog()", e);
+      throw new RuntimeException(e);
+    }
   }
 }

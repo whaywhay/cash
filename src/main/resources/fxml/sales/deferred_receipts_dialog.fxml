@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.Region?>
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
   fx:controller="kz.store.cash.fx.dialog.DeferredReceiptsDialogController"
-  spacing="10" alignment="TOP_CENTER" stylesheets="@styles.css" styleClass="dialog-pane">
+  spacing="10" alignment="TOP_CENTER" stylesheets="@../styles.css" styleClass="dialog-pane">
 
   <FlowPane fx:id="buttonPane" hgap="10" vgap="10" maxWidth="750" maxHeight="520"
     style="-fx-padding: 10;">

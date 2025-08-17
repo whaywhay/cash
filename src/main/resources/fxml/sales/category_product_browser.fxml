@@ -1,0 +1,30 @@
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Label?>
+<?import javafx.geometry.Insets?>
+<VBox xmlns="http://javafx.com/javafx"  xmlns:fx="http://javafx.com/fxml"
+  fx:id="categoryProductBrowserPane"
+  fx:controller="kz.store.cash.fx.dialog.CategoryProductDialogController"
+  spacing="10" styleClass="dialog-pane" stylesheets="@../styles.css">
+
+  <!-- Хлебные крошки + Назад -->
+  <HBox spacing="10" alignment="CENTER_LEFT" VBox.vgrow="NEVER">
+    <Button fx:id="backBtn" text="← Назад" onAction="#onBack" />
+    <HBox fx:id="breadcrumbs" spacing="6"/>
+    <Region HBox.hgrow="ALWAYS"/>
+    <TextField fx:id="searchField" promptText="Поиск в текущей папке..."/>
+  </HBox>
+  <!-- Список элементов (категории + товары) -->
+  <ListView fx:id="itemsList" VBox.vgrow="ALWAYS">
+    <placeholder><Label text="Пусто"/></placeholder>
+  </ListView>
+  <!-- Низ -->
+  <HBox spacing="10" alignment="CENTER_RIGHT">
+    <Button text="Закрыть" onAction="#onClose" />
+  </HBox>
+  <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+</VBox>

@@ -18,6 +18,7 @@ import kz.store.cash.fx.model.PaymentSumDetails;
 import kz.store.cash.fx.model.ProductItem;
 import kz.store.cash.mapper.PaymentReceiptMapper;
 import kz.store.cash.mapper.SalesMapper;
+import kz.store.cash.model.enums.ReceiptStatus;
 import kz.store.cash.repository.PaymentReceiptRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -191,5 +192,9 @@ public class PaymentReceiptService {
         salesService.saveSale(salesMapper.fromProductItemToSales(productItem, receipt));
       }
     }
+  }
+
+  public PaymentReceipt getNewestSalePaymentReceipt() {
+    return paymentReceiptRepository.getFirstByReceiptStatusOrderByIdDesc(ReceiptStatus.SALE);
   }
 }

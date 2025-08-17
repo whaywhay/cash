@@ -30,4 +30,6 @@ public interface PaymentReceiptRepository extends JpaRepository<PaymentReceipt, 
 
   List<PaymentReceipt> getAllByReceiptStatusAndCreatedAfter(ReceiptStatus receiptStatus,
       LocalDateTime createdAfter);
+
+  PaymentReceipt getFirstByReceiptStatusOrderByIdDesc(ReceiptStatus receiptStatus);
 }
