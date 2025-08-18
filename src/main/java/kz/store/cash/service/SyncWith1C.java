@@ -13,14 +13,14 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import kz.store.cash.config.ApiUrlProperties;
+import kz.store.cash.fx.component.UiNotificationService;
+import kz.store.cash.handler.BusinessException;
 import kz.store.cash.mapper.CategoryMapper;
 import kz.store.cash.mapper.ProductMapper;
 import kz.store.cash.model.CategoryDto;
 import kz.store.cash.model.ProductDto;
 import kz.store.cash.model.entity.Category;
 import kz.store.cash.model.entity.Product;
-import kz.store.cash.repository.CategoryRepository;
-import kz.store.cash.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -31,14 +31,15 @@ import org.springframework.web.client.RestClient;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CategoryAndProduct1C {
+public class SyncWith1C {
 
   private final RestClient restClient;
   private final ApiUrlProperties apiUrlProperties;
-  private final CategoryRepository categoryRepository;
-  private final ProductRepository productRepository;
+  private final CategoryService categoryService;
+  private final ProductService productService;
   private final CategoryMapper categoryMapper;
   private final ProductMapper productMapper;
+  private final UiNotificationService uiNotificationService;
 
   private static final ParameterizedTypeReference<List<CategoryDto>> CATEGORY_LIST_TYPE =
       new ParameterizedTypeReference<>() {
@@ -52,8 +53,7 @@ public class CategoryAndProduct1C {
   public void syncCategory() {
     var categoryDtoList = Optional.ofNullable(getCategoryDto()).orElseGet(List::of);
     if (categoryDtoList.isEmpty()) {
-      log.warn("Категории из 1С не получены или пусты");
-      return;
+      throw new BusinessException("Категории из 1С не получены или пусты");
     }
     //Собираем в Map по categoryId и CategoryDto и пропускаем через фильтр
     Map<String, CategoryDto> categoryDtosByCodeMap = categoryDtoList.stream()
@@ -62,7 +62,7 @@ public class CategoryAndProduct1C {
         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
             (a, b) -> a, LinkedHashMap::new));
     // Вытаскиваем с таблицы category все совпадающие с CategoryDto.categoryId одним запросом
-    Map<String, Category> existingCategoryByCodeMap = categoryRepository.findAllByCategoryCodeIn(
+    Map<String, Category> existingCategoryByCodeMap = categoryService.findAllByCategoryCodeIn(
             categoryDtosByCodeMap.keySet())
         .stream()
         .collect(Collectors.toMap(Category::getCategoryCode, Function.identity()));
@@ -81,19 +81,19 @@ public class CategoryAndProduct1C {
         .toList();
 
     if (!newCategoryList.isEmpty()) {
-      categoryRepository.saveAll(newCategoryList);
+      categoryService.saveAll(newCategoryList);
     }
-
-    log.info("Category sync: created={}, updated={}, categoryDto={}",
+    String info = String.format("Category sync: created=%d, updated=%d, categoryDto=%d",
         newCategoryList.size(), updatedCount, categoryDtoList.size());
+    log.info(info);
+    uiNotificationService.showInfo(info);
   }
 
   @Transactional
   public void syncProduct() {
     var productDtoList = Optional.ofNullable(getProductDto()).orElseGet(List::of);
     if (productDtoList.isEmpty()) {
-      log.warn("Продукты из 1С не получены или пусты");
-      return;
+      throw new BusinessException("Продукты из 1С не получены или пусты");
     }
     //Собираем в Map по barcode и ProductDto и пропускаем через фильтр
     Map<String, ProductDto> productDtosByBarcodeMap = productDtoList.stream()
@@ -106,17 +106,17 @@ public class CategoryAndProduct1C {
     // Собираем в Set<String> нужные category_code из List<productDto>
     Set<String> categoryCodesInProductDtos = productDtosByBarcodeMap.values().stream()
         .map(ProductDto::categoryRefId)
-        .map(CategoryAndProduct1C::trimToNull)
+        .map(SyncWith1C::trimToNull)
         .filter(Objects::nonNull)
         .collect(Collectors.toSet());
     // Вытаскиваем с таблицы category все совпадающие
     // с ProductDto.categoryRefId(Set<String> categoryCodesInProductDtos) одним запросом
     Map<String, Category> categoriesByCode = categoryCodesInProductDtos.isEmpty()
-        ? Map.of() : categoryRepository.findAllByCategoryCodeIn(categoryCodesInProductDtos).stream()
+        ? Map.of() : categoryService.findAllByCategoryCodeIn(categoryCodesInProductDtos).stream()
         .collect(Collectors.toMap(Category::getCategoryCode, Function.identity()));
     // Вытаскиваем с таблицы product все совпадающие по ProductDto.barcode одним запросом
     Map<String, Product> existingProductsByBarcode = productDtosByBarcodeMap.isEmpty()
-        ? Map.of() : productRepository.findByBarcodeIn(productDtosByBarcodeMap.keySet()).stream()
+        ? Map.of() : productService.findByBarcodeIn(productDtosByBarcodeMap.keySet()).stream()
         .collect(Collectors.toMap(Product::getBarcode, Function.identity()));
 
     // Сколько пропущено из-за отсутствующей категории (если categoryCode указан, а category не найдена)
@@ -166,11 +166,14 @@ public class CategoryAndProduct1C {
         .toList();
 
     if (!newProductList.isEmpty()) {
-      productRepository.saveAll(newProductList);
+      productService.saveAll(newProductList);
     }
 
-    log.info("Product sync: created={}, updated={}, skippedNoCategory={}, totalInPayload={}",
+    String info = String.format(
+        "Product sync: created=%d, updated=%d, skippedNoCategory=%d, totalInPayload=%d",
         newProductList.size(), updatedCount, skippedNoCategoryCount, productDtoList.size());
+    log.info(info);
+    uiNotificationService.showInfo(info);
   }
 
   private static String nullToEmpty(String s) {

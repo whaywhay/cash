@@ -1,0 +1,29 @@
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.Button?>
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+  fx:controller="kz.store.cash.fx.dialog.QuickProductsDialogController"
+  fx:id="root"
+  spacing="10" stylesheets="@../styles.css" styleClass="dialog-pane">
+
+  <Label text="Быстрые товары"/>
+
+  <ListView fx:id="itemsList" VBox.vgrow="ALWAYS">
+    <placeholder><Label text="Пока пусто"/></placeholder>
+  </ListView>
+
+  <HBox spacing="10" alignment="CENTER_RIGHT">
+    <!-- Кнопки сортировки пока скрыты/неактивны, пока ничего по ним не работает -->
+    <!--
+    <Button fx:id="upBtn" text="Вверх" disable="true"/>
+    <Button fx:id="downBtn" text="Вниз" disable="true"/>
+    -->
+    <Region HBox.hgrow="ALWAYS"/>
+    <Button fx:id="removeBtn" text="Убрать из быстрых" disable="true"/>
+    <Button fx:id="chooseBtn" text="Выбрать" defaultButton="true" disable="true"/>
+    <Button fx:id="closeBtn" text="Закрыть" cancelButton="true"/>
+  </HBox>
+</VBox>

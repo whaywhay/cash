@@ -31,6 +31,10 @@ public class UiNotificationService {
     showNotification(message, "#FF9800");
   }
 
+  public void showInfo(String message) {
+    showNotification(message, "#388E3C");
+  }
+
   public void showValidationError(String message) {
     showNotification(message, "#1976D2");
   }
@@ -44,19 +48,15 @@ public class UiNotificationService {
       if (notificationStage == null) {
         initNotificationStage();
       }
-
       // Очистить старое сообщение
       notificationContainer.getChildren().clear();
-
       // Создать новое уведомление
       StackPane box = createNotificationBox(message, bgColor);
       notificationContainer.getChildren().add(box);
-
       // Остановить предыдущий таймер, если был
       if (hideTimeline != null) {
         hideTimeline.stop();
       }
-
       // Авто-скрытие через 3 секунды
       hideTimeline = new Timeline(
           new KeyFrame(Duration.seconds(3), ev -> notificationStage.hide()));

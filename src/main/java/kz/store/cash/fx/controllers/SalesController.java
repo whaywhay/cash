@@ -28,6 +28,7 @@ import kz.store.cash.fx.dialog.AdditionalFunctionDialogController;
 import kz.store.cash.fx.dialog.CategoryProductDialogController;
 import kz.store.cash.fx.dialog.DeferredReceiptsDialogController;
 import kz.store.cash.fx.dialog.QuantitySetDialogController;
+import kz.store.cash.fx.dialog.QuickProductsDialogController;
 import kz.store.cash.fx.dialog.UniversalProductDialogController;
 import kz.store.cash.fx.dialog.lib.DialogBase;
 import kz.store.cash.fx.dialog.payments.PaymentDialogController;
@@ -454,6 +455,19 @@ public class SalesController {
       dialogBase.createDialogStage(rootPane, openedRoot, controller);
     } catch (IOException e) {
       log.error("IOException in SalesController.onAdditionalFunctionDialog()", e);
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void onQuickProductsDialog() {
+    try {
+      var loader = dialogBase.loadFXML("/fxml/sales/quick_products_dialog.fxml");
+      VBox openedRoot = loader.load();
+      QuickProductsDialogController controller = loader.getController();
+      controller.init(currentPriceMode, this::addOrUpdateProduct);
+      dialogBase.createDialogStage(rootPane, openedRoot, controller);
+    } catch (IOException e) {
+      log.error("IOException in SalesController.onQuickProductsDialog()", e);
       throw new RuntimeException(e);
     }
   }

@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 import kz.store.cash.fx.component.FxAsyncRunner;
 import kz.store.cash.fx.component.ReceiptPrintService;
 import kz.store.cash.fx.dialog.lib.CancellableDialog;
-import kz.store.cash.service.CategoryAndProduct1C;
+import kz.store.cash.service.SyncWith1C;
 import kz.store.cash.service.PaymentReceiptService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ public class AdditionalFunctionDialogController implements CancellableDialog {
 
   private final PaymentReceiptService paymentReceiptService;
   private final ReceiptPrintService receiptPrintService;
-  private final CategoryAndProduct1C categoryAndProduct1C;
+  private final SyncWith1C syncWith1C;
   private final FxAsyncRunner fxAsyncRunner;
 
   @Override
@@ -47,6 +47,6 @@ public class AdditionalFunctionDialogController implements CancellableDialog {
 
   public void onSyncWith1C() {
     fxAsyncRunner.runWithLoader(
-        additionalFunctionPane, "Синхронизация с 1С…", categoryAndProduct1C::syncAll1C);
+        additionalFunctionPane, "Синхронизация с 1С…", syncWith1C::syncAll1C);
   }
 }
