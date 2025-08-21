@@ -75,6 +75,13 @@ public class PaymentReceipt extends BaseEntity {
   @ToString.Exclude
   private PaymentReceipt originalReceipt;
 
+  /** Текущая смена, в рамках которой создан чек */
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "cash_shift_id")
+  @ToString.Exclude
+  private CashShift cashShift;
+
+
   @OneToMany(mappedBy = "paymentReceipt", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @ToString.Exclude
   private List<Sales> salesList;

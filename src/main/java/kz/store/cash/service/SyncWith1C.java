@@ -86,7 +86,7 @@ public class SyncWith1C {
     String info = String.format("Category sync: created=%d, updated=%d, categoryDto=%d",
         newCategoryList.size(), updatedCount, categoryDtoList.size());
     log.info(info);
-    uiNotificationService.showInfo(info);
+    uiNotificationService.showInfo("Категории за синхронизированы");
   }
 
   @Transactional
@@ -95,14 +95,15 @@ public class SyncWith1C {
     if (productDtoList.isEmpty()) {
       throw new BusinessException("Продукты из 1С не получены или пусты");
     }
-    //Собираем в Map по barcode и ProductDto и пропускаем через фильтр
-    Map<String, ProductDto> productDtosByBarcodeMap = productDtoList.stream()
-        .filter(prodDto -> prodDto.barcode() != null && !prodDto.barcode().isEmpty())
-        .map(d -> Map.entry(d.barcode(), d))
-        .collect(Collectors.toMap(
-            Map.Entry::getKey, Map.Entry::getValue,
-            (a, b) -> a, LinkedHashMap::new));
-
+    //Собираем в Map productDtosByBarcodeMap по barcode и ProductDto и пропускаем через фильтр
+    Map<String, ProductDto> productDtosByBarcodeMap = new LinkedHashMap<>();
+    for (var productDto : productDtoList) {
+      var barcode = productDto.barcode();
+      if (barcode == null || barcode.isBlank()) {
+        continue;
+      }
+      productDtosByBarcodeMap.putIfAbsent(barcode.strip(), productDto);
+    }
     // Собираем в Set<String> нужные category_code из List<productDto>
     Set<String> categoryCodesInProductDtos = productDtosByBarcodeMap.values().stream()
         .map(ProductDto::categoryRefId)
@@ -173,7 +174,7 @@ public class SyncWith1C {
         "Product sync: created=%d, updated=%d, skippedNoCategory=%d, totalInPayload=%d",
         newProductList.size(), updatedCount, skippedNoCategoryCount, productDtoList.size());
     log.info(info);
-    uiNotificationService.showInfo(info);
+    uiNotificationService.showInfo("Продукты за синхронизированы");
   }
 
   private static String nullToEmpty(String s) {

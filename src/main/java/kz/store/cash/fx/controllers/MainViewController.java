@@ -32,10 +32,13 @@ public class MainViewController {
   public Tab salesHistoryTab;
   @FXML
   public Tab returnTab;
+  @FXML
+  public Tab adminTab;
 
   // Кэшируем контент и контроллеры для каждой вкладки
   private final Map<Tab, Node> tabContentCache = new HashMap<>();
   private final Map<Tab, Object> tabControllerCache = new HashMap<>();
+
 
   @FXML
   public void initialize() {
