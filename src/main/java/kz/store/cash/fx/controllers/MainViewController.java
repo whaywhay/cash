@@ -12,8 +12,10 @@ import javafx.scene.control.TabPane;
 import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.fx.controllers.lib.TabController;
 import kz.store.cash.fx.model.SalesWithProductName;
+import kz.store.cash.security.AuthEvents;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -35,22 +37,43 @@ public class MainViewController {
   @FXML
   public Tab adminTab;
 
-  // Кэшируем контент и контроллеры для каждой вкладки
+  // ленивое кеширование контента и контроллеров
   private final Map<Tab, Node> tabContentCache = new HashMap<>();
   private final Map<Tab, Object> tabControllerCache = new HashMap<>();
 
+  // текущее состояние авторизации (без завязки на конкретный класс пользователя)
+  private boolean loggedIn = false;
+  private boolean isAdmin = false;
 
   @FXML
   public void initialize() {
-    tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab)
-        -> tabInitialize(newTab));
+    // изначально считаем, что пользователь не залогинен
+    applyAuthState(false, false);
 
-    // Инициализация первой вкладки
-    tabInitialize(tabPane.getSelectionModel().getSelectedItem());
+    // слушаем смену вкладок — инициализируем контент только когда вкладка активируется
+    tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
+      // если по какой-то причине оказались на недоступной вкладке — вернёмся на “Смена”
+      if (newTab != null && newTab.isDisable()) {
+        tabPane.getSelectionModel().select(shiftChangeTab);
+        return;
+      }
+      tabInitialize(newTab);
+    });
+
+    // при старте явно активируем "Смена"
+    tabPane.getSelectionModel().select(shiftChangeTab);
+    tabInitialize(shiftChangeTab);
   }
 
+  /**
+   * Открыть вкладку "Возврат" и подать туда данные.
+   */
   public void openReturnTab(PaymentReceipt receipt, List<SalesWithProductName> sales) {
-    // Загружаем вкладку Возврат, если она не инициализирована
+    // если нет доступа к вкладке — игнорируем
+    if (returnTab.isDisable()) {
+      return;
+    }
+
     if (!tabControllerCache.containsKey(returnTab)) {
       tabInitialize(returnTab);
     }
@@ -61,17 +84,68 @@ public class MainViewController {
     tabPane.getSelectionModel().select(returnTab);
   }
 
+  /**
+   * Реагируем на успешный вход.
+   */
+  @EventListener
+  public void onLogin(AuthEvents.LoginSuccess ev) {
+    this.loggedIn = true;
+
+    // определяем админ-ли это. Универсально: сравниваем строково, чтобы не зависеть от enum-класса.
+    String role = String.valueOf(ev.getSource().getRole()); // getRole() может вернуть enum/строку
+    this.isAdmin = "ADMIN".equalsIgnoreCase(role);
+
+    applyAuthState(true, this.isAdmin);
+
+    // по UX — сразу на "Продажи"; если хотите оставаться на "Смена", просто закомментируйте строку ниже
+    tabPane.getSelectionModel().select(salesTab);
+  }
+
+  /**
+   * Реагируем на выход.
+   */
+  @EventListener
+  public void onLogout(AuthEvents.Logout ev) {
+    this.loggedIn = false;
+    this.isAdmin = false;
+    applyAuthState(false, false);
+
+    // возвращаем на "Смена"
+    tabPane.getSelectionModel().select(shiftChangeTab);
+  }
+
+  /**
+   * Включение/отключение вкладок в зависимости от роли.
+   */
+  private void applyAuthState(boolean loggedIn, boolean admin) {
+    // “Смена” — всегда доступна
+    shiftChangeTab.setDisable(false);
+
+    // Все рабочие вкладки — только после логина
+    salesTab.setDisable(!loggedIn);
+    returnTab.setDisable(!loggedIn);
+    salesHistoryTab.setDisable(!loggedIn);
+
+    tabPane.getTabs().remove(adminTab);
+
+    if (loggedIn && admin) {
+      tabPane.getTabs().add(adminTab);
+    }
+  }
 
   private void tabInitialize(Tab newTab) {
     if (newTab == null) {
       return;
     }
+    if (newTab.isDisable()) {
+      return; // на всякий случай
+    }
 
     try {
-      // Загружаем FXML и контроллер, если вкладка ещё не инициализирована
       if (!tabContentCache.containsKey(newTab)) {
         String fxmlPath = getFxmlPath(newTab);
-        if (fxmlPath == null) {
+        if (fxmlPath == null || fxmlPath.isBlank()) {
+          // нет FXML — оставляем вкладку пустой
           return;
         }
 
@@ -80,12 +154,12 @@ public class MainViewController {
 
         Node content = loader.load();
         Object controller = loader.getController();
+
         tabContentCache.put(newTab, content);
         tabControllerCache.put(newTab, controller);
 
         newTab.setContent(content);
       }
-      // Вызываем onTabSelected() у контроллера (если он реализует интерфейс)
       Object controller = tabControllerCache.get(newTab);
       if (controller instanceof TabController tabController) {
         tabController.onTabSelected();
@@ -96,7 +170,7 @@ public class MainViewController {
   }
 
   /**
-   * Возвращает путь к FXML для конкретной вкладки
+   * Маршрутизация FXML-файлов для вкладок.
    */
   private String getFxmlPath(Tab tab) {
     if (tab == salesTab) {
@@ -110,6 +184,9 @@ public class MainViewController {
     }
     if (tab == salesHistoryTab) {
       return "/fxml/sale_history.fxml";
+    }
+    if (tab == adminTab) {
+      return "/fxml/admin.fxml"; // <-- создайте FXML, либо верните null пока не нужен
     }
     return null;
   }
