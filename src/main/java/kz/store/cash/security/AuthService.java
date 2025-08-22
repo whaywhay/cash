@@ -18,13 +18,13 @@ public class AuthService {
 
   public void login(String username, String rawPassword) {
     User user = userService.findByUsername(username)
-        .orElseThrow(() -> new IllegalArgumentException("Пользователь не найден"));
+        .orElseThrow(() -> new IllegalArgumentException("Неверный логин или пароль"));
 
     if (!user.isActive()) {
       throw new IllegalStateException("Пользователь заблокирован");
     }
     if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
-      throw new IllegalArgumentException("Неверный пароль");
+      throw new IllegalArgumentException("Неверный логин или пароль");
     }
     currentUserStore.set(user);
     events.publishEvent(new AuthEvents.LoginSuccess(user));

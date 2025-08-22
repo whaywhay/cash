@@ -1,0 +1,125 @@
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.Tab?>
+
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.CheckBox?>
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="kz.store.cash.fx.controllers.AdminController"
+  stylesheets="@styles.css">
+  <center>
+    <TabPane tabClosingPolicy="UNAVAILABLE">
+      <!-- TAB: Пользователи -->
+      <Tab text="Пользователи">
+        <SplitPane dividerPositions="0.55">
+          <!-- ЛЕВО: таблица -->
+          <VBox spacing="8" style="-fx-padding: 12;">
+            <HBox spacing="8">
+              <TextField fx:id="searchUserField" promptText="Поиск по логину/имени" />
+              <Button text="Найти" onAction="#onSearchUsers"/>
+              <Region HBox.hgrow="ALWAYS"/>
+              <Button text="Обновить" onAction="#onRefreshUsers"/>
+            </HBox>
+
+            <TableView fx:id="userTable" VBox.vgrow="ALWAYS">
+              <columns>
+                <TableColumn fx:id="colUserId" text="ID" prefWidth="60"/>
+                <TableColumn fx:id="colUsername" text="Логин" prefWidth="150"/>
+                <TableColumn fx:id="colDisplayName" text="Имя" prefWidth="180"/>
+                <TableColumn fx:id="colRole" text="Роль" prefWidth="120"/>
+                <TableColumn fx:id="colActive" text="Активен" prefWidth="90"/>
+              </columns>
+              <placeholder>
+                <Label text="Нет пользователей"/>
+              </placeholder>
+            </TableView>
+          </VBox>
+
+          <!-- ПРАВО: форма -->
+          <VBox spacing="10" style="-fx-padding: 12;">
+            <TitledPane text="Данные пользователя">
+              <GridPane hgap="8" vgap="8" style="-fx-padding: 8;">
+                <columnConstraints>
+                  <ColumnConstraints minWidth="120" halignment="RIGHT"/>
+                  <ColumnConstraints hgrow="ALWAYS"/>
+                </columnConstraints>
+
+                <Label text="ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="userIdField" GridPane.rowIndex="0" GridPane.columnIndex="1" editable="false"/>
+
+                <Label text="Логин:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextField fx:id="usernameField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Имя (отображаемое):" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <TextField fx:id="displayNameField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <Label text="Роль:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <ComboBox fx:id="roleCombo" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+
+                <Label text="Пароль:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                <PasswordField fx:id="passwordField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                <Label text="Пароль (повтор):" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                <PasswordField fx:id="password2Field" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+                <Label text="Активен:" style="-fx-alignment: CENTER;" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+                <CheckBox fx:id="activeCheck" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+              </GridPane>
+            </TitledPane>
+
+            <HBox spacing="8" alignment="CENTER_RIGHT">
+              <Button text="Очистить форму для создания user" onAction="#onNewUser"/>
+              <Button text="Создать/Сохранить" onAction="#onSaveUser" defaultButton="true"/>
+              <Button text="Удалить" onAction="#onDeleteUser"/>
+<!--              <Button text="Очистить" onAction="#onClearForm"/>-->
+            </HBox>
+          </VBox>
+        </SplitPane>
+      </Tab>
+
+      <!-- TAB: Настройки -->
+      <Tab text="Настройки">
+        <VBox spacing="10" style="-fx-padding: 12;">
+          <TitledPane text="Организация">
+            <GridPane hgap="8" vgap="8" style="-fx-padding: 8;">
+              <columnConstraints>
+                <ColumnConstraints minWidth="140" halignment="RIGHT"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+              </columnConstraints>
+
+              <Label text="Название:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+              <TextField fx:id="orgNameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+              <Label text="БИН:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+              <TextField fx:id="binField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+              <Label text="Адрес:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+              <TextField fx:id="addressField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+              <Label text="Торговая точка:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+              <TextField fx:id="saleStoreField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            </GridPane>
+          </TitledPane>
+
+          <HBox spacing="8" alignment="CENTER_RIGHT">
+            <Button text="Сохранить" onAction="#onSaveSettings" defaultButton="true"/>
+            <Button text="Обновить" onAction="#onReloadSettings"/>
+          </HBox>
+        </VBox>
+      </Tab>
+    </TabPane>
+  </center>
+</BorderPane>

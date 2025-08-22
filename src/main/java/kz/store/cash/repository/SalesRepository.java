@@ -5,11 +5,11 @@ import java.util.List;
 import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.model.entity.Sales;
 import kz.store.cash.fx.model.SalesWithProductName;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 
 
-public interface SalesRepository extends JpaRepository<Sales, Long> {
+public interface SalesRepository extends CrudRepository<Sales, Long> {
 
   @Query("""
           select new kz.store.cash.fx.model.SalesWithProductName(

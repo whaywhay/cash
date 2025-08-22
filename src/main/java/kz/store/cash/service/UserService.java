@@ -1,8 +1,10 @@
 package kz.store.cash.service;
 
+import java.util.List;
 import java.util.Optional;
+import kz.store.cash.mapper.UserMapper;
+import kz.store.cash.model.UserDto;
 import kz.store.cash.model.entity.User;
-import kz.store.cash.model.enums.UserRole;
 import kz.store.cash.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +17,8 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
   private final UserRepository userRepository;
-  private final PasswordEncoder pe;
+  private final PasswordEncoder passwordEncoder;
+  private final UserMapper userMapper;
 
   public User save(User user) {
     return userRepository.save(user);
@@ -25,29 +28,29 @@ public class UserService {
     return userRepository.findByUsername(username);
   }
 
-
-
-  public User createUser(String username, String displayName, String rawPassword, UserRole role, boolean active) {
-    if (userRepository.existsByUsername(username)) {
+  public void createUser(UserDto userDto) {
+    if (userRepository.existsByUsernameIgnoreCase(userDto.username())) {
       throw new IllegalArgumentException("Логин уже существует");
     }
-    User u = new User();
-    u.setUsername(username);
-    u.setDisplayName(displayName);
-    u.setPassword(pe.encode(rawPassword));
-    u.setRole(role == null ? UserRole.CASHIER : role);
-    u.setActive(active);
-    return userRepository.save(u);
+    User user = userMapper.toUser(userDto, passwordEncoder);
+    userRepository.save(user);
   }
 
-  public User updateUser(Long id, String displayName, String newRawPassword, UserRole role, Boolean active) {
-    User u = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Пользователь не найден"));
-    if (displayName != null) u.setDisplayName(displayName);
-    if (role != null) u.setRole(role);
-    if (active != null) u.setActive(active);
-    if (newRawPassword != null && !newRawPassword.isBlank()) {
-      u.setPassword(pe.encode(newRawPassword));
+  public void updateUser(UserDto userDto) {
+    User user = userRepository.findById(userDto.id())
+        .orElseThrow(() -> new IllegalArgumentException("Пользователь не найден"));
+    if (userRepository.existsByUsernameIgnoreCaseAndIdNot(userDto.username(), userDto.id())) {
+      throw new IllegalArgumentException("Логин уже используется другим пользователем");
     }
-    return userRepository.save(u);
+    userMapper.updateToUser(user, userDto, passwordEncoder);
+    userRepository.save(user);
+  }
+
+  public List<User> findAll() {
+    return userRepository.findAll();
+  }
+
+  public void deleteUser(Long id) {
+    userRepository.deleteById(id);
   }
 }

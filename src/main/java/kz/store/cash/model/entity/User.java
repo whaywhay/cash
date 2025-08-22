@@ -23,7 +23,19 @@ import lombok.ToString;
 @Entity
 @Table(name = "user", schema = "main")
 public class User extends BaseEntity {
-
+  public User(
+      String username,
+      String password,
+      String displayName,
+      UserRole role,
+      boolean active
+  ) {
+    this.username = username;
+    this.password = password;
+    this.displayName = displayName;
+    this.role = role;
+    this.active = active;
+  }
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)

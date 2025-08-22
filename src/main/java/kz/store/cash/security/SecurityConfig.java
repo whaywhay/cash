@@ -22,12 +22,11 @@ public class SecurityConfig {
   CommandLineRunner bootstrapAdmin(UserRepository userRep, PasswordEncoder pe) {
     return args -> {
       if (userRep.count() == 0) {
-        User admin = new  User();
-        admin.setUsername("admin");
-        admin.setPassword(pe.encode("admin"));
-        admin.setDisplayName("Администратор");
-        admin.setRole(UserRole.ADMIN);
-        admin.setActive(true);
+        User admin = new User("admin",
+            pe.encode("admin"),
+            "Администратор",
+            UserRole.ADMIN,
+            true);
         userRep.save(admin);
       }
     };

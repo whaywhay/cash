@@ -12,6 +12,7 @@ import javafx.scene.control.TabPane;
 import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.fx.controllers.lib.TabController;
 import kz.store.cash.fx.model.SalesWithProductName;
+import kz.store.cash.model.enums.UserRole;
 import kz.store.cash.security.AuthEvents;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
@@ -37,7 +38,6 @@ public class MainViewController {
   @FXML
   public Tab adminTab;
 
-  // ленивое кеширование контента и контроллеров
   private final Map<Tab, Node> tabContentCache = new HashMap<>();
   private final Map<Tab, Object> tabControllerCache = new HashMap<>();
 
@@ -91,13 +91,13 @@ public class MainViewController {
   public void onLogin(AuthEvents.LoginSuccess ev) {
     this.loggedIn = true;
 
-    // определяем админ-ли это. Универсально: сравниваем строково, чтобы не зависеть от enum-класса.
-    String role = String.valueOf(ev.getSource().getRole()); // getRole() может вернуть enum/строку
-    this.isAdmin = "ADMIN".equalsIgnoreCase(role);
+    // Сравниваем админ или нет по роли
+    UserRole role = ev.getSource().getRole();
+    this.isAdmin = UserRole.ADMIN.equals(role);
 
     applyAuthState(true, this.isAdmin);
 
-    // по UX — сразу на "Продажи"; если хотите оставаться на "Смена", просто закомментируйте строку ниже
+    // по UX — сразу перекидываем на "Продажи";
     tabPane.getSelectionModel().select(salesTab);
   }
 
@@ -105,10 +105,10 @@ public class MainViewController {
    * Реагируем на выход.
    */
   @EventListener
-  public void onLogout(AuthEvents.Logout ev) {
+  public void onLogout() {
     this.loggedIn = false;
     this.isAdmin = false;
-    applyAuthState(false, false);
+    applyAuthState(loggedIn, isAdmin);
 
     // возвращаем на "Смена"
     tabPane.getSelectionModel().select(shiftChangeTab);
@@ -138,14 +138,13 @@ public class MainViewController {
       return;
     }
     if (newTab.isDisable()) {
-      return; // на всякий случай
+      return;
     }
 
     try {
       if (!tabContentCache.containsKey(newTab)) {
         String fxmlPath = getFxmlPath(newTab);
         if (fxmlPath == null || fxmlPath.isBlank()) {
-          // нет FXML — оставляем вкладку пустой
           return;
         }
 
@@ -186,7 +185,7 @@ public class MainViewController {
       return "/fxml/sale_history.fxml";
     }
     if (tab == adminTab) {
-      return "/fxml/admin.fxml"; // <-- создайте FXML, либо верните null пока не нужен
+      return "/fxml/admin.fxml";
     }
     return null;
   }

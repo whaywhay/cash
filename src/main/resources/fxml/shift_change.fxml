@@ -13,7 +13,7 @@
   fx:controller="kz.store.cash.fx.controllers.ShiftChangeController"
   spacing="10" style="-fx-padding: 16">
   <Label text="Вход в систему"/>
-  <GridPane hgap="8" vgap="8">
+  <GridPane fx:id="loginPane" hgap="8" vgap="8">
     <Label text="Логин:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
     <TextField fx:id="usernameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
@@ -22,9 +22,10 @@
   </GridPane>
 
   <HBox spacing="8">
-    <Button text="Войти" onAction="#onLogin"/>
-    <Button text="Выход" onAction="#onLogout"/>
+    <Button fx:id="loginBtn"  text="Войти" onAction="#onLogin"/>
+    <Button fx:id="logoutBtn" text="Выход" onAction="#onLogout"/>
   </HBox>
+  <Label fx:id="welcomeTitle"/>
 
   <Separator/>
 

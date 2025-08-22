@@ -14,10 +14,4 @@ public class UtilAlert {
     alert.showAndWait();
   }
 
-  public void showInfo(String title, String msg) {
-    Alert alert = new Alert(AlertType.INFORMATION, msg);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.showAndWait();
-  }
 }

@@ -1,34 +1,34 @@
 package kz.store.cash.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-import java.time.LocalDateTime;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 
-@Getter
-@Setter
-@RequiredArgsConstructor
+
 @MappedSuperclass
+@EntityListeners(org.springframework.data.jpa.domain.support.AuditingEntityListener.class)
+@Getter @Setter
 public class BaseEntity {
 
-  @CreationTimestamp
-  @Column(updatable = false)
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-  private LocalDateTime created;
+  @CreatedDate
+  @Column(name = "created", updatable = false, nullable = false)
+  private java.time.LocalDateTime created;
 
-  @Column(name = "created_by")
+  @CreatedBy
+  @Column(name = "created_by", updatable = false, nullable = false)
   protected String createdBy = "system";
 
-  @UpdateTimestamp
-  @Column(name = "last_upd")
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-  private LocalDateTime lastUpdated;
+  @LastModifiedDate
+  @Column(name = "last_upd", nullable = false)
+  private java.time.LocalDateTime lastUpdated;
 
-  @Column(name = "last_upd_by")
+  @LastModifiedBy
+  @Column(name = "last_upd_by", nullable = false)
   protected String lastUpdatedBy = "system";
 }
