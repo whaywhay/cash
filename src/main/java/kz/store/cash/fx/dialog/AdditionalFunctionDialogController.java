@@ -2,7 +2,6 @@ package kz.store.cash.fx.dialog;
 
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import kz.store.cash.fx.component.FxAsyncRunner;
@@ -21,8 +20,6 @@ public class AdditionalFunctionDialogController implements CancellableDialog {
 
   @FXML
   public FlowPane additionalFunctionPane;
-  @FXML
-  public Button exitApplicationButton;
 
   private final PaymentReceiptService paymentReceiptService;
   private final ReceiptPrintService receiptPrintService;

@@ -1,34 +1,83 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.control.Separator?>
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-  fx:controller="kz.store.cash.fx.controllers.ShiftChangeController"
-  spacing="10" style="-fx-padding: 16">
-  <Label text="Вход в систему"/>
-  <GridPane fx:id="loginPane" hgap="8" vgap="8">
-    <Label text="Логин:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-    <TextField fx:id="usernameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+  fx:controller="kz.store.cash.fx.controllers.ShiftChangeController">
+  <top>
+    <VBox spacing="10" style="-fx-background-color: #FBC02D; -fx-padding: 20;">
+      <Label text="Смена" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+    </VBox>
+  </top>
+  <center>
+    <VBox fx:id="authPane" spacing="12">
+      <TitledPane fx:id="closePane" text="Закрыть смену">
+        <GridPane hgap="8" vgap="8" style="-fx-padding: 8;">
+          <Label text="Остаток (Нал. которая остается в кассе):" GridPane.rowIndex="0"
+            GridPane.columnIndex="0"/>
+          <TextField fx:id="closingLeftField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+          <Label text="Примечание:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+          <TextField fx:id="closingNoteField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        </GridPane>
+      </TitledPane>
 
-    <Label text="Пароль:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-    <PasswordField fx:id="passwordField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-  </GridPane>
+      <TitledPane text="Статус смены">
+        <GridPane hgap="10" vgap="6" style="-fx-padding: 8;">
+          <Label text="Статус:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+          <Label fx:id="statusLabel" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-  <HBox spacing="8">
-    <Button fx:id="loginBtn"  text="Войти" onAction="#onLogin"/>
-    <Button fx:id="logoutBtn" text="Выход" onAction="#onLogout"/>
-  </HBox>
-  <Label fx:id="welcomeTitle"/>
+          <Label text="Открыта:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+          <Label fx:id="openedAtLabel" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-  <Separator/>
+          <Label text="Кассир:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+          <Label fx:id="openedByLabel" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-  <!-- Здесь ниже может быть ваш UI открытия/закрытия смены -->
-  <!-- видимость можно связать с тем, что пользователь залогинен -->
-</VBox>
+          <Label text="В кассе наличные:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+          <Label fx:id="leftInDrawerLabel" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+        </GridPane>
+      </TitledPane>
+
+      <TitledPane fx:id="movementPane" text="Движение наличных">
+        <VBox spacing="10" style="-fx-padding: 8;">
+          <GridPane hgap="8" vgap="8">
+            <Label text="Тип:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <ComboBox fx:id="movementTypeCombo" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+            <Label text="Сумма:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <TextField fx:id="movementAmountField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+            <Label text="Основание:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <TextField fx:id="movementReasonField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+            <Button text="Добавить" onAction="#onAddMovement"
+              GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+          </GridPane>
+
+          <TableView fx:id="movementTable" prefHeight="220">
+            <columns>
+              <TableColumn fx:id="colMvTime" text="Время" prefWidth="140"/>
+              <TableColumn fx:id="colMvType" text="Тип" prefWidth="120"/>
+              <TableColumn fx:id="colMvAmount" text="Сумма" prefWidth="120"/>
+              <TableColumn fx:id="colMvReason" text="Основание" prefWidth="300"/>
+              <TableColumn fx:id="colMvUser" text="Пользователь" prefWidth="180"/>
+            </columns>
+          </TableView>
+        </VBox>
+      </TitledPane>
+    </VBox>
+  </center>
+  <bottom>
+    <HBox spacing="20" styleClass="bottom-bar">
+      <Button text="СДАТЬ ..." onAction="#onCloseShift" styleClass="btn-pay"
+        focusTraversable="false"/>
+    </HBox>
+  </bottom>
+</BorderPane>

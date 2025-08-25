@@ -3,6 +3,7 @@ package kz.store.cash.fx.dialog.lib;
 import java.io.IOException;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -25,7 +26,7 @@ public class DialogBase {
   private double yOffset = 0;
   private final ApplicationContext context;
 
-  public void createDialogStage(Pane rootPane, Pane openedRootPane, Object controller) {
+  public void createDialogStage(Node rootPane, Pane openedRootPane, Object controller) {
     Stage dialogStage = processDialogStage(rootPane, openedRootPane, controller);
     dialogStage.showAndWait();
   }
@@ -40,7 +41,7 @@ public class DialogBase {
     dialogStage.showAndWait();
   }
 
-  private Stage processDialogStage(Pane rootPane, Pane openedRootPane, Object controller) {
+  private Stage processDialogStage(Node rootPane, Pane openedRootPane, Object controller) {
     Stage dialogStage = new Stage();
     Scene openedSceneWindow = new Scene(openedRootPane);
     dialogStage.initOwner(rootPane.getScene().getWindow());

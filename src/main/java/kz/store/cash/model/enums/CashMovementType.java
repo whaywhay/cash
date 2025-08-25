@@ -12,4 +12,9 @@ public enum CashMovementType {
   CashMovementType(String name) {
     this.displayName = name;
   }
+
+  @Override
+  public String toString() {
+    return displayName;
+  }
 }

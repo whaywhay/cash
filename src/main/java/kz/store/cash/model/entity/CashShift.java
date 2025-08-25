@@ -41,9 +41,8 @@ public class CashShift extends BaseEntity {
   @Column(name = "shift_opened_date", nullable = false)
   private LocalDateTime shiftOpenedDate;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "opened_user_id", nullable = false)
-  @ToString.Exclude
   private User openedUser;
 
   @Column(name = "cash_during_opening", nullable = false, precision = 15, scale = 2)
@@ -52,9 +51,8 @@ public class CashShift extends BaseEntity {
   @Column(name = "shift_closed_date")
   private LocalDateTime shiftClosedDate;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "closed_by_id")
-  @ToString.Exclude
   private User closedBy;
 
   @Column(name = "sum_cash", precision = 15, scale = 2)

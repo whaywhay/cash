@@ -15,14 +15,9 @@
     <Button text="Синхронизация с 1С" onAction="#onSyncWith1C"
       style="-fx-font-size: 16px; -fx-background-color: white; -fx-border-color: teal;"
       prefWidth="200" prefHeight="60"/>
-    <Button fx:id="exitApplicationButton" text="Выход с приложения"
-      style="-fx-font-size: 16px; -fx-background-color: white; -fx-border-color: teal;"
-      prefWidth="200" prefHeight="60"/>
   </FlowPane>
-  <!-- Spacer -->
   <Region VBox.vgrow="ALWAYS"/>
 
-  <!-- Bottom Button -->
   <HBox spacing="20" alignment="CENTER">
     <Button text="ЗАКРЫТЬ"
       onAction="#onClose"

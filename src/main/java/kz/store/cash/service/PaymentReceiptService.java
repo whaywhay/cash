@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import kz.store.cash.fx.model.SalesWithProductName;
+import kz.store.cash.model.entity.CashShift;
 import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.model.entity.Sales;
 import kz.store.cash.fx.model.PaymentSumDetails;
@@ -34,8 +35,14 @@ public class PaymentReceiptService {
 
   private final PaymentReceiptMapper paymentReceiptMapper;
   private final PaymentReceiptRepository paymentReceiptRepository;
+  private final CashShiftService cashShiftService;
   private final SalesService salesService;
   private final SalesMapper salesMapper;
+
+  private CashShift getOpenedCashShift() {
+    return cashShiftService.getOpenedShift()
+        .orElseThrow(() -> new RuntimeException("Нет открытой смены"));
+  }
 
   @Transactional
   public void processPaymentSave(PaymentSumDetails paymentSumDetails,
@@ -44,6 +51,7 @@ public class PaymentReceiptService {
     List<Sales> salesList = cart.stream()
         .map(sale -> salesMapper.fromProductItemToSales(sale, paymentReceipt))
         .toList();
+    paymentReceipt.setCashShift(getOpenedCashShift());//Подвязка открытой смены к оплатам
     saveSalesWithPaymentRecipe(paymentReceipt, salesList);
   }
 
@@ -70,6 +78,7 @@ public class PaymentReceiptService {
         })
         .filter(Objects::nonNull)
         .toList();
+    paymentReceipt.setCashShift(getOpenedCashShift());//Подвязка открытой смены к оплатам
     saveSalesWithPaymentRecipe(paymentReceipt, salesList);
   }
 
@@ -87,6 +96,7 @@ public class PaymentReceiptService {
         .map(sale -> salesMapper.fromProductItemToReturnSales(sale, paymentReceipt))
         .toList();
     paymentReceipt.setSalesList(salesList);
+    paymentReceipt.setCashShift(getOpenedCashShift());//Подвязка открытой смены к оплатам
     paymentReceiptRepository.save(paymentReceipt);
   }
 
@@ -102,6 +112,7 @@ public class PaymentReceiptService {
   public PaymentReceipt createDeferredPaymentReceipt() {
     PaymentReceipt paymentReceipt = new PaymentReceipt();
     paymentReceipt.setReceiptStatus(PENDING);
+    paymentReceipt.setCashShift(getOpenedCashShift());//Подвязка открытой смены к оплатам
     return paymentReceiptRepository.save(paymentReceipt);
   }
 

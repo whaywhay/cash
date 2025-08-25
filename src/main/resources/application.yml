@@ -16,10 +16,10 @@ spring:
 logging:
   charset:
     console: UTF-8
-  level:
-    org.hibernate.SQL: DEBUG            # сами SQL
-    org.hibernate.orm.jdbc.bind: TRACE  # значения параметров (binding)
-    org.hibernate.orm.jdbc.extract: TRACE  # (опц.) извлечение из ResultSet
+#  level:
+#    org.hibernate.SQL: DEBUG            # сами SQL
+#    org.hibernate.orm.jdbc.bind: TRACE  # значения параметров (binding)
+#    org.hibernate.orm.jdbc.extract: TRACE  # (опц.) извлечение из ResultSet
 
 app:
   http:
@@ -28,8 +28,6 @@ app:
     read-timeout: 30s
   product:
     universal-product-barcode: universal-product-200001
-    organization-name: ${ORGANIZATION_NAME}
-    cashier-name: ${CASHIER_NAME}
     product-return-period: 14
 
 api:

@@ -40,7 +40,7 @@ public class CashMovement extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   @Column(name = "type", nullable = false)
-  private CashMovementType type; // IN / OUT
+  private CashMovementType type;
 
   @Column(name = "amount", nullable = false, precision = 15, scale = 2)
   private BigDecimal amount;
@@ -48,9 +48,10 @@ public class CashMovement extends BaseEntity {
   @Column(name = "reason")
   private String reason;
 
-  /** Кто сделал действие (ссылка на main."user".id) */
-  @ManyToOne(fetch = FetchType.LAZY)
+  /**
+   * Кто сделал действие (ссылка на main."user".id)
+   */
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "created_by_id", nullable = false)
-  @ToString.Exclude
   private User createdByUser;
 }

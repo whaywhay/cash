@@ -11,10 +11,10 @@ import javax.print.PrintServiceLookup;
 import javax.print.SimpleDoc;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
-import kz.store.cash.config.ProductProperties;
 import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.fx.model.SalesWithProductName;
 import kz.store.cash.model.enums.PaymentType;
+import kz.store.cash.service.AppSettingService;
 import kz.store.cash.service.SalesService;
 import kz.store.cash.util.UtilAlert;
 import kz.store.cash.util.UtilNumbers;
@@ -28,12 +28,25 @@ import org.springframework.stereotype.Service;
 public class ReceiptPrintService {
 
   private final SalesService salesService;
-  private final ProductProperties productProperties;
+  private final AppSettingService appSettingService;
   private final UtilAlert utilAlert;
   // Константы ширины строки (для 80мм ленты ≈ 42 символа) - Но я добавил два символа,
   // вроде печатается без проблем
   private static final int LINE_WIDTH = 44;
   private final UtilNumbers utilNumbers;
+  private String organizationName;
+  private String cashierName;
+
+  private void getAppSetting() {
+    var appSetting = appSettingService.getSingleton().orElse(null);
+    if (appSetting == null) {
+      organizationName = "";
+      cashierName = "";
+    } else {
+      organizationName = appSetting.getOrgName();
+      cashierName = appSetting.getSaleStore();
+    }
+  }
 
   /**
    * Основной метод печати чека в ESC/POS
@@ -42,13 +55,15 @@ public class ReceiptPrintService {
     if (currentReceipt == null) {
       return;
     }
+
+    getAppSetting();
     try {
       StringBuilder sb = new StringBuilder();
 
       // --- Шапка чека ---
-      sb.append(centerText("КАССИР: " + productProperties.organizationName()))
+      sb.append(centerText("КАССИР: " + organizationName))
           .append("\n");
-      sb.append(centerText(productProperties.cashierName())).append("\n");
+      sb.append(centerText(cashierName)).append("\n");
       sb.append(centerText("ЧЕК #" + currentReceipt.getId())).append("\n");
       sb.append(centerText(currentReceipt.getCreated().toString())).append("\n");
       sb.append(centerText(currentReceipt.getPaymentType().getDisplayName())).append("\n");

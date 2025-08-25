@@ -1,0 +1,51 @@
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.geometry.Insets?>
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+  fx:controller="kz.store.cash.fx.controllers.LoginDialogController" alignment="CENTER"
+  stylesheets="@styles.css" spacing="10" styleClass="dialog-pane-product-change">
+
+  <padding>
+    <Insets top="25" right="25" bottom="25" left="25"/>
+  </padding>
+
+  <Label text="Пользователь" styleClass="label-value"/>
+  <ComboBox fx:id="userCombo" prefWidth="360" styleClass="input-field-product-change"/>
+  <Label text="Пароль" styleClass="label-value"/>
+  <PasswordField fx:id="passwordField" prefWidth="360" styleClass="input-field-product-change"/>
+
+  <GridPane hgap="10" vgap="10" alignment="CENTER">
+    <Button text="1" styleClass="numpad-button" onAction="#onDigitClick" GridPane.rowIndex="0"
+      GridPane.columnIndex="0"/>
+    <Button text="2" styleClass="numpad-button" onAction="#onDigitClick" GridPane.rowIndex="0"
+      GridPane.columnIndex="1"/>
+    <Button text="3" styleClass="numpad-button" onAction="#onDigitClick" GridPane.rowIndex="0"
+      GridPane.columnIndex="2"/>
+    <Button text="4" styleClass="numpad-button" onAction="#onDigitClick" GridPane.rowIndex="1"
+      GridPane.columnIndex="0"/>
+    <Button text="5" styleClass="numpad-button" onAction="#onDigitClick" GridPane.rowIndex="1"
+      GridPane.columnIndex="1"/>
+    <Button text="6" styleClass="numpad-button" onAction="#onDigitClick" GridPane.rowIndex="1"
+      GridPane.columnIndex="2"/>
+    <Button text="7" styleClass="numpad-button" onAction="#onDigitClick" GridPane.rowIndex="2"
+      GridPane.columnIndex="0"/>
+    <Button text="8" styleClass="numpad-button" onAction="#onDigitClick" GridPane.rowIndex="2"
+      GridPane.columnIndex="1"/>
+    <Button text="9" styleClass="numpad-button" onAction="#onDigitClick" GridPane.rowIndex="2"
+      GridPane.columnIndex="2"/>
+    <Button text="-" styleClass="numpad-button" onAction="#onBackspace" GridPane.rowIndex="3"
+      GridPane.columnIndex="0"/>
+    <Button text="0" styleClass="numpad-button" onAction="#onDigitClick" GridPane.rowIndex="3"
+      GridPane.columnIndex="2"/>
+  </GridPane>
+
+  <HBox spacing="14" alignment="CENTER">
+    <Button text="Выход" onAction="#onExit" prefWidth="120"/>
+    <Button fx:id="btnLogin" text="Войти" onAction="#onLogin" prefWidth="120" defaultButton="true"/>
+  </HBox>
+</VBox>
