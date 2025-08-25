@@ -138,7 +138,7 @@ public class ShiftChangeController implements TabController {
       if (amount == null || amount.signum() <= 0) {
         movementAmountField.requestFocus();
         throw new IllegalArgumentException(
-            "ВНОС/ВЫНОС СРЕДСТВ не может быть отрицательным или пустым");
+            "ВНОС/ВЫНОС СРЕДСТВ не может иметь отрицательное или пустое значение");
       }
       cashShiftService.addMovement(currentShift.getId(), type, amount, reason,
           currentUserStore.get());
@@ -208,7 +208,7 @@ public class ShiftChangeController implements TabController {
   }
 
   private boolean isShiftOpen() {
-    return currentShift != null && currentShift.getStatus() == CashShiftStatus.OPEN;
+    return currentShift != null && currentShift.getStatus() == CashShiftStatus.OPENED;
   }
 
   private void ensureAuth() {

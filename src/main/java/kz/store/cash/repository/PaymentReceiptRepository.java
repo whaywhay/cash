@@ -1,7 +1,9 @@
 package kz.store.cash.repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import kz.store.cash.model.entity.CashShift;
 import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.model.enums.ReceiptStatus;
 import org.springframework.data.domain.Page;
@@ -27,9 +29,43 @@ public interface PaymentReceiptRepository extends JpaRepository<PaymentReceipt, 
 
   List<PaymentReceipt> getPaymentReceiptByOriginalReceipt(PaymentReceipt originalReceipt);
 
-
-  List<PaymentReceipt> getAllByReceiptStatusAndCreatedAfter(ReceiptStatus receiptStatus,
-      LocalDateTime createdAfter);
+  List<PaymentReceipt> getAllByReceiptStatusAndCashShift(ReceiptStatus receiptStatus,
+      CashShift cashShift);
 
   PaymentReceipt getFirstByReceiptStatusOrderByIdDesc(ReceiptStatus receiptStatus);
+
+  @Query("""
+      select coalesce(sum(pr.cashPayment), 0)
+      from PaymentReceipt pr
+      where pr.cashShift = :shift
+      and (pr.receiptStatus = :sale or pr.receiptStatus = :returnSale)
+      """)
+  BigDecimal sumCashByShiftAndStatus(CashShift shift, ReceiptStatus sale,
+      ReceiptStatus returnSale);
+
+  @Query("""
+      select coalesce(sum(pr.cardPayment), 0)
+      from PaymentReceipt pr
+      where pr.cashShift = :shift
+      and (pr.receiptStatus = :sale or pr.receiptStatus = :returnSale)
+      """)
+  BigDecimal sumCardByShiftAndStatus(CashShift shift, ReceiptStatus sale,
+      ReceiptStatus returnSale);
+
+  @Query("""
+      select coalesce(sum(pr.cardPayment), 0)
+      from PaymentReceipt pr
+      where pr.cashShift = :shift
+      and pr.receiptStatus = :returnSale
+      """)
+  BigDecimal sumReturnCardByShiftAndStatus(CashShift shift, ReceiptStatus returnSale);
+
+  @Query("""
+      select coalesce(sum(pr.cashPayment), 0)
+      from PaymentReceipt pr
+      where pr.cashShift = :shift
+      and pr.receiptStatus = :returnSale
+      """)
+  BigDecimal sumReturnCashByShiftAndStatus(CashShift shift, ReceiptStatus returnSale);
+
 }

@@ -20,13 +20,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CashShiftService {
 
-  private static final CashShiftStatus OPENED = CashShiftStatus.OPEN;
-  private static final CashShiftStatus CLOSED = CashShiftStatus.CLOSE;
+  private static final CashShiftStatus OPENED = CashShiftStatus.OPENED;
+  private static final CashShiftStatus CLOSED = CashShiftStatus.CLOSED;
 
   private final CashShiftRepository cashShiftRepository;
   private final CashMovementRepository cashMovementRepository;
   private final CashShiftMapper cashShiftMapper;
   private final CashMovementMapper cashMovementMapper;
+  private final PaymentReceiptService paymentReceiptService;
 
   public Optional<CashShift> getOpenedShift() {
     return cashShiftRepository.findFirstByStatusOrderByShiftOpenedDateDesc(OPENED);
@@ -57,8 +58,8 @@ public class CashShiftService {
       throw new IllegalStateException("Уже есть открытая смена");
     }
     BigDecimal openingCash = getLastRemainedCashInDrawer();
-    CashShift s = cashShiftMapper.toOpenCashShift(openedBy, openingCash);
-    return cashShiftRepository.save(s);
+    CashShift cashShift = cashShiftMapper.toOpenCashShift(openedBy, openingCash);
+    return cashShiftRepository.save(cashShift);
   }
 
   private BigDecimal getLastRemainedCashInDrawer() {
@@ -78,18 +79,26 @@ public class CashShiftService {
    */
   @Transactional
   public void closeShift(Long shiftId, BigDecimal leftInDrawer, String note, User closedBy) {
-    CashShift s = getOpenShiftById(shiftId);
-    cashShiftMapper.toCloseCashShift(s, closedBy, leftInDrawer,
-        BigDecimal.ZERO, BigDecimal.ZERO, note);
-    cashShiftRepository.save(s);
+    CashShift cashShift = getOpenShiftById(shiftId);
+    if (!paymentReceiptService.getDeferredPaymentReceipts().isEmpty()) {
+      throw new RuntimeException(
+          "Имеются отложенные чеки, прошу их обработать прежде чем закрыть смену");
+    }
+    BigDecimal sumCash = paymentReceiptService.getSumCash(cashShift);
+    BigDecimal sumCard = paymentReceiptService.getSumCard(cashShift);
+    BigDecimal sumReturnedCash = paymentReceiptService.getReturnedSumCash(cashShift);
+    BigDecimal sumReturnedCard = paymentReceiptService.getReturnedSumCard(cashShift);
+    cashShiftMapper.toCloseCashShift(cashShift, closedBy, leftInDrawer, sumCash,
+        sumCard, sumReturnedCash, sumReturnedCard, note);
+    cashShiftRepository.save(cashShift);
   }
 
   private CashShift getOpenShiftById(Long id) {
-    CashShift s = cashShiftRepository.findById(id)
+    CashShift cashShift = cashShiftRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("Смена не найдена"));
-    if (s.getStatus() != OPENED) {
+    if (cashShift.getStatus() != OPENED) {
       throw new IllegalStateException("Смена уже закрыта");
     }
-    return s;
+    return cashShift;
   }
 }

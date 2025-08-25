@@ -1,9 +1,10 @@
 package kz.store.cash.service;
 
 import static kz.store.cash.model.enums.ReceiptStatus.PENDING;
+import static kz.store.cash.model.enums.ReceiptStatus.RETURN;
+import static kz.store.cash.model.enums.ReceiptStatus.SALE;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,9 @@ import kz.store.cash.fx.model.PaymentSumDetails;
 import kz.store.cash.fx.model.ProductItem;
 import kz.store.cash.mapper.PaymentReceiptMapper;
 import kz.store.cash.mapper.SalesMapper;
+import kz.store.cash.model.enums.CashShiftStatus;
 import kz.store.cash.model.enums.ReceiptStatus;
+import kz.store.cash.repository.CashShiftRepository;
 import kz.store.cash.repository.PaymentReceiptRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,12 +38,12 @@ public class PaymentReceiptService {
 
   private final PaymentReceiptMapper paymentReceiptMapper;
   private final PaymentReceiptRepository paymentReceiptRepository;
-  private final CashShiftService cashShiftService;
+  private final CashShiftRepository cashShiftRepository;
   private final SalesService salesService;
   private final SalesMapper salesMapper;
 
   private CashShift getOpenedCashShift() {
-    return cashShiftService.getOpenedShift()
+    return cashShiftRepository.findFirstByStatusOrderByShiftOpenedDateDesc(CashShiftStatus.OPENED)
         .orElseThrow(() -> new RuntimeException("Нет открытой смены"));
   }
 
@@ -105,8 +108,8 @@ public class PaymentReceiptService {
   }
 
   public List<PaymentReceipt> getDeferredPaymentReceipts() {
-    LocalDateTime todayAtMidnight = LocalDate.now().atStartOfDay();
-    return paymentReceiptRepository.getAllByReceiptStatusAndCreatedAfter(PENDING, todayAtMidnight);
+    var cashShift = getOpenedCashShift();
+    return paymentReceiptRepository.getAllByReceiptStatusAndCashShift(PENDING, cashShift);
   }
 
   public PaymentReceipt createDeferredPaymentReceipt() {
@@ -207,5 +210,21 @@ public class PaymentReceiptService {
 
   public PaymentReceipt getNewestSalePaymentReceipt() {
     return paymentReceiptRepository.getFirstByReceiptStatusOrderByIdDesc(ReceiptStatus.SALE);
+  }
+
+  public BigDecimal getSumCash(CashShift cashShift) {
+    return paymentReceiptRepository.sumCashByShiftAndStatus(cashShift, SALE, RETURN);
+  }
+
+  public BigDecimal getSumCard(CashShift cashShift) {
+    return paymentReceiptRepository.sumCardByShiftAndStatus(cashShift, SALE, RETURN);
+  }
+
+  public BigDecimal getReturnedSumCash(CashShift cashShift) {
+    return paymentReceiptRepository.sumReturnCashByShiftAndStatus(cashShift, RETURN);
+  }
+
+  public BigDecimal getReturnedSumCard(CashShift cashShift) {
+    return paymentReceiptRepository.sumReturnCardByShiftAndStatus(cashShift, RETURN);
   }
 }

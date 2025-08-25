@@ -4,8 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum CashShiftStatus {
-  OPEN("СМЕНА ОТКРЫТА"),
-  CLOSE("СМЕНА ЗАКРЫТА");
+  OPENED("СМЕНА ОТКРЫТА"),
+  CLOSED("СМЕНА ЗАКРЫТА");
 
   private final String displayName;
 

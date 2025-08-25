@@ -22,7 +22,7 @@ public interface CashShiftMapper {
   @Mapping(target = "lastUpdatedBy", ignore = true)
   @Mapping(target = "openedUser", source = "user")
   @Mapping(target = "cashDuringOpening", source = "cashDuringOpening")
-  @Mapping(target = "status", constant = "OPEN")
+  @Mapping(target = "status", constant = "OPENED")
   @Mapping(target = "shiftOpenedDate", expression = "java(LocalDateTime.now())")
   @Mapping(target = "sumCash", expression = "java(BigDecimal.ZERO)")
   @Mapping(target = "sumCard", expression = "java(BigDecimal.ZERO)")
@@ -35,12 +35,15 @@ public interface CashShiftMapper {
   @Mapping(target = "lastUpdated", ignore = true)
   @Mapping(target = "lastUpdatedBy", ignore = true)
   @Mapping(target = "closedBy", source = "user")
-  @Mapping(target = "status", constant = "CLOSE")
+  @Mapping(target = "status", constant = "CLOSED")
   @Mapping(target = "shiftClosedDate", expression = "java(LocalDateTime.now())")
   @Mapping(target = "sumCash", source = "sumCash")
   @Mapping(target = "sumCard", source = "sumCard")
   @Mapping(target = "leftInDrawer", source = "leftInDrawer")
   @Mapping(target = "note", source = "note")
+  @Mapping(target = "sumReturnCash", source = "sumReturnCash")
+  @Mapping(target = "sumReturnCard", source = "sumReturnCard")
   void toCloseCashShift(@MappingTarget CashShift cashShift, User user, BigDecimal leftInDrawer,
-      BigDecimal sumCash, BigDecimal sumCard, String note);
+      BigDecimal sumCash, BigDecimal sumCard, BigDecimal sumReturnCash, BigDecimal sumReturnCard,
+      String note);
 }
