@@ -21,7 +21,7 @@ import kz.store.cash.security.AuthEvents;
 import kz.store.cash.service.CashShiftService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MainViewController {
 
-  private final ApplicationContext context;
+  private final ConfigurableApplicationContext context;
   private final CashShiftService cashShiftService;
   private final DialogBase dialogBase;
   private final UiNotificationService uiNotificationService;
@@ -95,6 +95,7 @@ public class MainViewController {
       }
     }
     if (exit) {
+      context.close();
       Platform.exit();
     }
   }

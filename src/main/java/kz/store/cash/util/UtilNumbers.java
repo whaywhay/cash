@@ -92,10 +92,8 @@ public class UtilNumbers {
 
   public String formatPrice(BigDecimal value) {
     if (value.stripTrailingZeros().scale() <= 0) {
-      // Нет дробной части → печатаем целое
       return String.format("%d", value.longValue());
     } else {
-      // Есть дробная часть → печатаем с 2 знаками
       return String.format("%.2f", value);
     }
   }

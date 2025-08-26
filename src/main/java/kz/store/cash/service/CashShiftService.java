@@ -2,7 +2,9 @@ package kz.store.cash.service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import kz.store.cash.fx.component.ReceiptPrintService;
 import kz.store.cash.mapper.CashMovementMapper;
 import kz.store.cash.mapper.CashShiftMapper;
 import kz.store.cash.model.entity.CashMovement;
@@ -28,6 +30,7 @@ public class CashShiftService {
   private final CashShiftMapper cashShiftMapper;
   private final CashMovementMapper cashMovementMapper;
   private final PaymentReceiptService paymentReceiptService;
+  private final ReceiptPrintService receiptPrintService;
 
   public Optional<CashShift> getOpenedShift() {
     return cashShiftRepository.findFirstByStatusOrderByShiftOpenedDateDesc(OPENED);
@@ -39,6 +42,22 @@ public class CashShiftService {
 
   public List<CashMovement> findMovements(Long shiftId) {
     return cashMovementRepository.findAllByCashShiftIdOrderByCreatedDesc(shiftId);
+  }
+
+  private BigDecimal findMovementsInOperation(Long shiftId) {
+    return findMovements(shiftId).stream()
+        .filter(m -> m.getType() == CashMovementType.IN)
+        .map(CashMovement::getAmount)
+        .filter(Objects::nonNull)
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
+  }
+
+  private BigDecimal findMovementsOutOperation(Long shiftId) {
+    return findMovements(shiftId).stream()
+        .filter(m -> m.getType() == CashMovementType.OUT)
+        .map(CashMovement::getAmount)
+        .filter(Objects::nonNull)
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 
   /**
@@ -88,9 +107,12 @@ public class CashShiftService {
     BigDecimal sumCard = paymentReceiptService.getSumCard(cashShift);
     BigDecimal sumReturnedCash = paymentReceiptService.getReturnedSumCash(cashShift);
     BigDecimal sumReturnedCard = paymentReceiptService.getReturnedSumCard(cashShift);
+    BigDecimal depositedFunds = findMovementsInOperation(shiftId);
+    BigDecimal withdrawalFunds = findMovementsOutOperation(shiftId);
     cashShiftMapper.toCloseCashShift(cashShift, closedBy, leftInDrawer, sumCash,
         sumCard, sumReturnedCash, sumReturnedCard, note);
-    cashShiftRepository.save(cashShift);
+    cashShift = cashShiftRepository.save(cashShift);
+    receiptPrintService.printCashShift(cashShift, depositedFunds, withdrawalFunds);
   }
 
   private CashShift getOpenShiftById(Long id) {

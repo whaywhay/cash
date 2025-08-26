@@ -42,7 +42,7 @@ public class MainCashApplication extends Application {
         primaryStage.setFullScreen(true);
       }
     });
-    primaryStage.setTitle("YelCashStore");
+    primaryStage.setTitle("Cash Store");
     primaryStage.setScene(scene);
     primaryStage.setFullScreen(true);
     primaryStage.show();
