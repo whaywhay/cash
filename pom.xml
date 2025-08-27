@@ -23,6 +23,9 @@
     <javafx.version>22.0.1</javafx.version>
     <lombok.version>1.18.34</lombok.version>
     <app.name>CashStore</app.name>
+
+    <!-- Чистая версия для инсталлятора (без -SNAPSHOT) -->
+    <installer.version>0.0.1</installer.version>
   </properties>
 
   <dependencies>
@@ -121,7 +124,7 @@
 
   <build>
     <plugins>
-      <!-- Java 21 -->
+      <!-- Java 22 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -146,7 +149,34 @@
         </configuration>
       </plugin>
 
-      <!-- Толстый JAR (точка входа — JavaFX-лаунчер) -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.6.1</version>
+        <executions>
+          <!-- Копируем перепакованный Boot-jar в target/app -->
+          <execution>
+            <id>copy-main-jar</id>
+            <phase>package</phase>
+            <goals><goal>copy</goal></goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>${project.groupId}</groupId>
+                  <artifactId>${project.artifactId}</artifactId>
+                  <version>${project.version}</version>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/app</outputDirectory>
+                  <destFileName>${project.build.finalName}.jar</destFileName>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Толстый JAR (вход — JavaFX-лаунчер) -->
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
@@ -162,43 +192,23 @@
         </configuration>
       </plugin>
 
-      <!-- OpenJFX: dev-run и jlink -->
+      <!-- JavaFX: только dev-запуск -->
       <plugin>
         <groupId>org.openjfx</groupId>
         <artifactId>javafx-maven-plugin</artifactId>
         <version>0.0.8</version>
-
-        <!-- общий конфиг для default-cli -->
         <configuration>
           <mainClass>kz.store.cash.MainCashApplication</mainClass>
-          <launcher>${app.name}</launcher>
-          <jlinkImageName>${app.name}</jlinkImageName>
-          <jlinkZipName>${app.name}</jlinkZipName>
-          <stripDebug>true</stripDebug>
-          <noHeaderFiles>true</noHeaderFiles>
-          <noManPages>true</noManPages>
-          <compress>2</compress>
         </configuration>
         <executions>
           <execution>
             <id>run</id>
-            <configuration>
-              <mainClass>kz.store.cash.MainCashApplication</mainClass>
-            </configuration>
-          </execution>
-          <execution>
-            <id>jlink</id>
-            <goals>
-              <goal>jlink</goal>
-            </goals>
-            <configuration>
-              <!-- можно ничего не дублировать, т.к. есть общий конфиг -->
-            </configuration>
+            <goals><goal>run</goal></goals>
           </execution>
         </executions>
       </plugin>
 
-      <!-- Инсталлятор Windows -->
+      <!-- Инсталлятор Windows (без jlink, с полным JRE из ${java.home}) -->
       <plugin>
         <groupId>org.panteleyev</groupId>
         <artifactId>jpackage-maven-plugin</artifactId>
@@ -206,30 +216,34 @@
         <configuration>
           <name>${app.name}</name>
           <vendor>Yestay</vendor>
-          <appVersion>${project.version}</appVersion>
-          <type>exe</type> <!-- для MSI: установи WiX и поменяй на msi -->
-          <runtimeImage>${project.build.directory}/image</runtimeImage>
-          <input>${project.build.directory}</input>
+          <appVersion>${installer.version}</appVersion>
+
+          <!-- берем fat-jar из target -->
+          <input>${project.build.directory}/app</input>
           <mainJar>${project.build.finalName}.jar</mainJar>
-          <mainClass>kz.store.cash.MainCashApplication</mainClass>
-          <winShortcut>true</winShortcut>
-          <winMenu>true</winMenu>
-          <winPerUserInstall>true</winPerUserInstall>
+
+          <!-- кладем полный рантайм из текущего JDK -->
+          <runtimeImage>${java.home}</runtimeImage>
+
+          <type>APP_IMAGE</type>
+          <destination>${project.build.directory}/dist1</destination>
+          <removeDestination>true</removeDestination>
+
           <icon>${project.basedir}/src/main/resources/icons/app.ico</icon>
+
           <javaOptions>
-            <javaOption>-Dspring.config.additional-location=$APPDIR/config/</javaOption>
             <javaOption>-Dfile.encoding=UTF-8</javaOption>
+            <javaOption>-Dspring.config.additional-location=$APPDIR/config/</javaOption>
           </javaOptions>
         </configuration>
         <executions>
           <execution>
             <id>jpackage</id>
-            <goals>
-              <goal>jpackage</goal>
-            </goals>
+            <goals><goal>jpackage</goal></goals>
           </execution>
         </executions>
       </plugin>
+
     </plugins>
   </build>
 </project>

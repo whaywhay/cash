@@ -6,6 +6,8 @@ spring:
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
+  main:
+    web-application-type: none
 
   jpa:
     hibernate:
@@ -40,11 +42,11 @@ app:
 api:
   url-basic:
     category1c:
-      base-url: ${API_CATEGORIES_URL}
-      username: ${API_USERNAME}
-      password: ${API_PASSWORD}
+      base-url: http://172.16.1.18/UT_MAGZHAN/hs/Categories/List
+      username: "Администратор"
+      password:
     product1c:
-      base-url: ${API_PRODUCTS_URL}
-      username: ${API_USERNAME}
-      password: ${API_PASSWORD}
+      base-url: http://172.16.1.18/UT_MAGZHAN/hs/Goods/List
+      username: "Администратор"
+      password:
 
