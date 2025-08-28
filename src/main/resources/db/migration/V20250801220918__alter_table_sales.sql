@@ -1,10 +1,10 @@
 ALTER TABLE main.payment_receipt
-    ADD COLUMN original_receipt_id BIGINT REFERENCES main.payment_receipt (id) ON DELETE SET NULL;
-CREATE INDEX payment_receipt_x1 ON main.payment_receipt (original_receipt_id);
-CREATE INDEX payment_receipt_x2 ON main.payment_receipt (created);
+    ADD COLUMN if not exists original_receipt_id BIGINT REFERENCES main.payment_receipt (id) ON DELETE SET NULL;
+CREATE INDEX if not exists payment_receipt_x1 ON main.payment_receipt (original_receipt_id);
+CREATE INDEX if not exists payment_receipt_x2 ON main.payment_receipt (created);
 
 ALTER TABLE main.sales
-    ADD COLUMN original_sale_id BIGINT REFERENCES main.sales (id) ON DELETE SET NULL;
+    ADD COLUMN if not exists original_sale_id BIGINT REFERENCES main.sales (id) ON DELETE SET NULL;
 
 ALTER TABLE main.sales
     DROP CONSTRAINT IF EXISTS sales_payment_receipt_id_fkey;

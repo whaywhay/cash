@@ -3,6 +3,7 @@ package kz.store.cash;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -19,8 +20,12 @@ public class MainCashApplication extends Application {
 
   @Override
   public void init() {
+    notifyPreloader(new Preloader.ProgressNotification(0.05));
     // Запускаем Spring Context
     context = new SpringApplicationBuilder(CashApplication.class).run();
+
+    // 100% — готово
+    notifyPreloader(new Preloader.ProgressNotification(1.0));
   }
 
   @Override

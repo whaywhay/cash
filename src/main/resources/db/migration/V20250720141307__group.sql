@@ -17,7 +17,7 @@ create index if not exists group_x1
     on main.category (full_path);
 
 alter table main.product
-    add column category_ref_id bigint;
+    add column if not exists category_ref_id bigint;
 
 ALTER TABLE main.product
     ADD CONSTRAINT fk_product_group

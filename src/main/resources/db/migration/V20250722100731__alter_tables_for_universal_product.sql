@@ -2,12 +2,12 @@ ALTER TABLE main.payment_receipt
     ALTER COLUMN payment_type DROP NOT NULL;
 
 ALTER TABLE main.payment_receipt
-    ADD COLUMN status text not null;
+    ADD COLUMN if not exists status text not null;
 
 ALTER TABLE main.sales
-    ADD COLUMN return_flag text not null default false;
+    ADD COLUMN if not exists return_flag text not null default false;
 ALTER TABLE main.sales
-    ADD COLUMN return_date timestamp;
+    ADD COLUMN if not exists return_date timestamp;
 
 INSERT INTO main.product (created_by,
                      last_upd_by,

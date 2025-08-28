@@ -119,13 +119,16 @@ public class MainViewController {
     this.loggedIn = true;
     this.isAdmin = UserRole.ADMIN.equals(ev.getSource().getRole());
     applyAuthState(true, this.isAdmin);
-
     try {
       cashShiftService.ensureOpenShift(ev.getSource());
     } catch (Exception ignored) {
     }
-    // при желании можно сразу переключить на Продажи:
-    // tabPane.getSelectionModel().select(salesTab);
+    tabInitialize(salesTab);
+    tabPane.getSelectionModel().select(salesTab);
+    Object c = tabControllerCache.get(salesTab);
+    if (c instanceof TabController tc) {
+      tc.onTabSelected();
+    }
   }
 
   @EventListener
