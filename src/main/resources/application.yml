@@ -39,14 +39,3 @@ app:
     universal-product-barcode: universal-product-200001
     product-return-period: 14
 
-api:
-  url-basic:
-    category1c:
-      base-url: http://172.16.1.18/UT_MAGZHAN/hs/Categories/List
-      username: "Администратор"
-      password:
-    product1c:
-      base-url: http://172.16.1.18/UT_MAGZHAN/hs/Goods/List
-      username: "Администратор"
-      password:
-

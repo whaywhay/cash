@@ -111,6 +111,18 @@
 
               <Label text="Торговая точка:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
               <TextField fx:id="saleStoreField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+              <Label text="Web адрес для получения категории с 1С:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+              <TextField fx:id="categoryWebAddressField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+              <Label text="Web  адрес для получения продуктов с 1С:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+              <TextField fx:id="productWebAddressField" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+              <Label text="Логин(optional):" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+              <TextField fx:id="webLoginField" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+              <Label text="Пароль(optional):" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+              <TextField fx:id="webAddressPasswordField" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
             </GridPane>
           </TitledPane>
 

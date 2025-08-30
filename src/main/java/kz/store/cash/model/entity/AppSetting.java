@@ -37,4 +37,16 @@ public class AppSetting extends BaseEntity {
 
   @Column(name = "sale_store")
   private String saleStore;
+
+  @Column(name = "category_web_address")
+  private String categoryWebAddress;
+
+  @Column(name = "product_web_address")
+  private String productWebAddress;
+
+  @Column(name = "login")
+  private String webLogin;
+
+  @Column(name = "password")
+  private String webPassword;
 }

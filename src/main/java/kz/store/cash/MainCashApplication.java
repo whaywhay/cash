@@ -20,11 +20,8 @@ public class MainCashApplication extends Application {
 
   @Override
   public void init() {
-    notifyPreloader(new Preloader.ProgressNotification(0.05));
-    // Запускаем Spring Context
+    notifyPreloader(new Preloader.ProgressNotification(0.9));
     context = new SpringApplicationBuilder(CashApplication.class).run();
-
-    // 100% — готово
     notifyPreloader(new Preloader.ProgressNotification(1.0));
   }
 

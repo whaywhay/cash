@@ -7,12 +7,12 @@ import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import kz.store.cash.config.ApiUrlProperties;
 import kz.store.cash.fx.component.UiNotificationService;
 import kz.store.cash.handler.BusinessException;
 import kz.store.cash.mapper.CategoryMapper;
@@ -34,12 +34,12 @@ import org.springframework.web.client.RestClient;
 public class SyncWith1C {
 
   private final RestClient restClient;
-  private final ApiUrlProperties apiUrlProperties;
   private final CategoryService categoryService;
   private final ProductService productService;
   private final CategoryMapper categoryMapper;
   private final ProductMapper productMapper;
   private final UiNotificationService uiNotificationService;
+  private final AppSettingService appSettingService;
 
   private static final ParameterizedTypeReference<List<CategoryDto>> CATEGORY_LIST_TYPE =
       new ParameterizedTypeReference<>() {
@@ -59,7 +59,7 @@ public class SyncWith1C {
     Map<String, CategoryDto> categoryDtosByCodeMap = categoryDtoList.stream()
         .filter(catDto -> catDto.categoryId() != null && !catDto.categoryId().isEmpty())
         .map(d -> Map.entry(d.categoryId(), d))
-        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+        .collect(Collectors.toMap(Entry::getKey, Entry::getValue,
             (a, b) -> a, LinkedHashMap::new));
     // Вытаскиваем с таблицы category все совпадающие с CategoryDto.categoryId одним запросом
     Map<String, Category> existingCategoryByCodeMap = categoryService.findAllByCategoryCodeIn(
@@ -194,15 +194,21 @@ public class SyncWith1C {
   }
 
   private <T> List<T> fetchList(String endpointKey, ParameterizedTypeReference<List<T>> type) {
-    var apiProperty = apiUrlProperties.urlBasic().get(endpointKey);
-    if (apiProperty == null) {
-      throw new IllegalStateException("Нет настроек endpoint: " + endpointKey);
+    var appSetting = appSettingService.getSingleton().orElse(null);
+    if (appSetting == null || nullToEmpty(appSetting.getCategoryWebAddress()).isEmpty()
+        || nullToEmpty(appSetting.getProductWebAddress()).isEmpty()) {
+      throw new IllegalStateException(
+          "Нет настроек по организации или нет endpoint адресов: 1C категории и продукты");
     }
-
-    URI uri = apiProperty.baseUrl();
+    URI uri = URI.create(appSetting.getCategoryWebAddress());
+    if (endpointKey.equals("category1c")) {
+      uri = URI.create(appSetting.getCategoryWebAddress());
+    } else if (endpointKey.equals("product1c")) {
+      uri = URI.create(appSetting.getProductWebAddress());
+    }
     String auth = "Basic " + Base64.getEncoder()
         .encodeToString(
-            (nullToEmpty(apiProperty.username()) + ":" + nullToEmpty(apiProperty.password()))
+            (nullToEmpty(appSetting.getWebLogin()) + ":" + nullToEmpty(appSetting.getWebPassword()))
                 .getBytes(StandardCharsets.UTF_8));
 
     return restClient.get()

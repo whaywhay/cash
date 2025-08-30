@@ -34,7 +34,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AdminController {
 
-  // --- Users tab UI
   @FXML
   private TableView<User> userTable;
   @FXML
@@ -71,6 +70,14 @@ public class AdminController {
   private TextField addressField;
   @FXML
   private TextField saleStoreField;
+  @FXML
+  private TextField categoryWebAddressField;
+  @FXML
+  private TextField productWebAddressField;
+  @FXML
+  private TextField webLoginField;
+  @FXML
+  private TextField webAddressPasswordField;
 
   private final UserService userService;
   private final AppSettingService appSettingService;
@@ -223,7 +230,8 @@ public class AdminController {
       throw new ValidationException("Выберите пользователя для удаления");
     }
     Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-        "Удалить пользователя " + selectedUser.getUsername() + "?", ButtonType.OK, ButtonType.CANCEL);
+        "Удалить пользователя " + selectedUser.getUsername() + "?", ButtonType.OK,
+        ButtonType.CANCEL);
     alert.setHeaderText(null);
     alert.showAndWait().ifPresent(btn -> {
       if (btn == ButtonType.OK) {
@@ -248,6 +256,10 @@ public class AdminController {
     binField.setText(nvl(currentSetting.getBin()));
     addressField.setText(nvl(currentSetting.getAddress()));
     saleStoreField.setText(nvl(currentSetting.getSaleStore()));
+    categoryWebAddressField.setText(nvl(currentSetting.getCategoryWebAddress()));
+    productWebAddressField.setText(nvl(currentSetting.getProductWebAddress()));
+    webLoginField.setText(nvl(currentSetting.getWebLogin()));
+    webAddressPasswordField.setText(nvl(currentSetting.getWebPassword()));
   }
 
   @FXML
@@ -263,6 +275,10 @@ public class AdminController {
       currentSetting.setBin(trimOrNull(binField.getText()));
       currentSetting.setAddress(trimOrNull(addressField.getText()));
       currentSetting.setSaleStore(trimOrNull(saleStoreField.getText()));
+      currentSetting.setCategoryWebAddress(trimOrNull(categoryWebAddressField.getText()));
+      currentSetting.setProductWebAddress(trimOrNull(productWebAddressField.getText()));
+      currentSetting.setWebLogin(trimOrNull(webLoginField.getText()));
+      currentSetting.setWebPassword(trimOrNull(webAddressPasswordField.getText()));
       currentSetting = appSettingService.saveSingleton(currentSetting);
       ui.showInfo("Настройки сохранены");
     } catch (Exception e) {

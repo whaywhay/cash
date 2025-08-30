@@ -16,9 +16,11 @@ import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
@@ -134,6 +136,28 @@ public class SalesController {
       if (!isNowFocused) {
         suggestionsPopup.hide();
       }
+    });
+
+    qtyCol.setCellFactory(col -> {
+      TableCell<ProductItem, Number> cell = new TableCell<>() {
+        @Override
+        protected void updateItem(Number value, boolean empty) {
+          super.updateItem(value, empty);
+          setText(empty || value == null ? null : String.valueOf(value.intValue()));
+        }
+      };
+
+      cell.setOnMouseClicked(e -> {
+        if (e.getButton() == MouseButton.PRIMARY
+            && e.getClickCount() == 1
+            && !cell.isEmpty()) {
+          salesTable.getSelectionModel().select(cell.getIndex());
+          onQuantityDialog();
+          e.consume();
+        }
+      });
+
+      return cell;
     });
   }
 
