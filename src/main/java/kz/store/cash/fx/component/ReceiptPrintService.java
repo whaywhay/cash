@@ -21,6 +21,7 @@ import kz.store.cash.fx.model.SalesWithProductName;
 import kz.store.cash.model.enums.PaymentType;
 import kz.store.cash.service.AppSettingService;
 import kz.store.cash.service.SalesService;
+import kz.store.cash.util.StringUtils;
 import kz.store.cash.util.UtilNumbers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -373,7 +374,7 @@ public class ReceiptPrintService {
   }
 
   private static String emptyIfNull(String s) {
-    return (s == null) ? "" : s;
+    return StringUtils.nullToEmpty(s);
   }
 
   private static boolean isBlank(String s) {

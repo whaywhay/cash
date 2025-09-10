@@ -16,8 +16,6 @@ This project is offered under a **dual licensing model**:
   - Disclose source code of derivative works;
   - Disclose source code when used as SaaS (web-based services).
 
-See the full text in [LICENSE](LICENSE).
-
 ### 2. Commercial License (Enterprise Edition)
 - Available under a separate commercial agreement.  
 - Intended for organizations that:
@@ -39,20 +37,23 @@ See the full text in [LICENSE](LICENSE).
 - Multiple payment types: Cash, Card, Mixed  
 
 ## 🧰 Hardware & OS
-- **Сканеры штрих-кода:** любой USB/HID, настроенный на **суффикс Enter (CR/LF)**. Tab поддерживается опционально.
-- **Чековый принтер:** 80 мм, **ESC/POS**-совместимый. Печать идёт на **системный принтер по умолчанию**.
-- **OS:** Windows 10/11 (x64). Linux/macOS — экспериментально.
+- **Barcode scanners:** any USB/HID device configured to send **Enter (CR/LF)** after the code. Tab is optionally supported.
+- **Receipt printer:** 80 mm, **ESC/POS** compatible. Prints to the **system default printer**.
+- **OS:** Windows 10/11 (x64). Linux/macOS — experimental.
 
 ## ⚙️ Requirements
-- PostgreSQL 15+ (рекомендовано 16/17), заранее установленный.
-- Java 21/22 (JDK) при сборке из исходников.
+- PostgreSQL 15+ (recommended: 16/17), pre-installed.
+- JavaFX 24 for compilation.
+- Java 21/22 (JDK) if building from source.
 
 ## 🚦 Quick Start (Windows)
-1) Установите PostgreSQL и создайте БД/пользователя (см. ниже).
-2) Установите чековый принтер и сделайте его **принтером по умолчанию** в Windows.
-3) Подключите сканер штрих-кода в режиме **HID Keyboard** с суффиксом **Enter**.
-4) Отредактируйте `application.yml` (раздел *Database*).
-5) Запустите приложение (готовый `.exe` или `java -jar`).
+1) Install PostgreSQL and create DB/user (see below).
+2) Install the receipt printer and set it as **Default** in Windows.
+3) Connect a barcode scanner in **USB HID Keyboard** mode with **Enter** suffix.
+4) Configure `application.yml` (Database section).
+5) Run the app (bundled `.exe` or `java -jar`). Compile exe executing command in project '.\mvnw -DskipTests clean package' and '.\mvnw -DskipTests jpackage:jpackage -X'
+6) Install Cash-Store.exe in any cash computer
+
 
 📚 Подробнее: [docs/INSTALL_WINDOWS.md](docs/INSTALL_WINDOWS.md), [docs/PRINTING.md](docs/PRINTING.md), [docs/BARCODE_SCANNER.md](docs/BARCODE_SCANNER.md), [docs/DB_SETUP.md](docs/DB_SETUP.md), [docs/PACKAGING_WINDOWS.md](docs/PACKAGING_WINDOWS.md)
 ---

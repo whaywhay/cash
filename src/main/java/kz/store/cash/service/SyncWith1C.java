@@ -21,6 +21,7 @@ import kz.store.cash.model.CategoryDto;
 import kz.store.cash.model.ProductDto;
 import kz.store.cash.model.entity.Category;
 import kz.store.cash.model.entity.Product;
+import kz.store.cash.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -178,19 +179,11 @@ public class SyncWith1C {
   }
 
   private static String nullToEmpty(String s) {
-    return s == null ? "" : s;
-  }
-
-  private static String trimSafely(String s) {
-    if (s == null) {
-      return null;
-    }
-    String t = s.trim();
-    return t.isEmpty() ? null : t;
+    return StringUtils.nullToEmpty(s);
   }
 
   private static String trimToNull(String s) {
-    return trimSafely(s);
+    return StringUtils.trimSafely(s);
   }
 
   private <T> List<T> fetchList(String endpointKey, ParameterizedTypeReference<List<T>> type) {
