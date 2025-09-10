@@ -38,6 +38,23 @@ See the full text in [LICENSE](LICENSE).
 - Asynchronous product search (barcode & name)  
 - Multiple payment types: Cash, Card, Mixed  
 
+## 🧰 Hardware & OS
+- **Сканеры штрих-кода:** любой USB/HID, настроенный на **суффикс Enter (CR/LF)**. Tab поддерживается опционально.
+- **Чековый принтер:** 80 мм, **ESC/POS**-совместимый. Печать идёт на **системный принтер по умолчанию**.
+- **OS:** Windows 10/11 (x64). Linux/macOS — экспериментально.
+
+## ⚙️ Requirements
+- PostgreSQL 15+ (рекомендовано 16/17), заранее установленный.
+- Java 21/22 (JDK) при сборке из исходников.
+
+## 🚦 Quick Start (Windows)
+1) Установите PostgreSQL и создайте БД/пользователя (см. ниже).
+2) Установите чековый принтер и сделайте его **принтером по умолчанию** в Windows.
+3) Подключите сканер штрих-кода в режиме **HID Keyboard** с суффиксом **Enter**.
+4) Отредактируйте `application.yml` (раздел *Database*).
+5) Запустите приложение (готовый `.exe` или `java -jar`).
+
+📚 Подробнее: [docs/INSTALL_WINDOWS.md](docs/INSTALL_WINDOWS.md), [docs/PRINTING.md](docs/PRINTING.md), [docs/BARCODE_SCANNER.md](docs/BARCODE_SCANNER.md), [docs/DB_SETUP.md](docs/DB_SETUP.md), [docs/PACKAGING_WINDOWS.md](docs/PACKAGING_WINDOWS.md)
 ---
 
 © 2025 Yestay Yeleup. All rights reserved.
