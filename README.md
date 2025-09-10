@@ -43,7 +43,7 @@ This project is offered under a **dual licensing model**:
 
 ## ⚙️ Requirements
 - PostgreSQL 15+ (recommended: 16/17), pre-installed.
-- JavaFX 24 for compilation.
+- JavaFX 24 if building from source.
 - Java 21/22 (JDK) if building from source.
 
 ## 🚦 Quick Start (Windows)
