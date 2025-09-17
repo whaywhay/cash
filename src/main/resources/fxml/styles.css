@@ -3,6 +3,12 @@
   -fx-font-family: "Segoe UI";
 }
 
+.sale-bottom-bar {
+  -fx-background-color: #333;
+  -fx-padding: 15 20 20 20;
+  -fx-min-height: 170;
+}
+
 .bottom-bar {
   -fx-background-color: #333;
   -fx-padding: 15 25 25 25;
@@ -14,6 +20,15 @@
   -fx-padding: 10;
   -fx-border-radius: 5;
   -fx-background-radius: 5;
+}
+
+/* защищаем белый блок сумм от сжатия по ширине */
+.sale-summary-box {
+  -fx-background-color: white;
+  -fx-padding: 10;
+  -fx-border-radius: 5;
+  -fx-background-radius: 5;
+  -fx-min-width: 260; /* ключевая строка */
 }
 
 .summary-label {
@@ -43,6 +58,11 @@
   -fx-pref-height: 45;
   -fx-font-size: 18px;
 }
+/* кнопки теперь тянутся по ширине колонок, фиксированный pref-width не нужен */
+.sale-grid-btn {
+  -fx-pref-height: 45;
+  -fx-font-size: 18px;
+}
 
 .btn-delete {
   -fx-background-color: #f55;
@@ -52,11 +72,24 @@
   -fx-pref-height: 45;
 }
 
+.sale-btn-delete {
+  -fx-background-color: #f55;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-pref-height: 45;
+}
 .btn-pay {
   -fx-background-color: #0f8;
   -fx-text-fill: white;
   -fx-font-weight: bold;
   -fx-pref-width: 260;
+  -fx-pref-height: 45;
+}
+
+.sale-btn-pay {
+  -fx-background-color: #0f8;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
   -fx-pref-height: 45;
 }
 

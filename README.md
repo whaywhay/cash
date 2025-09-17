@@ -43,8 +43,8 @@ This project is offered under a **dual licensing model**:
 
 ## ⚙️ Requirements
 - PostgreSQL 15+ (recommended: 16/17), pre-installed.
-- JavaFX 24 if building from source.
-- Java 21/22 (JDK) if building from source.
+- JavaFX 21.0.7 if building from source.
+- Java 21 (Open JDK) if building from source.
 
 ## 🚦 Quick Start (Windows)
 1) Install PostgreSQL and create DB/user (see below).

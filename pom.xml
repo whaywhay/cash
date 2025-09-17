@@ -18,12 +18,12 @@
   <description>Store cash application</description>
 
   <properties>
-    <java.version>22</java.version>
+    <java.version>21</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <javafx.version>24.0.2</javafx.version>
+    <javafx.version>21.0.7</javafx.version>
     <lombok.version>1.18.34</lombok.version>
     <app.name>CashStore</app.name>
-    <installer.version>0.0.1</installer.version>
+    <installer.version>0.0.2</installer.version>
   </properties>
 
   <dependencies>
@@ -247,7 +247,6 @@
             <javaOption>-Djavafx.preloader=kz.store.cash.config.AppPreloader</javaOption>
 <!--            <javaOption>-Dspring.config.additional-location=$APPDIR/config/</javaOption>-->
           </javaOptions>
-
           <!-- Включи, если нужно видеть вывод при старте EXE -->
 <!--          <winConsole>true</winConsole>-->
         </configuration>

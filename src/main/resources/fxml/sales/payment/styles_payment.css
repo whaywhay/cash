@@ -3,22 +3,22 @@
 /* Диалог */
 .dialog-pane {
   -fx-background-color: #f9f9f9;
-  -fx-pref-width: 800px;
-  -fx-pref-height: 550px;
-  -fx-padding: 20;
+  -fx-pref-width: 720px;
+  -fx-pref-height: 460px;
+  -fx-padding: 12 14;
   -fx-border-radius: 8;
   -fx-background-radius: 8;
 }
 
 /* Заголовки сумм */
 .label-amount {
-  -fx-font-size: 20px;
+  -fx-font-size: 18px;
   -fx-font-weight: bold;
   -fx-text-fill: #333333;
 }
 
 .label-value {
-  -fx-font-size: 22px;
+  -fx-font-size: 20px;
   -fx-font-weight: bold;
   -fx-text-fill: #222222;
 }
@@ -26,7 +26,7 @@
 /* Фон панели переключателей */
 .toggle-bar {
   -fx-background-color: #eeeeee;
-  -fx-padding: 0;
+  -fx-padding: 0 0 6 0;
 }
 
 /* Базовый стиль ToggleButton */
@@ -74,17 +74,17 @@ toggle-button.expanded {
   -fx-border-color: #cccccc;
   -fx-border-radius: 4;
   -fx-background-radius: 4;
-  -fx-padding: 10;
+  -fx-padding: 6; /*10*/
 }
 
 /* Цифровая панель */
 .digit-button {
-  -fx-min-width: 84px;
-  -fx-min-height: 84px;
+  -fx-min-width: 80px; /*80*/
+  -fx-min-height: 80px;/*80*/
   -fx-background-color: #fafafa;
   -fx-border-color: #bbbbbb;
   -fx-border-radius: 5;
-  -fx-font-size: 26px;
+  -fx-font-size: 26px;/*26*/
   -fx-cursor: hand;
 }
 
@@ -99,7 +99,7 @@ toggle-button.expanded {
   -fx-font-size: 26px;
   -fx-cursor: hand;
   -fx-pref-width: 140px; /* одинаковая ширина */
-  -fx-pref-height: 84px; /* одинаковая высота как у digit-button */
+  -fx-pref-height: 80px; /* одинаковая высота как у digit-button */
   -fx-alignment: center;
 }
 

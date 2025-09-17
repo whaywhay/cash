@@ -13,11 +13,14 @@
   stylesheets="@styles_payment.css" styleClass="dialog-pane" fx:id="paymentWindow">
 
   <content>
-    <VBox spacing="12" alignment="TOP_CENTER">
+    <VBox spacing="4" alignment="TOP_CENTER">
 
       <!-- Шапка с итоговыми суммами -->
-      <GridPane hgap="20" vgap="8">
+      <GridPane hgap="4" vgap="8">
         <columnConstraints>
+          <ColumnConstraints halignment="LEFT"/>
+          <ColumnConstraints halignment="RIGHT"/>
+          <ColumnConstraints prefWidth="24" minWidth="40" hgrow="NEVER"/>
           <ColumnConstraints halignment="LEFT"/>
           <ColumnConstraints halignment="RIGHT"/>
         </columnConstraints>
@@ -25,17 +28,17 @@
           styleClass="label-amount"/>
         <Label fx:id="totalLabel" GridPane.rowIndex="0" GridPane.columnIndex="1"
           styleClass="label-value"/>
-        <Label text="Получено:" GridPane.rowIndex="1" GridPane.columnIndex="0"
+        <Label text="Получено:" GridPane.rowIndex="0" GridPane.columnIndex="3"
           styleClass="label-amount"/>
-        <Label fx:id="receivedPaymentLabel" GridPane.rowIndex="1" GridPane.columnIndex="1"
+        <Label fx:id="receivedPaymentLabel" GridPane.rowIndex="0" GridPane.columnIndex="4"
           styleClass="label-value"/>
-        <Label text="Осталось:" GridPane.rowIndex="2" GridPane.columnIndex="0"
+        <Label text="Осталось:" GridPane.rowIndex="1" GridPane.columnIndex="0"
           styleClass="label-amount"/>
-        <Label fx:id="remainingPaymentLabel" GridPane.rowIndex="2" GridPane.columnIndex="1"
+        <Label fx:id="remainingPaymentLabel" GridPane.rowIndex="1" GridPane.columnIndex="1"
           styleClass="label-value"/>
-        <Label text="Сдача:" GridPane.rowIndex="3" GridPane.columnIndex="0"
+        <Label text="Сдача:" GridPane.rowIndex="1" GridPane.columnIndex="3"
           styleClass="label-amount"/>
-        <Label fx:id="changeMoneyLabel" GridPane.rowIndex="3" GridPane.columnIndex="1"
+        <Label fx:id="changeMoneyLabel" GridPane.rowIndex="1" GridPane.columnIndex="4"
           styleClass="label-value"/>
       </GridPane>
 
