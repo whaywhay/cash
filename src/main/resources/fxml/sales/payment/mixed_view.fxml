@@ -13,7 +13,7 @@
   <Label text="Наличный счет" styleClass="payment-label" GridPane.rowIndex="0"
     GridPane.columnIndex="0"/>
   <TextField fx:id="mixedCashField" styleClass="payment-input" promptText="Введите сумму"
-    GridPane.rowIndex="1" GridPane.columnIndex="0" editable="false"/>
+    GridPane.rowIndex="1" GridPane.columnIndex="0"/>
   <Label text="Безналичный счет" styleClass="payment-label" GridPane.rowIndex="0"
     GridPane.columnIndex="1"/>
   <TextField fx:id="mixedCardField" styleClass="payment-input" promptText="Введите сумму"

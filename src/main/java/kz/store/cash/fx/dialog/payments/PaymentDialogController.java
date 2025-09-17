@@ -1,6 +1,8 @@
 package kz.store.cash.fx.dialog.payments;
 
 import java.io.IOException;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +13,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import kz.store.cash.fx.dialog.lib.CancellableDialog;
@@ -38,7 +42,6 @@ public class PaymentDialogController implements CancellableDialog {
   private ToggleButton cardButton;
   @FXML
   private ToggleButton mixedButton;
-
   @FXML
   public Label totalLabel;
   @FXML
@@ -49,6 +52,8 @@ public class PaymentDialogController implements CancellableDialog {
   private Label changeMoneyLabel;
   @FXML
   private StackPane modeContent;
+  private ChangeListener<String> activeListener;
+
 
   private final ApplicationContext context;
   private boolean paymentConfirmed = false;
@@ -58,6 +63,30 @@ public class PaymentDialogController implements CancellableDialog {
   private TextField activePaymentField;
   private PaymentSumDetails paymentSumDetails;
   private final UtilNumbers utilNumbers;
+
+  private void hookActiveField(TextField field) {
+    // delete old or previous listener
+    if (activeListener != null && activePaymentField != null) {
+      activePaymentField.textProperty().removeListener(activeListener);
+    }
+    activePaymentField = field;
+    activeListener = (obs, o, n) -> {
+      if (!cardButton.isSelected()) {
+        updateFromInputNew();
+      }
+    };
+    activePaymentField.textProperty().addListener(activeListener);
+    Platform.runLater(this::setFocusOnActivePaymentField);
+  }
+
+  @FXML
+  public void initialize() {
+    paymentWindow.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+      if (e.getCode() == KeyCode.ENTER) {
+        onPay();
+      }
+    });
+  }
 
   public void initData() {
     ToggleGroup group = new ToggleGroup();
@@ -75,7 +104,7 @@ public class PaymentDialogController implements CancellableDialog {
       utilNumbers.setupDecimalFilter(cashViewController.cashAmountField);
     }
     modeContent.getChildren().setAll(cashViewController.getRoot());
-    activePaymentField = cashViewController.cashAmountField;
+    hookActiveField(cashViewController.cashAmountField);
     clearAllInputs();
   }
 
@@ -83,15 +112,14 @@ public class PaymentDialogController implements CancellableDialog {
   public void switchToCard() {
     if (cardViewController == null) {
       cardViewController = loadCardView();
-      utilNumbers.setupDecimalFilter(cardViewController.cardAmountField);
     }
     modeContent.getChildren().setAll(cardViewController.getRoot());
     clearAllInputs();
     double total = paymentSumDetails.getTotalToPay();
-    activePaymentField = cardViewController.cardAmountField;
-    activePaymentField.setText(String.valueOf(total));
+    cardViewController.cardAmountField.setText(String.valueOf(total));
     paymentSumDetails.setReceivedPayment(total);
     updateLabelValues();
+//    hookActiveField(cardViewController.cardAmountField, false); // ← ввод с клавы запрещён
   }
 
   @FXML
@@ -101,7 +129,7 @@ public class PaymentDialogController implements CancellableDialog {
       utilNumbers.setupDecimalFilter(mixedViewController.mixedCashField);
     }
     modeContent.getChildren().setAll(mixedViewController.getRoot());
-    activePaymentField = mixedViewController.mixedCashField;
+    hookActiveField(mixedViewController.mixedCashField);
     clearAllInputs();
   }
 
@@ -155,7 +183,12 @@ public class PaymentDialogController implements CancellableDialog {
     String digit = ((Button) event.getSource()).getText();
     String previousValue = activePaymentField.getText();
     activePaymentField.setText(previousValue + digit);
-    updateFromInputNew();
+    setFocusOnActivePaymentField();
+  }
+
+  private void setFocusOnActivePaymentField() {
+    activePaymentField.requestFocus();
+    activePaymentField.positionCaret(activePaymentField.getText().length());
   }
 
   private boolean checkPaymentSumEnough() {
@@ -185,7 +218,7 @@ public class PaymentDialogController implements CancellableDialog {
     String fieldValue = activePaymentField.getText();
     if (!fieldValue.isEmpty() && !cardButton.isSelected()) {
       activePaymentField.setText(fieldValue.substring(0, fieldValue.length() - 1));
-      updateFromInputNew();
+      setFocusOnActivePaymentField();
     }
   }
 
@@ -199,7 +232,7 @@ public class PaymentDialogController implements CancellableDialog {
     double buttonSum = UtilNumbers.parseDoubleAmount(text);
     double result = UtilNumbers.parseDoubleAmount(activePaymentField.getText()) + buttonSum;
     activePaymentField.setText(String.valueOf(result));
-    updateFromInputNew();
+    setFocusOnActivePaymentField();
   }
 
   @FXML
@@ -244,7 +277,6 @@ public class PaymentDialogController implements CancellableDialog {
         String.format("%,.2f тг", paymentSumDetails.getRemainingPayment()));
     changeMoneyLabel.setText(String.format("%,.2f тг", paymentSumDetails.getChangeMoney()));
   }
-
 
   @Override
   public void handleClose() {
