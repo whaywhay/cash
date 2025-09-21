@@ -82,7 +82,7 @@ public class SalesHistoryController implements TabController {
     // Привязываем ширину колонок через TableUtils
     TableUtils.bindColumnWidths(
         salesHistoryTable,
-        new double[]{0.17, 0.15, 0.16, 0.17, 0.16, 0.19},
+        new double[]{0.13, 0.20, 0.19, 0.21, 0.16, 0.11},
         // размер для колонок 1 = 100% процент размеру
         idCol, dateCol, totalCol, paymentTypeCol, receiptStatusCol, fiscalCol);
     // Устанавливаем сегодняшнюю дату по умолчанию
@@ -176,7 +176,7 @@ public class SalesHistoryController implements TabController {
     });
 
     fiscalCol.setCellFactory(col -> new TableCell<>() {
-      private final Label link = new Label("Открыть чек");
+      private final Label link = new Label("Чек");
 
       {
         link.setStyle("-fx-text-fill: teal; -fx-underline: true; -fx-cursor: hand;");

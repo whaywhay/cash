@@ -24,7 +24,7 @@
   </top>
   <center>
     <StackPane>
-      <TableView fx:id="salesHistoryTable">
+      <TableView fx:id="salesHistoryTable" styleClass="main-table-view">
         <placeholder>
           <Label/>
         </placeholder>

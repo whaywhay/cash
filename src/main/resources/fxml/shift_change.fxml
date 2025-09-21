@@ -13,9 +13,6 @@
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
   fx:controller="kz.store.cash.fx.controllers.ShiftChangeController">
   <top>
-    <VBox spacing="10" style="-fx-background-color: #FBC02D; -fx-padding: 20;">
-      <Label text="Смена" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
-    </VBox>
   </top>
   <center>
     <VBox fx:id="authPane" spacing="12">

@@ -3,8 +3,8 @@
 /* Диалог */
 .dialog-pane {
   -fx-background-color: #f9f9f9;
-  -fx-pref-width: 720px;
-  -fx-pref-height: 460px;
+  -fx-pref-width: 760px;
+  -fx-pref-height: 480px;
   -fx-padding: 12 14;
   -fx-border-radius: 8;
   -fx-background-radius: 8;
@@ -79,12 +79,12 @@ toggle-button.expanded {
 
 /* Цифровая панель */
 .digit-button {
-  -fx-min-width: 80px; /*80*/
-  -fx-min-height: 80px;/*80*/
+  -fx-min-width: 84px;
+  -fx-min-height: 84px;
   -fx-background-color: #fafafa;
-  -fx-border-color: #bbbbbb;
-  -fx-border-radius: 5;
-  -fx-font-size: 26px;/*26*/
+  -fx-border-color: #959595;
+  -fx-border-radius: 6;
+  -fx-font-size: 22px;
   -fx-cursor: hand;
 }
 
@@ -96,10 +96,11 @@ toggle-button.expanded {
 .payment-amount-button {
   -fx-background-color: #dddddd;
   -fx-background-radius: 6;
-  -fx-font-size: 26px;
+  -fx-border-color: #959595;
+  -fx-font-size: 22px;
   -fx-cursor: hand;
-  -fx-pref-width: 140px; /* одинаковая ширина */
-  -fx-pref-height: 80px; /* одинаковая высота как у digit-button */
+  -fx-pref-width: 140px;
+  -fx-pref-height: 84px; /* одинаковая высота как у digit-button */
   -fx-alignment: center;
 }
 

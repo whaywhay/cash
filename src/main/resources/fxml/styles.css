@@ -3,6 +3,17 @@
   -fx-font-family: "Segoe UI";
 }
 
+.main-table-view {
+  -fx-font-size: 25px;           /* px в JavaFX — это логические пиксели */
+  -fx-font-family: "Segoe UI";
+}
+
+/* Шрифт заголовков колонок */
+.main-table-view .column-header .label {
+  -fx-font-size: 13px;
+  -fx-font-weight: bold;
+}
+
 .sale-bottom-bar {
   -fx-background-color: #333;
   -fx-padding: 15 20 20 20;
@@ -25,14 +36,14 @@
 /* защищаем белый блок сумм от сжатия по ширине */
 .sale-summary-box {
   -fx-background-color: white;
-  -fx-padding: 10;
+  -fx-padding: 40 10 10 20;
   -fx-border-radius: 5;
   -fx-background-radius: 5;
-  -fx-min-width: 260; /* ключевая строка */
+  -fx-min-width: 280; /* ключевая строка */
 }
 
 .summary-label {
-  -fx-font-size: 20px;
+  -fx-font-size: 26px;
   -fx-text-fill: black;
   -fx-font-weight: bold;
 }
@@ -53,15 +64,31 @@
   -fx-text-fill: black;
 }
 
+.summary-value, .sub-summary-value {
+  -fx-alignment: CENTER_RIGHT;
+  -fx-padding: 0 4 0 16;
+}
+/* небольшой “дыхательный” зазор слева у чисел */
+
 .grid-btn {
   -fx-pref-width: 260;
   -fx-pref-height: 45;
   -fx-font-size: 18px;
 }
+
 /* кнопки теперь тянутся по ширине колонок, фиксированный pref-width не нужен */
 .sale-grid-btn {
-  -fx-pref-height: 45;
-  -fx-font-size: 18px;
+  -fx-pref-height: 52;
+  -fx-font-size: 12px;
+  -fx-text-alignment: center;
+  -fx-border-radius: 5;
+  -fx-background-radius: 5;
+}
+.sale-plus-minus-grid-btn {
+  -fx-pref-height: 52;
+  -fx-font-size: 25px;
+  -fx-font-weight: bold;
+  -fx-text-alignment: center;
 }
 
 .btn-delete {
@@ -76,8 +103,9 @@
   -fx-background-color: #f55;
   -fx-text-fill: white;
   -fx-font-weight: bold;
-  -fx-pref-height: 45;
+  -fx-pref-height: 52;
 }
+
 .btn-pay {
   -fx-background-color: #0f8;
   -fx-text-fill: white;
@@ -90,7 +118,7 @@
   -fx-background-color: #0f8;
   -fx-text-fill: white;
   -fx-font-weight: bold;
-  -fx-pref-height: 45;
+  -fx-pref-height: 52;
 }
 
 .icon-success {

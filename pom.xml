@@ -23,7 +23,7 @@
     <javafx.version>21.0.7</javafx.version>
     <lombok.version>1.18.34</lombok.version>
     <app.name>CashStore</app.name>
-    <installer.version>0.0.2</installer.version>
+    <installer.version>0.0.4</installer.version>
   </properties>
 
   <dependencies>

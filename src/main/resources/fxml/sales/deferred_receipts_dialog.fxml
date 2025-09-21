@@ -18,9 +18,8 @@
 
   <!-- Bottom Button -->
   <HBox spacing="20" alignment="CENTER">
-    <Button text="ЗАКРЫТЬ"
-      onAction="#onClose"
-      styleClass="btn-cancel-product-change"
+<!--    <Button text="ВЫБРАТЬ" onAction="#onOpen" styleClass="btn-save-product-change" prefWidth="140"/>-->
+    <Button text="ЗАКРЫТЬ" onAction="#onClose" styleClass="btn-cancel-product-change"
       prefWidth="140"/>
   </HBox>
 

@@ -15,6 +15,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
 <BorderPane xmlns="http://javafx.com/javafx" fx:id="rootPane"
   xmlns:fx="http://javafx.com/fxml" fx:controller="kz.store.cash.fx.controllers.SalesController">
   <top>
@@ -38,7 +39,7 @@
   </top>
   <center>
     <StackPane>
-      <TableView fx:id="salesTable" editable="true">
+      <TableView fx:id="salesTable" editable="true" styleClass="main-table-view">
         <placeholder>
           <Label/>
         </placeholder>
@@ -65,31 +66,39 @@
     </StackPane>
   </center>
   <bottom>
-    <HBox spacing="20" styleClass="sale-bottom-bar" minHeight="160.0">
-
-      <VBox spacing="10" styleClass="sale-summary-box" alignment="CENTER_LEFT"
-        minWidth="260.0" prefWidth="260.0">
-        <GridPane>
+    <HBox spacing="15" styleClass="sale-bottom-bar" minHeight="160.0">
+      <VBox styleClass="sale-summary-box">
+        <!--minWidth="290.0" prefWidth="300.0" -->
+        <GridPane hgap="8" vgap="8">
+          <rowConstraints>
+            <RowConstraints valignment="CENTER"/>
+            <RowConstraints valignment="CENTER"/>
+            <RowConstraints valignment="CENTER"/>
+          </rowConstraints>
           <columnConstraints>
-            <ColumnConstraints hgrow="NEVER"  halignment="LEFT"/>
-            <ColumnConstraints hgrow="ALWAYS" halignment="RIGHT"/>
+            <ColumnConstraints hgrow="ALWAYS" halignment="LEFT"/>
+            <ColumnConstraints hgrow="NEVER" halignment="RIGHT"/>
           </columnConstraints>
-
-          <Label GridPane.rowIndex="0" GridPane.columnIndex="0" text="ИТОГО" styleClass="summary-label"/>
-          <Label GridPane.rowIndex="0" GridPane.columnIndex="1" fx:id="totalLabel" text="00.000" styleClass="summary-value"/>
-
-          <Label GridPane.rowIndex="1" GridPane.columnIndex="0" text="ПОЛУЧЕНО" styleClass="sub-summary-label"/>
-          <Label GridPane.rowIndex="1" GridPane.columnIndex="1" fx:id="receivedPaymentLabel" text="00.000" styleClass="sub-summary-value"/>
-
-          <Label GridPane.rowIndex="2" GridPane.columnIndex="0" text="СДАЧА" styleClass="sub-summary-label"/>
-          <Label GridPane.rowIndex="2" GridPane.columnIndex="1" fx:id="changeMoneyLabel" text="00.000" styleClass="sub-summary-value"/>
+          <Label GridPane.rowIndex="0" GridPane.columnIndex="0" text="ИТОГО"
+            styleClass="summary-label"/>
+          <Label GridPane.rowIndex="0" GridPane.columnIndex="1" fx:id="totalLabel" text="00.00"
+            styleClass="summary-value" maxWidth="Infinity" GridPane.halignment="RIGHT"/>
+          <Label GridPane.rowIndex="1" GridPane.columnIndex="0" text="ПОЛУЧЕНО"
+            styleClass="sub-summary-label"/>
+          <Label GridPane.rowIndex="1" GridPane.columnIndex="1" fx:id="receivedPaymentLabel"
+            text="00.00" styleClass="sub-summary-value" maxWidth="Infinity"
+            GridPane.halignment="RIGHT"/>
+          <Label GridPane.rowIndex="2" GridPane.columnIndex="0" text="СДАЧА"
+            styleClass="sub-summary-label"/>
+          <Label GridPane.rowIndex="2" GridPane.columnIndex="1" fx:id="changeMoneyLabel"
+            text="00.00" styleClass="sub-summary-value" maxWidth="Infinity"
+            GridPane.halignment="RIGHT"/>
         </GridPane>
       </VBox>
-
       <Region HBox.hgrow="ALWAYS"/>
 
       <!-- Правая панель — резиновая сетка -->
-      <GridPane hgap="10" vgap="10" alignment="CENTER_RIGHT">
+      <GridPane hgap="4" vgap="4" alignment="CENTER_RIGHT">
         <columnConstraints>
           <ColumnConstraints percentWidth="33.33" hgrow="ALWAYS"/>
           <ColumnConstraints percentWidth="33.33" hgrow="ALWAYS"/>
@@ -97,31 +106,45 @@
         </columnConstraints>
 
         <!-- ВАЖНО: maxWidth="Infinity" + разумный minWidth -->
-        <Button text="БЫСТРЫЕ ТОВАРЫ" styleClass="sale-grid-btn" maxWidth="Infinity" minWidth="140.0"
-          GridPane.rowIndex="0" GridPane.columnIndex="0" focusTraversable="false" onAction="#onQuickProductsDialog"/>
+        <Button text="БЫСТРЫЕ&#10;ТОВАРЫ" styleClass="sale-grid-btn" maxWidth="Infinity"
+          minWidth="140.0"
+          GridPane.rowIndex="0" GridPane.columnIndex="0" focusTraversable="false"
+          onAction="#onQuickProductsDialog"/>
         <Button text="КОЛИЧЕСТВО" styleClass="sale-grid-btn" maxWidth="Infinity" minWidth="140.0"
-          GridPane.rowIndex="0" GridPane.columnIndex="1" focusTraversable="false" onAction="#onQuantityDialog"/>
-        <Button text="+" styleClass="sale-grid-btn" maxWidth="Infinity" minWidth="140.0"
-          GridPane.rowIndex="0" GridPane.columnIndex="2" focusTraversable="false" onAction="#onIncreaseQuantity"/>
+          GridPane.rowIndex="0" GridPane.columnIndex="1" focusTraversable="false"
+          onAction="#onQuantityDialog"/>
+        <Button text="+" styleClass="sale-plus-minus-grid-btn" maxWidth="Infinity" minWidth="140.0"
+          GridPane.rowIndex="0" GridPane.columnIndex="2" focusTraversable="false"
+          onAction="#onIncreaseQuantity"/>
 
-        <Button text="ИЗМЕНИТЬ ТОВАР" styleClass="sale-grid-btn" maxWidth="Infinity" minWidth="140.0"
-          GridPane.rowIndex="1" GridPane.columnIndex="0" focusTraversable="false" onAction="#onEditProduct"/>
+        <Button text="ИЗМЕНИТЬ&#10;ТОВАР" styleClass="sale-grid-btn" maxWidth="Infinity"
+          minWidth="140.0" GridPane.rowIndex="1" GridPane.columnIndex="0" focusTraversable="false"
+          onAction="#onEditProduct"/>
         <Button text="ОТЛОЖКА" styleClass="sale-grid-btn" maxWidth="Infinity" minWidth="140.0"
-          GridPane.rowIndex="1" GridPane.columnIndex="1" focusTraversable="false" onAction="#onDeferredReceiptsDialog"/>
+          GridPane.rowIndex="1" GridPane.columnIndex="1" focusTraversable="false"
+          onAction="#onDeferredReceiptsDialog"/>
         <Button text="ДОП. ФУНКЦИИ" styleClass="sale-grid-btn" maxWidth="Infinity" minWidth="140.0"
-          GridPane.rowIndex="1" GridPane.columnIndex="2" focusTraversable="false" onAction="#onAdditionalFunctionDialog"/>
+          GridPane.rowIndex="1" GridPane.columnIndex="2" focusTraversable="false"
+          onAction="#onAdditionalFunctionDialog"/>
 
-        <Button text="УНИВЕРСАЛЬНЫЙ ПРОДУКТ" styleClass="sale-grid-btn" maxWidth="Infinity" minWidth="140.0"
-          GridPane.rowIndex="2" GridPane.columnIndex="0" focusTraversable="false" onAction="#onUniversalProductDialog"/>
-        <Button text="КАТЕГОРИЯ ТОВАРОВ" styleClass="sale-grid-btn" maxWidth="Infinity" minWidth="140.0"
-          GridPane.rowIndex="2" GridPane.columnIndex="1" focusTraversable="false" onAction="#onCategoryProductDialog"/>
-        <Button text="-" styleClass="sale-grid-btn" maxWidth="Infinity" minWidth="140.0"
-          GridPane.rowIndex="2" GridPane.columnIndex="2" focusTraversable="false" onAction="#onDecreaseQuantity"/>
+        <Button text="УНИВЕРСАЛЬНЫЙ&#10;ПРОДУКТ" styleClass="sale-grid-btn" maxWidth="Infinity"
+          minWidth="140.0"
+          GridPane.rowIndex="2" GridPane.columnIndex="0" focusTraversable="false"
+          onAction="#onUniversalProductDialog"/>
+        <Button text="КАТЕГОРИЯ&#10;ТОВАРОВ" styleClass="sale-grid-btn" maxWidth="Infinity"
+          minWidth="140.0"
+          GridPane.rowIndex="2" GridPane.columnIndex="1" focusTraversable="false"
+          onAction="#onCategoryProductDialog"/>
+        <Button text="-" styleClass="sale-plus-minus-grid-btn" maxWidth="Infinity" minWidth="140.0"
+          GridPane.rowIndex="2" GridPane.columnIndex="2" focusTraversable="false"
+          onAction="#onDecreaseQuantity"/>
 
         <Button text="УДАЛИТЬ" styleClass="sale-btn-delete" maxWidth="Infinity" minWidth="140.0"
-          GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.columnSpan="2" focusTraversable="false" onAction="#onDeleteSelectedOrChecked"/>
+          GridPane.rowIndex="3" GridPane.columnIndex="0"
+          focusTraversable="false" onAction="#onDeleteSelectedOrChecked"/>
         <Button text="ОПЛАТА" styleClass="sale-btn-pay" maxWidth="Infinity" minWidth="140.0"
-          GridPane.rowIndex="3" GridPane.columnIndex="2" focusTraversable="false" onAction="#onPaymentDialog"/>
+          GridPane.rowIndex="3" GridPane.columnIndex="1" GridPane.columnSpan="2"
+          focusTraversable="false" onAction="#onPaymentDialog"/>
       </GridPane>
     </HBox>
   </bottom>
