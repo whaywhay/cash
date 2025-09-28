@@ -4,7 +4,7 @@
 }
 
 .main-table-view {
-  -fx-font-size: 25px;           /* px в JavaFX — это логические пиксели */
+  -fx-font-size: 25px;
   -fx-font-family: "Segoe UI";
 }
 
@@ -68,7 +68,6 @@
   -fx-alignment: CENTER_RIGHT;
   -fx-padding: 0 4 0 16;
 }
-/* небольшой “дыхательный” зазор слева у чисел */
 
 .grid-btn {
   -fx-pref-width: 260;
@@ -84,6 +83,7 @@
   -fx-border-radius: 5;
   -fx-background-radius: 5;
 }
+
 .sale-plus-minus-grid-btn {
   -fx-pref-height: 52;
   -fx-font-size: 25px;
@@ -222,4 +222,75 @@
   -fx-border-color: black;
   -fx-border-width: 0 0 1 0; /* только нижняя линия */
   -fx-border-style: dotted; /* пунктир */
+}
+
+.dialog-icon-btn {
+  -fx-pref-width: 48;
+  -fx-pref-height: 40;
+  -fx-font-size: 20px;
+  -fx-font-weight: bold;
+  -fx-background-color: white;
+  -fx-text-fill: #333;
+  -fx-border-color: teal;
+  -fx-background-radius: 8;
+  -fx-border-radius: 8;
+}
+
+/* Кнопка отложенного чека (в FlowPane) */
+.receipt-btn {
+  -fx-pref-width: 120;
+  -fx-pref-height: 60;
+  -fx-wrap-text: true;
+  -fx-font-size: 15px;
+  -fx-background-color: white;
+  -fx-border-color: teal;
+  -fx-background-radius: 8;
+  -fx-border-radius: 8;
+}
+
+/*Превью (ContextMenu) */
+.preview-box {
+  -fx-padding: 8;
+  -fx-background-color: #fff;
+}
+
+.preview-title {
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+}
+
+.preview-meta {
+  -fx-font-size: 12px;
+  -fx-text-fill: #666;
+}
+
+.preview-line {
+  -fx-font-size: 12px;
+}
+
+.preview-menu-item:disabled {
+  -fx-opacity: 1.0;
+  -fx-background-color: transparent;
+  -fx-background-insets: 0;
+  -fx-padding: 0;
+}
+
+/* на всякий — не даём ховеру что-либо перекрашивать */
+.preview-menu-item:disabled:hover,
+.preview-menu-item:disabled:focused,
+.preview-menu-item:disabled:armed {
+  -fx-background-color: transparent;
+}
+
+/* отключаем подсветку/фон у пункта-превью */
+.preview-menu-item,
+.preview-menu-item:hover,
+.preview-menu-item:focused,
+.preview-menu-item:armed,
+.preview-menu-item:selected {
+  -fx-background-color: transparent;
+  -fx-background-insets: 0;
+  -fx-padding: 0;
+  -fx-focus-color: transparent;
+  -fx-faint-focus-color: transparent;
 }

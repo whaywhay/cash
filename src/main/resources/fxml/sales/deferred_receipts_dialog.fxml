@@ -1,26 +1,60 @@
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.FlowPane?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CustomMenuItem?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.FlowPane?>
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
   fx:controller="kz.store.cash.fx.dialog.DeferredReceiptsDialogController"
-  spacing="10" alignment="TOP_CENTER" stylesheets="@../styles.css" styleClass="dialog-pane">
+  spacing="10" alignment="TOP_CENTER"
+  stylesheets="@../styles.css" styleClass="dialog-pane">
 
-  <FlowPane fx:id="buttonPane" hgap="10" vgap="10" maxWidth="750" maxHeight="520"
-    style="-fx-padding: 10;">
-    <Button fx:id="plusButton" text="+"
-      style="-fx-font-size: 24px; -fx-background-color: white; -fx-border-color: teal;"
-      prefWidth="60" prefHeight="60"/>
-  </FlowPane>
-  <!-- Spacer -->
-  <Region VBox.vgrow="ALWAYS"/>
-
-  <!-- Bottom Button -->
-  <HBox spacing="20" alignment="CENTER">
-<!--    <Button text="ВЫБРАТЬ" onAction="#onOpen" styleClass="btn-save-product-change" prefWidth="140"/>-->
-    <Button text="ЗАКРЫТЬ" onAction="#onClose" styleClass="btn-cancel-product-change"
-      prefWidth="140"/>
+  <!-- ВЕРХ: плюс -->
+  <HBox spacing="10" alignment="CENTER_LEFT" VBox.vgrow="NEVER">
+    <Button fx:id="plusButton" text="+" styleClass="dialog-icon-btn"/>
   </HBox>
 
+  <!-- КНОПКИ ЧЕКОВ -->
+  <FlowPane fx:id="buttonPane" hgap="10" vgap="10" maxWidth="760" maxHeight="460"
+    style="-fx-padding: 10;"/>
+
+  <Region VBox.vgrow="ALWAYS"/>
+
+  <!-- НИЗ: Выбрать / Закрыть -->
+  <HBox spacing="20" alignment="CENTER">
+    <Button text="ВЫБРАТЬ" onAction="#onSelect" styleClass="btn-save-product-change"
+      prefWidth="160"/>
+    <Button text="ЗАКРЫТЬ" onAction="#onClose" styleClass="btn-cancel-product-change"
+      prefWidth="160"/>
+  </HBox>
+
+  <!-- Объявляем нефизические объекты здесь -->
+  <fx:define>
+    <ContextMenu fx:id="previewMenu">
+      <items>
+        <CustomMenuItem fx:id="previewItem" hideOnClick="false" styleClass="preview-menu-item">
+          <content>
+            <VBox fx:id="previewBox" spacing="4" styleClass="preview-box" mouseTransparent="true">
+              <Label fx:id="previewTitle" styleClass="preview-title"/>
+              <Label fx:id="previewMeta" styleClass="preview-meta"/>
+              <Separator/>
+              <VBox fx:id="previewLinesContainer" spacing="2"/>
+            </VBox>
+          </content>
+        </CustomMenuItem>
+        <SeparatorMenuItem/>
+        <MenuItem fx:id="chooseItem" text="Выбрать" onAction="#onSelect"/>
+      </items>
+    </ContextMenu>
+  </fx:define>
+
+  <padding>
+    <Insets top="16" right="20" bottom="16" left="20"/>
+  </padding>
 </VBox>
