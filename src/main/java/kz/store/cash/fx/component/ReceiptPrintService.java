@@ -76,8 +76,7 @@ public class ReceiptPrintService {
       BigDecimal allSale = cashSum.add(cardSum).add(returnCashSum).add(returnCardSum);
       BigDecimal realCashSale = cashSum.add(returnCashSum);
       BigDecimal realCardSale = cardSum.add(returnCardSum);
-      BigDecimal realCashFromStore =
-          cashSum.add(openingSum).subtract(leftSum).subtract(returnCashSum);
+      BigDecimal realCashFromStore = cashSum.add(openingSum).subtract(leftSum);
 
       StringBuilder sb = new StringBuilder();
 
