@@ -141,7 +141,7 @@
 
         <Button text="УДАЛИТЬ" styleClass="sale-btn-delete" maxWidth="Infinity" minWidth="140.0"
           GridPane.rowIndex="3" GridPane.columnIndex="0"
-          focusTraversable="false" onAction="#onDeleteSelectedOrChecked"/>
+          focusTraversable="false" onAction="#onDeleteCheckedItems"/>
         <Button text="ОПЛАТА" styleClass="sale-btn-pay" maxWidth="Infinity" minWidth="140.0"
           GridPane.rowIndex="3" GridPane.columnIndex="1" GridPane.columnSpan="2"
           focusTraversable="false" onAction="#onPaymentDialog"/>

@@ -136,10 +136,8 @@ public class TransactionReturnController implements TabController {
   }
 
   @FXML
-  public void onDeleteSelectedOrChecked() {
+  public void onDeleteCheckedItems() {
     cart.removeIf(ProductItem::isSelected);
-    ProductItem selected = salesReturnTable.getSelectionModel().getSelectedItem();
-    cart.remove(selected);
     updateReturnTotal();
   }
 

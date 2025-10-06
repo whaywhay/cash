@@ -208,10 +208,8 @@ public class SalesController {
   }
 
   @FXML
-  private void onDeleteSelectedOrChecked() {
+  private void onDeleteCheckedItems() {
     cart.removeIf(ProductItem::isSelected);
-    ProductItem selected = salesTable.getSelectionModel().getSelectedItem();
-    cart.remove(selected);
     updateTotal();
   }
 

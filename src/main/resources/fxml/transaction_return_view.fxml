@@ -90,7 +90,7 @@
           styleClass="grid-btn"
           GridPane.rowIndex="0" GridPane.columnIndex="1" focusTraversable="false"/>
 
-        <Button text="УДАЛИТЬ" fx:id="deleteButton" onAction="#onDeleteSelectedOrChecked"
+        <Button text="УДАЛИТЬ" fx:id="deleteButton" onAction="#onDeleteCheckedItems"
           styleClass="btn-delete"
           GridPane.rowIndex="1" GridPane.columnIndex="0"
           focusTraversable="false"/>
