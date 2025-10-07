@@ -31,6 +31,7 @@ import kz.store.cash.model.enums.PriceMode;
 import kz.store.cash.service.CategoryService;
 import kz.store.cash.service.ProductService;
 import kz.store.cash.service.QuickProductService;
+import kz.store.cash.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -112,7 +113,8 @@ public class CategoryProductDialogController implements CancellableDialog {
       }
       if (row.type() == RowType.CATEGORY && e.getClickCount() == 1) {
         var c = row.category();
-        pushAndNavigate(new Crumb(nvl(c.getCategoryCode()), nvl(c.getCategoryName())));
+        pushAndNavigate(new Crumb(StringUtils.nullToEmpty(c.getCategoryCode()),
+            StringUtils.nullToEmpty(c.getCategoryName())));
       } else if (row.type() == RowType.PRODUCT && e.getClickCount() == 2) {
         chooseProduct(row.product());
       }
@@ -128,7 +130,8 @@ public class CategoryProductDialogController implements CancellableDialog {
       }
       if (row.type() == RowType.CATEGORY) {
         var c = row.category();
-        pushAndNavigate(new Crumb(nvl(c.getCategoryCode()), nvl(c.getCategoryName())));
+        pushAndNavigate(new Crumb(StringUtils.nullToEmpty(c.getCategoryCode()),
+            StringUtils.nullToEmpty(c.getCategoryName())));
       } else {
         chooseProduct(row.product());
       }
@@ -221,11 +224,11 @@ public class CategoryProductDialogController implements CancellableDialog {
     }
 
     Optional<Category> named = roots.stream()
-        .filter(c -> "товары".equalsIgnoreCase(nvl(c.getCategoryName())))
+        .filter(c -> "товары".equalsIgnoreCase(StringUtils.nullToEmpty(c.getCategoryName())))
         .findFirst();
 
     Category rootCat = named.orElse(roots.getFirst());
-    return nvl(rootCat.getCategoryCode());
+    return StringUtils.nullToEmpty(rootCat.getCategoryCode());
   }
 
   private void rebuildBreadcrumbs() {
@@ -274,10 +277,6 @@ public class CategoryProductDialogController implements CancellableDialog {
 
   private static boolean isRoot(Crumb c) {
     return c != null && Objects.equals(c.code(), ROOT.code());
-  }
-
-  private static String nvl(String s) {
-    return s == null ? "" : s;
   }
 
   @Override

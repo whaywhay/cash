@@ -15,7 +15,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class TableViewProductConfigService {
 
-  public void configure(TableView<ProductItem> table,
+  public void configure(
+      TableView<ProductItem> table,
       TableColumn<ProductItem, Boolean> checkboxCol,
       TableColumn<ProductItem, Number> indexCol,
       TableColumn<ProductItem, String> nameCol,
@@ -24,7 +25,8 @@ public class TableViewProductConfigService {
       TableColumn<ProductItem, Number> totalCol,
       ObservableList<ProductItem> cart,
       CheckBox headerCheckBox,
-      Runnable updateTotalAndHeaderCheckbox) {
+      Runnable onCartChanged // CHANGED: было updateTotalAndHeaderCheckbox
+  ) {
 
     table.setItems(cart);
     table.setEditable(true);
@@ -53,14 +55,14 @@ public class TableViewProductConfigService {
       }
     });
 
-    // Обновление тотала и чекбокса при изменении списка
-    cart.addListener(
-        (ListChangeListener<ProductItem>) change -> {
-          updateTotalAndHeaderCheckbox.run();
-          updateHeaderCheckboxState(cart, headerCheckBox);
-        });
-    cart.forEach(item -> item.selectedProperty()
-        .addListener((obs, oldVal, newVal) -> updateTotalAndHeaderCheckbox.run()));
+    // Обновление тотала/хедера делаем через единый runnable из контроллера:
+    cart.addListener((ListChangeListener<ProductItem>) change -> {
+      onCartChanged.run();                         // CHANGED
+      updateHeaderCheckboxState(cart, headerCheckBox);
+    });
+
+    cart.forEach(item ->
+        item.selectedProperty().addListener((obs, oldVal, newVal) -> onCartChanged.run())); // CHANGED
   }
 
   private void updateHeaderCheckboxState(List<ProductItem> cart, CheckBox headerCheckBox) {

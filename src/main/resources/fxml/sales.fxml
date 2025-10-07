@@ -100,50 +100,54 @@
       <!-- Правая панель — резиновая сетка -->
       <GridPane hgap="4" vgap="4" alignment="CENTER_RIGHT">
         <columnConstraints>
-          <ColumnConstraints percentWidth="33.33" hgrow="ALWAYS"/>
-          <ColumnConstraints percentWidth="33.33" hgrow="ALWAYS"/>
-          <ColumnConstraints percentWidth="33.33" hgrow="ALWAYS"/>
+          <ColumnConstraints percentWidth="25" hgrow="ALWAYS"/>
+          <ColumnConstraints percentWidth="25" hgrow="ALWAYS"/>
+          <ColumnConstraints percentWidth="25" hgrow="ALWAYS"/>
+          <ColumnConstraints percentWidth="25" hgrow="ALWAYS"/>
         </columnConstraints>
 
         <!-- ВАЖНО: maxWidth="Infinity" + разумный minWidth -->
         <Button text="БЫСТРЫЕ&#10;ТОВАРЫ" styleClass="sale-grid-btn" maxWidth="Infinity"
           minWidth="140.0"
-          GridPane.rowIndex="0" GridPane.columnIndex="0" focusTraversable="false"
+          GridPane.rowIndex="0" GridPane.columnIndex="1" focusTraversable="false"
           onAction="#onQuickProductsDialog"/>
         <Button text="КОЛИЧЕСТВО" styleClass="sale-grid-btn" maxWidth="Infinity" minWidth="140.0"
-          GridPane.rowIndex="0" GridPane.columnIndex="1" focusTraversable="false"
+          GridPane.rowIndex="0" GridPane.columnIndex="2" focusTraversable="false"
           onAction="#onQuantityDialog"/>
         <Button text="+" styleClass="sale-plus-minus-grid-btn" maxWidth="Infinity" minWidth="140.0"
-          GridPane.rowIndex="0" GridPane.columnIndex="2" focusTraversable="false"
+          GridPane.rowIndex="0" GridPane.columnIndex="3" focusTraversable="false"
           onAction="#onIncreaseQuantity"/>
 
         <Button text="ИЗМЕНИТЬ&#10;ТОВАР" styleClass="sale-grid-btn" maxWidth="Infinity"
-          minWidth="140.0" GridPane.rowIndex="1" GridPane.columnIndex="0" focusTraversable="false"
+          minWidth="140.0" GridPane.rowIndex="1" GridPane.columnIndex="1" focusTraversable="false"
           onAction="#onEditProduct"/>
         <Button text="ОТЛОЖКА" styleClass="sale-grid-btn" maxWidth="Infinity" minWidth="140.0"
-          GridPane.rowIndex="1" GridPane.columnIndex="1" focusTraversable="false"
+          GridPane.rowIndex="1" GridPane.columnIndex="2" focusTraversable="false"
           onAction="#onDeferredReceiptsDialog"/>
         <Button text="ДОП. ФУНКЦИИ" styleClass="sale-grid-btn" maxWidth="Infinity" minWidth="140.0"
-          GridPane.rowIndex="1" GridPane.columnIndex="2" focusTraversable="false"
+          GridPane.rowIndex="1" GridPane.columnIndex="3" focusTraversable="false"
           onAction="#onAdditionalFunctionDialog"/>
 
         <Button text="УНИВЕРСАЛЬНЫЙ&#10;ПРОДУКТ" styleClass="sale-grid-btn" maxWidth="Infinity"
           minWidth="140.0"
-          GridPane.rowIndex="2" GridPane.columnIndex="0" focusTraversable="false"
+          GridPane.rowIndex="2" GridPane.columnIndex="1" focusTraversable="false"
           onAction="#onUniversalProductDialog"/>
         <Button text="КАТЕГОРИЯ&#10;ТОВАРОВ" styleClass="sale-grid-btn" maxWidth="Infinity"
           minWidth="140.0"
-          GridPane.rowIndex="2" GridPane.columnIndex="1" focusTraversable="false"
+          GridPane.rowIndex="2" GridPane.columnIndex="2" focusTraversable="false"
           onAction="#onCategoryProductDialog"/>
         <Button text="-" styleClass="sale-plus-minus-grid-btn" maxWidth="Infinity" minWidth="140.0"
-          GridPane.rowIndex="2" GridPane.columnIndex="2" focusTraversable="false"
+          GridPane.rowIndex="2" GridPane.columnIndex="3" focusTraversable="false"
           onAction="#onDecreaseQuantity"/>
 
+        <Button text="В ДОЛГ" styleClass="sale-grid-btn" maxWidth="Infinity"
+          minWidth="140.0" GridPane.rowIndex="3" GridPane.columnIndex="0" focusTraversable="false"
+          onAction="#onDiaryDebtDialog"/>
         <Button text="УДАЛИТЬ" styleClass="sale-btn-delete" maxWidth="Infinity" minWidth="140.0"
-          GridPane.rowIndex="3" GridPane.columnIndex="0"
+          GridPane.rowIndex="3" GridPane.columnIndex="1"
           focusTraversable="false" onAction="#onDeleteCheckedItems"/>
         <Button text="ОПЛАТА" styleClass="sale-btn-pay" maxWidth="Infinity" minWidth="140.0"
-          GridPane.rowIndex="3" GridPane.columnIndex="1" GridPane.columnSpan="2"
+          GridPane.rowIndex="3" GridPane.columnIndex="2" GridPane.columnSpan="2"
           focusTraversable="false" onAction="#onPaymentDialog"/>
       </GridPane>
     </HBox>

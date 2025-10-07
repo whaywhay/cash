@@ -49,4 +49,13 @@ public class AppSetting extends BaseEntity {
 
   @Column(name = "password")
   private String webPassword;
+
+  @Column(name = "debt_diary_base_address")
+  private String debtDiaryBaseAddress;
+
+  @Column(name = "debt_diary_login")
+  private String debtDiaryLogin;
+
+  @Column(name = "debt_diary_password")
+  private String debtDiaryPassword;
 }

@@ -26,9 +26,11 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import kz.store.cash.fx.component.SalesCartService;
 import kz.store.cash.fx.component.TableViewProductConfigService;
+import kz.store.cash.fx.component.UiNotificationService;
 import kz.store.cash.fx.dialog.AdditionalFunctionDialogController;
 import kz.store.cash.fx.dialog.CategoryProductDialogController;
 import kz.store.cash.fx.dialog.DeferredReceiptsDialogController;
+import kz.store.cash.fx.dialog.DiaryCustomersDialogController;
 import kz.store.cash.fx.dialog.QuantitySetDialogController;
 import kz.store.cash.fx.dialog.QuickProductsDialogController;
 import kz.store.cash.fx.dialog.UniversalProductDialogController;
@@ -102,10 +104,10 @@ public class SalesController {
   private PaymentSumDetails paymentSumDetails;
   private PaymentReceipt paymentReceipt;
   private final SalesService salesService;
+  private final UiNotificationService uiNotificationService;
 
   @FXML
   public void initialize() {
-    log.info("paymentReceipt: {}", paymentReceipt);
     initTableView();
     TableUtils.bindColumnWidths(
         salesTable,
@@ -330,6 +332,7 @@ public class SalesController {
       if (controller.isPaymentConfirmed()) {
         paymentSumDetails = controller.getPaymentSumDetails();
         processPaymentSuccess(paymentSumDetails); // свой метод обработки результата
+        System.out.println("after onPaymentDialog - paymentSumDetails" + paymentSumDetails);
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -348,6 +351,7 @@ public class SalesController {
       cart.clear();
       updatePaymentDetailSumLabel(paymentSumDetails);
       salesTable.requestFocus();
+
     } catch (Exception e) {
       log.error("Ошибка сохранения продажи", e);
       utilAlert.showError("Ошибка", "Не удалось сохранить продажу. Попробуйте снова.");
@@ -373,7 +377,7 @@ public class SalesController {
       }
     } catch (IOException e) {
       log.info("IOException in SalesController.onEditProduct()", e);
-      throw new RuntimeException(e);
+      uiNotificationService.showError(e.getMessage());
     }
   }
 
@@ -391,7 +395,7 @@ public class SalesController {
       }
     } catch (IOException e) {
       log.info("IOException in SalesController.onUniversalProductDialog()", e);
-      throw new RuntimeException(e);
+      uiNotificationService.showError(e.getMessage());
     }
   }
 
@@ -413,7 +417,7 @@ public class SalesController {
       }
     } catch (IOException e) {
       log.error("IOException in SalesController.onQuantityDialog()", e);
-      throw new RuntimeException(e);
+      uiNotificationService.showError(e.getMessage());
     }
   }
 
@@ -438,7 +442,7 @@ public class SalesController {
       }
     } catch (IOException e) {
       log.error("IOException in SalesController.onDeferredReceiptsDialog()", e);
-      throw new RuntimeException(e);
+      uiNotificationService.showError(e.getMessage());
     }
   }
 
@@ -465,7 +469,7 @@ public class SalesController {
       dialogBase.createDialogStage(rootPane, openedRoot, controller);
     } catch (IOException e) {
       log.error("IOException in SalesController.onCategoryProductDialog()", e);
-      throw new RuntimeException(e);
+      uiNotificationService.showError(e.getMessage());
     }
   }
 
@@ -477,7 +481,7 @@ public class SalesController {
       dialogBase.createDialogStage(rootPane, openedRoot, controller);
     } catch (IOException e) {
       log.error("IOException in SalesController.onAdditionalFunctionDialog()", e);
-      throw new RuntimeException(e);
+      uiNotificationService.showError(e.getMessage());
     }
   }
 
@@ -490,7 +494,20 @@ public class SalesController {
       dialogBase.createDialogStage(rootPane, openedRoot, controller);
     } catch (IOException e) {
       log.error("IOException in SalesController.onQuickProductsDialog()", e);
-      throw new RuntimeException(e);
+      uiNotificationService.showError(e.getMessage());
+    }
+  }
+
+  public void onDiaryDebtDialog() {
+    try {
+      var loader = dialogBase.loadFXML("/fxml/sales/customers_dialog.fxml");
+      BorderPane openedRoot = loader.load();
+      DiaryCustomersDialogController controller = loader.getController();
+      controller.resetAndReload(paymentSumDetails == null ? 0 : paymentSumDetails.getTotalToPay());
+      dialogBase.createFullscreenDialogStage(rootPane, openedRoot, controller);
+    } catch (IOException e) {
+      log.error("IOException in SalesController.onDiaryDebt()", e);
+      uiNotificationService.showError(e.getMessage());
     }
   }
 }

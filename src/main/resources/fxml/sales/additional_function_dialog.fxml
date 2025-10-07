@@ -19,9 +19,7 @@
   <Region VBox.vgrow="ALWAYS"/>
 
   <HBox spacing="20" alignment="CENTER">
-    <Button text="ЗАКРЫТЬ"
-      onAction="#onClose"
-      styleClass="btn-cancel-product-change"
+    <Button text="ЗАКРЫТЬ" onAction="#onClose" styleClass="btn-cancel-product-change"
       prefWidth="140"/>
   </HBox>
 

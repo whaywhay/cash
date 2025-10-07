@@ -17,6 +17,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
+import kz.store.cash.fx.component.FxAsyncRunner;
 import kz.store.cash.fx.component.UiNotificationService;
 import kz.store.cash.handler.ValidationException;
 import kz.store.cash.model.UserDto;
@@ -25,6 +26,8 @@ import kz.store.cash.model.entity.User;
 import kz.store.cash.model.enums.UserRole;
 import kz.store.cash.service.AppSettingService;
 import kz.store.cash.service.UserService;
+import kz.store.cash.service.diary.DiaryAuthService;
+import kz.store.cash.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -78,11 +81,19 @@ public class AdminController {
   private TextField webLoginField;
   @FXML
   private TextField webAddressPasswordField;
+  @FXML
+  public TextField debtDiaryBaseAddress;
+  @FXML
+  public TextField debtDiaryLogin;
+  @FXML
+  public TextField debtDiaryPassword;
+
 
   private final UserService userService;
   private final AppSettingService appSettingService;
   private final UiNotificationService ui;
-
+  private final FxAsyncRunner fxAsyncRunner;
+  private final DiaryAuthService diaryAuthService;
   private AppSetting currentSetting;
 
   @FXML
@@ -252,14 +263,18 @@ public class AdminController {
 
   private void loadSettings() {
     currentSetting = appSettingService.loadOrNew();
-    orgNameField.setText(nvl(currentSetting.getOrgName()));
-    binField.setText(nvl(currentSetting.getBin()));
-    addressField.setText(nvl(currentSetting.getAddress()));
-    saleStoreField.setText(nvl(currentSetting.getSaleStore()));
-    categoryWebAddressField.setText(nvl(currentSetting.getCategoryWebAddress()));
-    productWebAddressField.setText(nvl(currentSetting.getProductWebAddress()));
-    webLoginField.setText(nvl(currentSetting.getWebLogin()));
-    webAddressPasswordField.setText(nvl(currentSetting.getWebPassword()));
+    orgNameField.setText(StringUtils.nullToEmpty(currentSetting.getOrgName()));
+    binField.setText(StringUtils.nullToEmpty(currentSetting.getBin()));
+    addressField.setText(StringUtils.nullToEmpty(currentSetting.getAddress()));
+    saleStoreField.setText(StringUtils.nullToEmpty(currentSetting.getSaleStore()));
+    categoryWebAddressField.setText(
+        StringUtils.nullToEmpty(currentSetting.getCategoryWebAddress()));
+    productWebAddressField.setText(StringUtils.nullToEmpty(currentSetting.getProductWebAddress()));
+    webLoginField.setText(StringUtils.nullToEmpty(currentSetting.getWebLogin()));
+    webAddressPasswordField.setText(StringUtils.nullToEmpty(currentSetting.getWebPassword()));
+    debtDiaryBaseAddress.setText(StringUtils.nullToEmpty(currentSetting.getDebtDiaryBaseAddress()));
+    debtDiaryLogin.setText(StringUtils.nullToEmpty(currentSetting.getDebtDiaryLogin()));
+    debtDiaryPassword.setText(StringUtils.nullToEmpty(currentSetting.getDebtDiaryPassword()));
   }
 
   @FXML
@@ -271,6 +286,11 @@ public class AdminController {
   @FXML
   public void onSaveSettings() {
     try {
+
+      String oldBase = StringUtils.nullToEmpty(currentSetting.getDebtDiaryBaseAddress());
+      String oldLogin = StringUtils.nullToEmpty(currentSetting.getDebtDiaryLogin());
+      String oldPass = StringUtils.nullToEmpty(currentSetting.getDebtDiaryPassword());
+
       currentSetting.setOrgName(trimOrNull(orgNameField.getText()));
       currentSetting.setBin(trimOrNull(binField.getText()));
       currentSetting.setAddress(trimOrNull(addressField.getText()));
@@ -279,7 +299,19 @@ public class AdminController {
       currentSetting.setProductWebAddress(trimOrNull(productWebAddressField.getText()));
       currentSetting.setWebLogin(trimOrNull(webLoginField.getText()));
       currentSetting.setWebPassword(trimOrNull(webAddressPasswordField.getText()));
+      currentSetting.setDebtDiaryBaseAddress(trimOrNull(debtDiaryBaseAddress.getText()));
+      currentSetting.setDebtDiaryLogin(trimOrNull(debtDiaryLogin.getText()));
+      currentSetting.setDebtDiaryPassword(trimOrNull(debtDiaryPassword.getText()));
       currentSetting = appSettingService.saveSingleton(currentSetting);
+
+      // Если что-то из параметров авторизации изменилось — сбрасываем токен
+      String newBase = StringUtils.nullToEmpty(currentSetting.getDebtDiaryBaseAddress());
+      String newLogin = StringUtils.nullToEmpty(currentSetting.getDebtDiaryLogin());
+      String newPass = StringUtils.nullToEmpty(currentSetting.getDebtDiaryPassword());
+      if (!oldBase.equals(newBase) || !oldLogin.equals(newLogin) || !oldPass.equals(newPass)) {
+        diaryAuthService.logout();
+      }
+
       ui.showInfo("Настройки сохранены");
     } catch (Exception e) {
       log.error("Ошибка при сохранении настроек по организации", e);
@@ -287,23 +319,25 @@ public class AdminController {
     }
   }
 
-  private static String nvl(String s) {
-    return s == null ? "" : s;
-  }
-
   private static String trimOrNull(String s) {
-    if (s == null) {
-      return null;
-    }
-    String t = s.trim();
-    return t.isEmpty() ? null : t;
+    return StringUtils.trimSafely(s);
   }
 
   private static String trimToNull(String s) {
-    if (s == null) {
-      return null;
-    }
-    String t = s.trim();
-    return t.isEmpty() ? null : t;
+    return StringUtils.trimSafely(s);
+  }
+
+  public void onTestDebtDiary() {
+    fxAsyncRunner.runWithLoader(debtDiaryBaseAddress,         // что заблокировать визуально
+        "Проверка авторизации в системе Книга задолженности...",
+        () -> {
+          diaryAuthService.logout();
+          diaryAuthService.authenticate(debtDiaryBaseAddress.getText(), debtDiaryLogin.getText(),
+              debtDiaryPassword.getText());      // бросит исключение при ошибке → поймает GlobalExceptionHandler
+          diaryAuthService.logout();
+          return null;
+        },
+        ok -> ui.showInfo("Авторизация прошла успешно")
+    );
   }
 }

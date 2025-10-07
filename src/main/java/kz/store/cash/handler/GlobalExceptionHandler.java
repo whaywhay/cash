@@ -33,12 +33,19 @@ public class GlobalExceptionHandler {
     uiNotificationService.showError(e.getMessage());
   }
 
+  @ExceptionHandler(ExternalResponseError.class)
+  public void handleSystemException(ExternalResponseError e) {
+    log.error("ExternalResponseError error:", e);
+    uiNotificationService.showError(e.getMessage());
+  }
+
   public void handleJavaFxException(Throwable e) {
     Throwable rootCause = unwrapCause(e);
     log.info("JavaFx exception: {}", rootCause.getClass().getName());
     switch (rootCause) {
       case BusinessException be -> handleBusinessException(be);
       case ValidationException ve -> handleValidationException(ve);
+      case ExternalResponseError ex -> handleSystemException(ex);
       case Exception ex -> handleSystemException(ex);
       default -> handleSystemException(new RuntimeException(rootCause));
     }

@@ -24,6 +24,7 @@ import kz.store.cash.model.entity.Product;
 import kz.store.cash.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +35,7 @@ import org.springframework.web.client.RestClient;
 @RequiredArgsConstructor
 public class SyncWith1C {
 
+  @Qualifier("oneCClient")
   private final RestClient restClient;
   private final CategoryService categoryService;
   private final ProductService productService;

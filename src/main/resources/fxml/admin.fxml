@@ -1,7 +1,6 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.Tab?>
-
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
@@ -28,7 +27,7 @@
           <!-- ЛЕВО: таблица -->
           <VBox spacing="8" style="-fx-padding: 12;">
             <HBox spacing="8">
-              <TextField fx:id="searchUserField" promptText="Поиск по логину/имени" />
+              <TextField fx:id="searchUserField" promptText="Поиск по логину/имени"/>
               <Button text="Найти" onAction="#onSearchUsers"/>
               <Region HBox.hgrow="ALWAYS"/>
               <Button text="Обновить" onAction="#onRefreshUsers"/>
@@ -58,7 +57,8 @@
                 </columnConstraints>
 
                 <Label text="ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                <TextField fx:id="userIdField" GridPane.rowIndex="0" GridPane.columnIndex="1" editable="false"/>
+                <TextField fx:id="userIdField" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                  editable="false"/>
 
                 <Label text="Логин:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
                 <TextField fx:id="usernameField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
@@ -67,15 +67,18 @@
                 <TextField fx:id="displayNameField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
                 <Label text="Роль:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                <ComboBox fx:id="roleCombo" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+                <ComboBox fx:id="roleCombo" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
                 <Label text="Пароль:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                <PasswordField fx:id="passwordField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                <PasswordField fx:id="passwordField" GridPane.rowIndex="4"
+                  GridPane.columnIndex="1"/>
 
                 <Label text="Пароль (повтор):" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-                <PasswordField fx:id="password2Field" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+                <PasswordField fx:id="password2Field" GridPane.rowIndex="5"
+                  GridPane.columnIndex="1"/>
 
-                <Label text="Активен:" style="-fx-alignment: CENTER;" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+                <Label text="Активен:" style="-fx-alignment: CENTER;" GridPane.rowIndex="6"
+                  GridPane.columnIndex="0"/>
                 <CheckBox fx:id="activeCheck" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
               </GridPane>
             </TitledPane>
@@ -84,7 +87,7 @@
               <Button text="Очистить форму для создания user" onAction="#onNewUser"/>
               <Button text="Создать/Сохранить" onAction="#onSaveUser" defaultButton="true"/>
               <Button text="Удалить" onAction="#onDeleteUser"/>
-<!--              <Button text="Очистить" onAction="#onClearForm"/>-->
+              <!--              <Button text="Очистить" onAction="#onClearForm"/>-->
             </HBox>
           </VBox>
         </SplitPane>
@@ -112,21 +115,41 @@
               <Label text="Торговая точка:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
               <TextField fx:id="saleStoreField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
-              <Label text="Web адрес для получения категории с 1С:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-              <TextField fx:id="categoryWebAddressField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+              <Label text="Web адрес для получения категории с 1С:" GridPane.rowIndex="4"
+                GridPane.columnIndex="0"/>
+              <TextField fx:id="categoryWebAddressField" GridPane.rowIndex="4"
+                GridPane.columnIndex="1"/>
 
-              <Label text="Web  адрес для получения продуктов с 1С:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-              <TextField fx:id="productWebAddressField" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+              <Label text="Web  адрес для получения продуктов с 1С:" GridPane.rowIndex="5"
+                GridPane.columnIndex="0"/>
+              <TextField fx:id="productWebAddressField" GridPane.rowIndex="5"
+                GridPane.columnIndex="1"/>
 
               <Label text="Логин(optional):" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
               <TextField fx:id="webLoginField" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
 
               <Label text="Пароль(optional):" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
-              <TextField fx:id="webAddressPasswordField" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+              <TextField fx:id="webAddressPasswordField" GridPane.rowIndex="7"
+                GridPane.columnIndex="1"/>
+
+              <Label text="Base адрес книги задолженности:" GridPane.rowIndex="8"
+                GridPane.columnIndex="0"/>
+              <TextField fx:id="debtDiaryBaseAddress" GridPane.rowIndex="8"
+                GridPane.columnIndex="1"/>
+
+              <Label text="Логин книги задолженности:" GridPane.rowIndex="9"
+                GridPane.columnIndex="0"/>
+              <TextField fx:id="debtDiaryLogin" GridPane.rowIndex="9" GridPane.columnIndex="1"/>
+
+              <Label text="Пароль книги задолженности:" GridPane.rowIndex="10"
+                GridPane.columnIndex="0"/>
+              <TextField fx:id="debtDiaryPassword" GridPane.rowIndex="10" GridPane.columnIndex="1"/>
+
             </GridPane>
           </TitledPane>
 
           <HBox spacing="8" alignment="CENTER_RIGHT">
+            <Button text="Тест авторизации Книга задолженности" onAction="#onTestDebtDiary"/>
             <Button text="Сохранить" onAction="#onSaveSettings" defaultButton="true"/>
             <Button text="Обновить" onAction="#onReloadSettings"/>
           </HBox>
