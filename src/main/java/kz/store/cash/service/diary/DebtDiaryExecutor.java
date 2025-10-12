@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DebtDiaryExecutor {
 
-  private final DiaryAuthService auth;
+  private final DiaryDebtAuthService auth;
   private final TokenHolder tokenHolder;
 
   public <T> T call(Callable<T> action) {

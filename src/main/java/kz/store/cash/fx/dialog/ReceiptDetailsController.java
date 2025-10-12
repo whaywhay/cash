@@ -95,21 +95,23 @@ public class ReceiptDetailsController implements CancellableDialog {
     }
 
     totalLabel.setText("ИТОГО: " + receipt.getTotal() + " тг");
-    if (receipt.getPaymentType() == PaymentType.MIXED) {
-      String mixedDetails =
-          "Смешанная оплата: " + receipt.getReceivedPayment() + "\n" + "Наличные: "
-              + (receipt.getCashPayment() != null ? receipt.getCashPayment() : BigDecimal.ZERO)
-              + " тг\n"
-              + "Карта: "
-              + (receipt.getCardPayment() != null ? receipt.getCardPayment() : BigDecimal.ZERO)
-              + " тг";
-      paymentTypeLabel.setText(mixedDetails);
-    } else {
-      paymentTypeLabel.setText(
-          receipt.getPaymentType().getDisplayName() + ": " + receipt.getReceivedPayment());
-    }
-    changeLabel.setText("Сдача: " + receipt.getChangeMoney());
+    if (receipt.getPaymentType() != PaymentType.DEBT) {
+      if (receipt.getPaymentType() == PaymentType.MIXED) {
+        String mixedDetails =
+            "Смешанная оплата: " + receipt.getReceivedPayment() + "\n" + "Наличные: "
+                + (receipt.getCashPayment() != null ? receipt.getCashPayment() : BigDecimal.ZERO)
+                + " тг\n"
+                + "Карта: "
+                + (receipt.getCardPayment() != null ? receipt.getCardPayment() : BigDecimal.ZERO)
+                + " тг";
+        paymentTypeLabel.setText(mixedDetails);
+      } else {
+        paymentTypeLabel.setText(
+            receipt.getPaymentType().getDisplayName() + ": " + receipt.getReceivedPayment());
+      }
 
+      changeLabel.setText("Сдача: " + receipt.getChangeMoney());
+    }
     closeBtn.setOnAction(e -> handleClose());
     returnBtn.setOnAction(e -> {
       handleClose(); // Закрыть диалог
@@ -118,6 +120,7 @@ public class ReceiptDetailsController implements CancellableDialog {
     printBtn.setOnAction(e -> receiptPrintService.printReceiptRawWithLine(receipt));
     if (receipt.getReceiptStatus().equals(ReceiptStatus.RETURN)
         || receipt.getReceiptStatus().equals(ReceiptStatus.RETURN_NO_RECEIPT)
+        || receipt.getReceiptStatus().equals(ReceiptStatus.DEBT_RECEIPT_RETURN)
         || returnPeriodDate.isAfter(receipt.getCreated())) {
       returnBtn.setDisable(true);
     }

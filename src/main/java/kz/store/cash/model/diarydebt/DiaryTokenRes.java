@@ -1,4 +1,4 @@
-package kz.store.cash.model;
+package kz.store.cash.model.diarydebt;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;

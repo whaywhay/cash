@@ -2,8 +2,8 @@ package kz.store.cash.service.diary;
 
 import kz.store.cash.handler.ExternalResponseError;
 import kz.store.cash.handler.ValidationException;
-import kz.store.cash.model.DiaryLoginReq;
-import kz.store.cash.model.DiaryTokenRes;
+import kz.store.cash.model.diarydebt.DiaryLoginReq;
+import kz.store.cash.model.diarydebt.DiaryTokenRes;
 import kz.store.cash.model.entity.AppSetting;
 import kz.store.cash.service.AppSettingService;
 import kz.store.cash.util.StringUtils;
@@ -14,7 +14,7 @@ import org.springframework.web.client.RestClient;
 
 @Service
 @RequiredArgsConstructor
-public class DiaryAuthService {
+public class DiaryDebtAuthService {
 
   @Qualifier("rawHydraClient")
   private final RestClient rawHydraClient;

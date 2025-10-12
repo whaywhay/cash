@@ -1,4 +1,4 @@
-package kz.store.cash.model;
+package kz.store.cash.model.diarydebt;
 
 public record DiaryLoginReq(
     String username,

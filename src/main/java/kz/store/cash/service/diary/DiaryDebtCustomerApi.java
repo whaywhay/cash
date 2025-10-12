@@ -5,12 +5,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import kz.store.cash.model.DiaryCustomer;
-import kz.store.cash.model.HydraCollection;
-import kz.store.cash.model.PageResult;
+import kz.store.cash.model.diarydebt.DiaryCustomer;
+import kz.store.cash.model.diarydebt.HydraCollection;
+import kz.store.cash.model.diarydebt.PageResult;
 import kz.store.cash.model.entity.AppSetting;
 import kz.store.cash.service.AppSettingService;
 import kz.store.cash.util.StringUtils;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
@@ -20,12 +21,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 @RequiredArgsConstructor
-public class DiaryCustomerApi {
+public class DiaryDebtCustomerApi {
 
   @Qualifier("hydraClient")
   private final RestClient hydraClient;
   private final DebtDiaryExecutor exec;
-  private final DiaryAuthService auth;
+  private final DiaryDebtAuthService auth;
   private final AppSettingService appSettingService;
 
   private static final ParameterizedTypeReference<HydraCollection<DiaryCustomer>> TYPE =

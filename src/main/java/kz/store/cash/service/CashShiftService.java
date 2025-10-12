@@ -107,12 +107,14 @@ public class CashShiftService {
     BigDecimal sumCard = paymentReceiptService.getSumCard(cashShift);
     BigDecimal sumReturnedCash = paymentReceiptService.getReturnedSumCash(cashShift);
     BigDecimal sumReturnedCard = paymentReceiptService.getReturnedSumCard(cashShift);
+    BigDecimal sumDebt = paymentReceiptService.getDebtSum(cashShift);
+    BigDecimal sumDebtReturn = paymentReceiptService.getDebtReturnSum(cashShift);
     BigDecimal depositedFunds = findMovementsInOperation(shiftId);
     BigDecimal withdrawalFunds = findMovementsOutOperation(shiftId);
     cashShiftMapper.toCloseCashShift(cashShift, closedBy, leftInDrawer, sumCash,
-        sumCard, sumReturnedCash, sumReturnedCard, note);
+        sumCard, sumReturnedCash, sumReturnedCard, note, sumDebt, sumDebtReturn);
     cashShift = cashShiftRepository.save(cashShift);
-    receiptPrintService.printCashShift(cashShift, depositedFunds, withdrawalFunds);
+    receiptPrintService.printCashShift(cashShift, depositedFunds, withdrawalFunds, sumDebt, sumDebtReturn);
   }
 
   private CashShift getOpenShiftById(Long id) {

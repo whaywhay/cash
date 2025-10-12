@@ -61,6 +61,7 @@ public class ReturnDialogController implements CancellableDialog {
 
   public void initData(PaymentReceipt returnPayment, double totalToReturn) {
     returnFlag = false;
+    paymentSumDetails = null;
     totalReturnLabel.setText(String.format("%.2f тг", totalToReturn));
     setVisibility(false, cashReturnText, cashReturnLabel, cashText, cashLabel);
     setVisibility(false, cardReturnText, cardReturnLabel, cardText, cardLabel);
@@ -91,6 +92,7 @@ public class ReturnDialogController implements CancellableDialog {
         cardLabel.setText(String.format("%.2f тг", card));
         setPaymentSumDetails(totalToReturn, cash, card, PaymentType.MIXED);
       }
+      case DEBT -> setPaymentSumDetails(totalToReturn, 0, 0, PaymentType.DEBT);
     }
   }
 

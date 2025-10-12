@@ -16,9 +16,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import kz.store.cash.fx.component.FxAsyncRunner;
 import kz.store.cash.fx.dialog.ReturnDialogController;
 import kz.store.cash.fx.model.PaymentSumDetails;
 import kz.store.cash.handler.ValidationException;
+import kz.store.cash.model.diarydebt.DiaryTransaction;
 import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.fx.component.SalesCartService;
 import kz.store.cash.fx.component.TableViewProductConfigService;
@@ -28,11 +30,14 @@ import kz.store.cash.fx.dialog.lib.DialogBase;
 import kz.store.cash.fx.model.ProductItem;
 import kz.store.cash.fx.model.SalesWithProductName;
 import kz.store.cash.mapper.ProductMapper;
+import kz.store.cash.model.enums.DiaryOperationType;
 import kz.store.cash.model.enums.PaymentType;
 import kz.store.cash.service.PaymentReceiptService;
+import kz.store.cash.service.diary.DiaryTransactionApi;
 import kz.store.cash.util.TableUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -89,6 +94,8 @@ public class TransactionReturnController implements TabController {
   private final ProductMapper productMapper;
   private final DialogBase dialogBase;
   private final PaymentReceiptService paymentReceiptService;
+  private final FxAsyncRunner fx;
+  private final DiaryTransactionApi diaryTransactionApi;
 
   @FXML
   public void initialize() {
@@ -176,15 +183,43 @@ public class TransactionReturnController implements TabController {
       dialogBase.createDialogStage(returnPane, openedRoot, controller);
       PaymentSumDetails returnPaymentDetails = controller.getPaymentSumDetails();
       if (returnPaymentDetails != null && controller.isReturnFlag()) {
-        paymentReceiptService.processReturnSave(returnPaymentDetails, cart, returnPayment);
-        cart.clear();
-        returnPayment = null;
-        returnSales.clear();
+        fx.runWithLoader(returnPane, "Оформляем возврат...",
+            () -> {
+              if (returnPaymentDetails.getPaymentType() == PaymentType.DEBT) {
+                createDiaryDebtReturnBlocking(returnPaymentDetails);
+              }
+              paymentReceiptService.processReturnSave(returnPaymentDetails, cart, returnPayment);
+              return null;
+            },
+            ok -> {
+              cart.clear();
+              returnPayment = null;
+              if (returnSales != null) returnSales.clear();
+            }
+        );
       }
     } catch (IOException e) {
       log.error("IOException in TransactionReturnController.onReturnDialog()", e);
       throw new RuntimeException(e);
     }
+  }
+
+  private void createDiaryDebtReturnBlocking(PaymentSumDetails returnPaymentDetails) {
+    final int amount = (int) Math.round(returnPaymentDetails.getTotalToPay());
+    String customerId = returnPayment.getDiaryDebtCustomerId();
+    final DiaryTransaction diaryTransaction = createDebtTransaction(customerId, amount);
+
+    var resp = diaryTransactionApi.createSale(diaryTransaction, DiaryOperationType.RETURN);
+
+    if (resp == null || resp.getStatusCode() != HttpStatus.CREATED) {
+      // любое исключение тут прервёт общий runWithLoader и onSuccess не вызовется
+      throw new IllegalStateException("Не удалось записать возврат в Книгу задолженности. " +
+          "Код: " + (resp == null ? "N/A" : resp.getStatusCode()));
+    }
+  }
+
+  private DiaryTransaction createDebtTransaction(String customer, int amount) {
+    return new DiaryTransaction(String.valueOf(customer), amount);
   }
 
   private int getLimitQuantity(ProductItem productItem) {
@@ -227,7 +262,8 @@ public class TransactionReturnController implements TabController {
   }
 
   private void configureButton(PaymentReceipt receipt) {
-    if (receipt != null && !receipt.getPaymentType().equals(PaymentType.CASH)) {
+    if (receipt != null && !receipt.getPaymentType().equals(PaymentType.CASH)
+        && !receipt.getPaymentType().equals(PaymentType.DEBT)) {
       quantityButton.setDisable(true);
       deleteButton.setDisable(true);
     } else {

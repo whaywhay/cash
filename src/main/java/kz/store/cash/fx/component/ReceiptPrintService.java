@@ -52,9 +52,8 @@ public class ReceiptPrintService {
    * Печать сменного чека (закрытие смены). Заголовки по центру, данные — «лейбл слева / значение
    * справа».
    */
-  public void printCashShift(CashShift cashShift,
-      BigDecimal depositedFunds,
-      BigDecimal withdrawalFunds) {
+  public void printCashShift(CashShift cashShift, BigDecimal depositedFunds,
+      BigDecimal withdrawalFunds, BigDecimal sumDebt, BigDecimal sumDebtReturn) {
     if (cashShift == null) {
       uiNotificationService.showError("Сменный чек для распечатки пустой");
       return;
@@ -103,6 +102,8 @@ public class ReceiptPrintService {
       line(sb, formatFullLine("  Наличные с кассы", money(realCashFromStore)));
       line(sb, formatFullLine("  Возврат (наличные)", money(returnCashSum)));
       line(sb, formatFullLine("  Возврат (безнал)", money(returnCardSum)));
+      line(sb, formatFullLine("  Сумма долга", money(zeroIfNull(sumDebt))));
+      line(sb, formatFullLine("  Долг возврат", money(zeroIfNull(sumDebtReturn))));
       line(sb, formatFullLine("  При открытии", money(openingSum)));
       line(sb, formatFullLine("  Оставлено в кассе", money(leftSum)));
       sep(sb);
@@ -157,16 +158,17 @@ public class ReceiptPrintService {
 
       // ===== Итоги =====
       line(sb, formatFullLine("ИТОГО", money(zeroIfNull(currentReceipt.getTotal()))));
-      line(sb, formatFullLine(currentReceipt.getPaymentType().getDisplayName(),
-          money(zeroIfNull(currentReceipt.getReceivedPayment()))));
+      if (!currentReceipt.getPaymentType().equals(PaymentType.DEBT)) {
+        line(sb, formatFullLine(currentReceipt.getPaymentType().getDisplayName(),
+            money(zeroIfNull(currentReceipt.getReceivedPayment()))));
 
-      if (currentReceipt.getPaymentType() == PaymentType.MIXED) {
-        line(sb, formatFullLine("Наличные", money(zeroIfNull(currentReceipt.getCashPayment()))));
-        line(sb, formatFullLine("Карта", money(zeroIfNull(currentReceipt.getCardPayment()))));
+        if (currentReceipt.getPaymentType() == PaymentType.MIXED) {
+          line(sb, formatFullLine("Наличные", money(zeroIfNull(currentReceipt.getCashPayment()))));
+          line(sb, formatFullLine("Карта", money(zeroIfNull(currentReceipt.getCardPayment()))));
+        }
+
+        line(sb, formatFullLine("СДАЧА", money(zeroIfNull(currentReceipt.getChangeMoney()))));
       }
-
-      line(sb, formatFullLine("СДАЧА", money(zeroIfNull(currentReceipt.getChangeMoney()))));
-
       finalizeAndPrint(sb);
 
     } catch (Exception e) {

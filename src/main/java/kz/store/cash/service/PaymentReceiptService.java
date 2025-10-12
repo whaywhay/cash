@@ -1,5 +1,7 @@
 package kz.store.cash.service;
 
+import static kz.store.cash.model.enums.ReceiptStatus.DEBT_RECEIPT;
+import static kz.store.cash.model.enums.ReceiptStatus.DEBT_RECEIPT_RETURN;
 import static kz.store.cash.model.enums.ReceiptStatus.PENDING;
 import static kz.store.cash.model.enums.ReceiptStatus.RETURN;
 import static kz.store.cash.model.enums.ReceiptStatus.SALE;
@@ -13,6 +15,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import kz.store.cash.fx.model.SalesWithProductName;
+import kz.store.cash.model.diarydebt.DiaryTransaction;
 import kz.store.cash.model.entity.CashShift;
 import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.model.entity.Sales;
@@ -48,21 +51,46 @@ public class PaymentReceiptService {
   }
 
   @Transactional
-  public void processPaymentSave(PaymentSumDetails paymentSumDetails,
+  public void processPayment(PaymentSumDetails paymentSumDetails,
       ObservableList<ProductItem> cart) {
-    PaymentReceipt paymentReceipt = paymentReceiptMapper.toPaymentReceipt(paymentSumDetails);
+    PaymentReceipt paymentReceipt = paymentReceiptMapper.saleToPaymentReceipt(paymentSumDetails);
+    paymentAndDebtSave(cart, paymentReceipt);
+  }
+
+  @Transactional
+  public void processDebt(PaymentSumDetails paymentSumDetails,
+      ObservableList<ProductItem> cart, DiaryTransaction diaryTransaction) {
+    PaymentReceipt paymentReceipt = paymentReceiptMapper.debtToPaymentReceipt(paymentSumDetails,
+        diaryTransaction);
+    paymentAndDebtSave(cart, paymentReceipt);
+  }
+
+  private void paymentAndDebtSave(ObservableList<ProductItem> cart, PaymentReceipt paymentReceipt) {
     List<Sales> salesList = cart.stream()
         .map(sale -> salesMapper.fromProductItemToSales(sale, paymentReceipt))
         .toList();
-    paymentReceipt.setCashShift(getOpenedCashShift());//Подвязка открытой смены к оплатам
     saveSalesWithPaymentRecipe(paymentReceipt, salesList);
+  }
+
+
+  @Transactional
+  public void processDebtWithDeferredPayment(PaymentReceipt paymentReceipt,
+      PaymentSumDetails paymentSumDetails,
+      ObservableList<ProductItem> cart, DiaryTransaction diaryTransaction) {
+    paymentReceiptMapper.updateDebtToPaymentReceipt(paymentReceipt, paymentSumDetails,
+        diaryTransaction);
+    debtAndPaymentSave(paymentReceipt, cart);
   }
 
   @Transactional
   public void processPaymentSaveWithDeferredPayment(PaymentReceipt paymentReceipt,
       PaymentSumDetails paymentSumDetails,
       ObservableList<ProductItem> cart) {
-    paymentReceiptMapper.updateToPaymentReceipt(paymentReceipt, paymentSumDetails);
+    paymentReceiptMapper.updateDeferredToPaymentReceipt(paymentReceipt, paymentSumDetails);
+    debtAndPaymentSave(paymentReceipt, cart);
+  }
+
+  private void debtAndPaymentSave(PaymentReceipt paymentReceipt, ObservableList<ProductItem> cart) {
     List<Sales> salesList = cart.stream()
         .map(productIem -> {
           if (productIem.getSalesId() == null) {
@@ -81,12 +109,12 @@ public class PaymentReceiptService {
         })
         .filter(Objects::nonNull)
         .toList();
-    paymentReceipt.setCashShift(getOpenedCashShift());//Подвязка открытой смены к оплатам
     saveSalesWithPaymentRecipe(paymentReceipt, salesList);
   }
 
   private void saveSalesWithPaymentRecipe(PaymentReceipt paymentReceipt, List<Sales> salesList) {
-    paymentReceipt.setSalesList(salesList);
+    paymentReceipt.setCashShift(getOpenedCashShift());//Подвязка оплаты к открытой смене
+    paymentReceipt.setSalesList(salesList);//Продажу подвязать к чеку
     paymentReceiptRepository.save(paymentReceipt);
   }
 
@@ -227,4 +255,13 @@ public class PaymentReceiptService {
   public BigDecimal getReturnedSumCard(CashShift cashShift) {
     return paymentReceiptRepository.sumReturnCardByShiftAndStatus(cashShift, RETURN);
   }
+
+  public BigDecimal getDebtSum(CashShift cashShift) {
+    return paymentReceiptRepository.sumDebtTotalByShiftAndStatus(cashShift, DEBT_RECEIPT);
+  }
+
+  public BigDecimal getDebtReturnSum(CashShift cashShift) {
+    return paymentReceiptRepository.sumDebtReturnTotalByShiftAndStatus(cashShift, DEBT_RECEIPT_RETURN);
+  }
+
 }

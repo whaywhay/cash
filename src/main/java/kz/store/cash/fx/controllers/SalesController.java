@@ -40,6 +40,7 @@ import kz.store.cash.fx.dialog.EditProductDialogController;
 import kz.store.cash.fx.model.PaymentSumDetails;
 import kz.store.cash.fx.model.ProductItem;
 import kz.store.cash.fx.component.BarcodeScannerListener;
+import kz.store.cash.model.diarydebt.DiaryTransaction;
 import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.model.enums.PriceMode;
 import kz.store.cash.service.PaymentReceiptService;
@@ -174,6 +175,10 @@ public class SalesController {
     totalLabel.setText(String.format("%.2f тг", paymentSum.getTotalToPay()));
     receivedPaymentLabel.setText(String.format("%.2f тг", paymentSum.getReceivedPayment()));
     changeMoneyLabel.setText(String.format("%.2f тг", paymentSum.getChangeMoney()));
+  }
+
+  private void updatePaymentDetailSumLabel(double total) {
+    totalLabel.setText(String.format("%.2f тг", total));
   }
 
   public void addOrUpdateProduct(ProductItem productItem) {
@@ -330,9 +335,8 @@ public class SalesController {
       controller.setPaymentDetailsSum(paymentSumDetails);
       dialogBase.createDialogStage(rootPane, openedRoot, controller);
       if (controller.isPaymentConfirmed()) {
-        paymentSumDetails = controller.getPaymentSumDetails();
-        processPaymentSuccess(paymentSumDetails); // свой метод обработки результата
-        System.out.println("after onPaymentDialog - paymentSumDetails" + paymentSumDetails);
+        PaymentSumDetails summary = PaymentSumDetails.copyOf(paymentSumDetails);
+        processPaymentSuccess(summary);
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -342,7 +346,7 @@ public class SalesController {
   private void processPaymentSuccess(PaymentSumDetails paymentSumDetails) {
     try {
       if (paymentReceipt == null) {
-        paymentReceiptService.processPaymentSave(paymentSumDetails, cart);
+        paymentReceiptService.processPayment(paymentSumDetails, cart);
       } else {
         paymentReceiptService.processPaymentSaveWithDeferredPayment(paymentReceipt,
             paymentSumDetails, cart);
@@ -505,9 +509,33 @@ public class SalesController {
       DiaryCustomersDialogController controller = loader.getController();
       controller.resetAndReload(paymentSumDetails == null ? 0 : paymentSumDetails.getTotalToPay());
       dialogBase.createFullscreenDialogStage(rootPane, openedRoot, controller);
+      if(controller.isWriteDebtFlag()){
+        DiaryTransaction diaryTransaction = controller.getDiaryTransaction();
+        processDebtSuccess(paymentSumDetails.getTotalToPay(), diaryTransaction);
+        log.info("onDiaryDebtDialog getting diaryTransaction: {}", diaryTransaction);
+      }
     } catch (IOException e) {
       log.error("IOException in SalesController.onDiaryDebt()", e);
       uiNotificationService.showError(e.getMessage());
+    }
+  }
+
+  private void processDebtSuccess(double totalToPay, DiaryTransaction diaryTransaction) {
+    try {
+      if (paymentReceipt == null) {
+        paymentReceiptService.processDebt(paymentSumDetails, cart, diaryTransaction);
+      } else {
+        paymentReceiptService.processDebtWithDeferredPayment(paymentReceipt,
+            paymentSumDetails, cart, diaryTransaction);
+        refreshDeferredPaymentReceiptsUI();
+      }
+      cart.clear();
+      updatePaymentDetailSumLabel(totalToPay);
+      uiNotificationService.showInfo("Долг записан успешно: " + totalToPay);
+      salesTable.requestFocus();
+    } catch (Exception e) {
+      log.error("Ошибка сохранения долга", e);
+      utilAlert.showError("Ошибка", "Не удалось сохранить долг. Проверьте через книгу долгов.");
     }
   }
 }

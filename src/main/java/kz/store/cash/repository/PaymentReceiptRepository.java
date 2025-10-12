@@ -68,4 +68,20 @@ public interface PaymentReceiptRepository extends JpaRepository<PaymentReceipt, 
       """)
   BigDecimal sumReturnCashByShiftAndStatus(CashShift shift, ReceiptStatus returnSale);
 
+  @Query("""
+      select coalesce(sum(pr.total), 0)
+      from PaymentReceipt pr
+      where pr.cashShift = :shift
+      and pr.receiptStatus = :debtSale
+      """)
+  BigDecimal sumDebtTotalByShiftAndStatus(CashShift shift, ReceiptStatus debtSale);
+
+  @Query("""
+      select coalesce(sum(pr.total), 0)
+      from PaymentReceipt pr
+      where pr.cashShift = :shift
+      and pr.receiptStatus = :debtReturnSale
+      """)
+  BigDecimal sumDebtReturnTotalByShiftAndStatus(CashShift shift, ReceiptStatus debtReturnSale);
+
 }

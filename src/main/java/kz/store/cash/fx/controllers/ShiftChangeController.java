@@ -30,6 +30,7 @@ import kz.store.cash.security.AuthEvents;
 import kz.store.cash.security.AuthService;
 import kz.store.cash.security.CurrentUserStore;
 import kz.store.cash.service.CashShiftService;
+import kz.store.cash.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -233,11 +234,7 @@ public class ShiftChangeController implements TabController {
   }
 
   private static String trimToNull(String s) {
-    if (s == null) {
-      return null;
-    }
-    String t = s.trim();
-    return t.isEmpty() ? null : t;
+    return StringUtils.trimSafely(s);
   }
 
   private static String fmt(LocalDateTime dt) {

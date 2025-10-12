@@ -67,6 +67,9 @@ public class PaymentReceipt extends BaseEntity {
   @Column(name = "status")
   private ReceiptStatus receiptStatus;
 
+  @Column(name = "diary_debt_customer_id")
+  private String diaryDebtCustomerId;
+
   /**
    * Ссылка на исходный чек (для возвратов по чеку)
    */

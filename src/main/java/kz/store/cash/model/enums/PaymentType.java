@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum PaymentType {
   CASH("Наличные"),
   CARD("Банковский счет"),
-  MIXED("Смешанная оплата");
+  MIXED("Смешанная оплата"),
+  DEBT("В долг");
 
   private final String displayName;
 

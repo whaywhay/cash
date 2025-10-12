@@ -73,6 +73,12 @@ public class CashShift extends BaseEntity {
   @Column(name = "sum_return_card", precision = 15, scale = 2)
   private BigDecimal sumReturnCard;
 
+  @Column(name = "sum_debt", precision = 15, scale = 2)
+  private BigDecimal sumDebt;
+
+  @Column(name = "sum_debt_return", precision = 15, scale = 2)
+  private BigDecimal sumDebtReturn;
+
   /* Обратные связи
   @OneToMany(mappedBy = "cashShift", fetch = FetchType.LAZY)
   @ToString.Exclude

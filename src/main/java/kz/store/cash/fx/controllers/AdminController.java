@@ -26,7 +26,7 @@ import kz.store.cash.model.entity.User;
 import kz.store.cash.model.enums.UserRole;
 import kz.store.cash.service.AppSettingService;
 import kz.store.cash.service.UserService;
-import kz.store.cash.service.diary.DiaryAuthService;
+import kz.store.cash.service.diary.DiaryDebtAuthService;
 import kz.store.cash.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -93,7 +93,7 @@ public class AdminController {
   private final AppSettingService appSettingService;
   private final UiNotificationService ui;
   private final FxAsyncRunner fxAsyncRunner;
-  private final DiaryAuthService diaryAuthService;
+  private final DiaryDebtAuthService diaryDebtAuthService;
   private AppSetting currentSetting;
 
   @FXML
@@ -309,7 +309,7 @@ public class AdminController {
       String newLogin = StringUtils.nullToEmpty(currentSetting.getDebtDiaryLogin());
       String newPass = StringUtils.nullToEmpty(currentSetting.getDebtDiaryPassword());
       if (!oldBase.equals(newBase) || !oldLogin.equals(newLogin) || !oldPass.equals(newPass)) {
-        diaryAuthService.logout();
+        diaryDebtAuthService.logout();
       }
 
       ui.showInfo("Настройки сохранены");
@@ -331,10 +331,10 @@ public class AdminController {
     fxAsyncRunner.runWithLoader(debtDiaryBaseAddress,         // что заблокировать визуально
         "Проверка авторизации в системе Книга задолженности...",
         () -> {
-          diaryAuthService.logout();
-          diaryAuthService.authenticate(debtDiaryBaseAddress.getText(), debtDiaryLogin.getText(),
+          diaryDebtAuthService.logout();
+          diaryDebtAuthService.authenticate(debtDiaryBaseAddress.getText(), debtDiaryLogin.getText(),
               debtDiaryPassword.getText());      // бросит исключение при ошибке → поймает GlobalExceptionHandler
-          diaryAuthService.logout();
+          diaryDebtAuthService.logout();
           return null;
         },
         ok -> ui.showInfo("Авторизация прошла успешно")

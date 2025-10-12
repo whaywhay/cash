@@ -43,7 +43,9 @@ public interface CashShiftMapper {
   @Mapping(target = "note", source = "note")
   @Mapping(target = "sumReturnCash", source = "sumReturnCash")
   @Mapping(target = "sumReturnCard", source = "sumReturnCard")
+  @Mapping(target = "sumDebt", source = "sumDebt")
+  @Mapping(target = "sumDebtReturn", source = "sumDebtReturn")
   void toCloseCashShift(@MappingTarget CashShift cashShift, User user, BigDecimal leftInDrawer,
       BigDecimal sumCash, BigDecimal sumCard, BigDecimal sumReturnCash, BigDecimal sumReturnCard,
-      String note);
+      String note, BigDecimal sumDebt, BigDecimal sumDebtReturn);
 }
