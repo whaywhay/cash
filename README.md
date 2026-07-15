@@ -1,61 +1,236 @@
 # Cash POS System
 
-**Cash POS** is a cross-platform Point of Sale system built with **JavaFX + Spring Boot + PostgreSQL**.  
-It supports cash register hardware, multiple payment types (cash, card, mixed), returns, sales history, and integrations with external systems.
+Десктопная кассовая система на JavaFX, Spring Boot и PostgreSQL. Приложение поддерживает продажи, возвраты, отложенные чеки, кассовые смены, наличную и безналичную оплату, быстрые товары и синхронизацию с внешними системами.
 
----
+## Технологии
 
-## 📜 License
+- Java 21;
+- JavaFX 21.0.7;
+- Spring Boot 3.5.3;
+- Spring Data JPA;
+- PostgreSQL;
+- Flyway;
+- MapStruct и Lombok;
+- JUnit 5, AssertJ и Mockito;
+- Maven Wrapper;
+- `jpackage` для Windows EXE.
 
-This project is offered under a **dual licensing model**:
+## Требования для разработки
 
-### 1. Open Source License (Community Edition)
-- Licensed under the **GNU AGPLv3**.  
-- You are free to use, modify, and distribute the code, provided you comply with the AGPLv3 requirements:
-  - Retain copyright and license notices;
-  - Disclose source code of derivative works;
-  - Disclose source code when used as SaaS (web-based services).
+- Windows 10/11 x64;
+- JDK 21, переменная `JAVA_HOME` должна указывать на JDK 21;
+- PostgreSQL 15 или новее;
+- WiX Toolset 3.x для формирования Windows EXE;
+- подключение к интернету при первом запуске Maven для загрузки зависимостей.
 
-### 2. Commercial License (Enterprise Edition)
-- Available under a separate commercial agreement.  
-- Intended for organizations that:
-  - Do not wish to disclose their modifications or derivative works;
-  - Require enterprise integrations (ERP, 1C, banking APIs, etc.);
-  - Need professional support, updates, and SLA guarantees.
+Проверка окружения:
 
-📧 To obtain a **commercial license**, contact us at:  
-**estai86@gmail.com**
+```powershell
+java -version
+.\mvnw.cmd -version
+where.exe jpackage
+where.exe candle.exe
+where.exe light.exe
+```
 
----
+Именно вывод `mvnw.cmd -version` должен показывать Java 21.
 
-## 🚀 Features
-- Java 22, JavaFx 24 and Spring Boot 3.x support  
-- PostgreSQL as the main database (Oracle optional)  
-- POS hardware integration  
-- Sales, returns, shift management, sales history  
-- Asynchronous product search (barcode & name)  
-- Multiple payment types: Cash, Card, Mixed  
+## Настройка базы данных
 
-## 🧰 Hardware & OS
-- **Barcode scanners:** any USB/HID device configured to send **Enter (CR/LF)** after the code. Tab is optionally supported.
-- **Receipt printer:** 80 mm, **ESC/POS** compatible. Prints to the **system default printer**.
-- **OS:** Windows 10/11 (x64). Linux/macOS — experimental.
+Параметры подключения находятся в `src/main/resources/application.yml`:
 
-## ⚙️ Requirements
-- PostgreSQL 15+ (recommended: 16/17), pre-installed.
-- JavaFX 21.0.7 if building from source.
-- Java 21 (Open JDK) if building from source.
+```yaml
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/cash_store
+    username: postgres
+    password: postgres
+```
 
-## 🚦 Quick Start (Windows)
-1) Install PostgreSQL and create DB/user (see below).
-2) Install the receipt printer and set it as **Default** in Windows.
-3) Connect a barcode scanner in **USB HID Keyboard** mode with **Enter** suffix.
-4) Configure `application.yml` (Database section).
-5) Run the app (bundled `.exe` or `java -jar`). Compile exe executing command in project '.\mvnw -DskipTests clean package' and '.\mvnw -DskipTests jpackage:jpackage -X'
-6) Install Cash-Store.exe in any cash computer
+При запуске Flyway применяет миграции из `src/main/resources/db/migration`. Hibernate работает в режиме `ddl-auto: validate`, поэтому структура базы должна соответствовать миграциям.
 
+Подробности: [настройка PostgreSQL](docs/DB_SETUP.md).
 
-📚 Подробнее: [docs/INSTALL_WINDOWS.md](docs/INSTALL_WINDOWS.md), [docs/PRINTING.md](docs/PRINTING.md), [docs/BARCODE_SCANNER.md](docs/BARCODE_SCANNER.md), [docs/DB_SETUP.md](docs/DB_SETUP.md), [docs/PACKAGING_WINDOWS.md](docs/PACKAGING_WINDOWS.md)
----
+## Запуск проекта
+
+Запуск из Maven:
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+Для JavaFX-разработки также настроен плагин:
+
+```powershell
+.\mvnw.cmd javafx:run
+```
+
+Главный JavaFX-класс — `kz.store.cash.MainCashApplication`, Spring Boot-конфигурация начинается с `kz.store.cash.CashApplication`.
+
+## Тестирование
+
+Запуск всех тестов:
+
+```powershell
+.\mvnw.cmd clean test
+```
+
+Запуск одного класса:
+
+```powershell
+.\mvnw.cmd -Dtest=PaymentReceiptServiceTest test
+```
+
+Запуск одного тестового метода:
+
+```powershell
+.\mvnw.cmd -Dtest=PaymentReceiptServiceTest#createsAndDeletesDeferredReceipt test
+```
+
+Тесты сервисного слоя изолированы от PostgreSQL и внешних серверов: зависимости заменяются Mockito-моками. Если тест падает, Maven не переходит к упаковке приложения.
+
+## Сборка JAR и Windows EXE
+
+Полная проверка и создание нового установщика:
+
+```powershell
+.\mvnw.cmd clean verify jpackage:jpackage
+```
+
+Последовательность следующая:
+
+1. удаляется старый каталог `target`;
+2. компилируется production-код;
+3. компилируются и запускаются тесты;
+4. формируется Spring Boot fat-JAR;
+5. JAR копируется в `target/app`;
+6. `jpackage` формирует Windows EXE в `target/dist`.
+
+Результаты:
+
+- `target/app/cash-0.0.1-SNAPSHOT.jar` — исполняемый JAR;
+- `target/dist/CashStore-<версия>.exe` — Windows-установщик.
+
+Версия установщика задаётся свойством `installer.version` в `pom.xml`. Перед выпуском новой версии увеличьте его значение.
+
+Не используйте `-DskipTests` или `-Dmaven.test.skip=true` для релизной сборки.
+
+Подробная инструкция: [сборка Windows EXE](docs/PACKAGING_WINDOWS.md).
+
+## Архитектура
+
+Основные пакеты:
+
+- `fx.controllers` и `fx.dialog` — JavaFX-контроллеры и диалоги;
+- `fx.component` — переиспользуемая UI- и кассовая логика;
+- `service` — бизнес-операции;
+- `service.diary` — интеграция с книгой задолженности;
+- `repository` — доступ к PostgreSQL через Spring Data JPA;
+- `mapper` — преобразования MapStruct;
+- `model.entity` — JPA-сущности;
+- `model` — DTO и модели обмена;
+- `config` — Spring- и HTTP-конфигурация;
+- `security` — локальная авторизация кассира;
+- `handler` — бизнес- и интеграционные исключения.
+
+Типичный поток вызова:
+
+```text
+JavaFX Controller -> Service -> Mapper/Repository -> PostgreSQL
+                         |
+                         +-> RestClient -> внешний сервис
+```
+
+Контроллер не должен напрямую обращаться к репозиторию. Транзакционные бизнес-операции должны находиться в сервисном слое.
+
+## Сервисы проекта
+
+### Продажи и чеки
+
+- `ProductService` ищет товары по штрихкоду или названию, получает универсальный товар и обновляет розничную цену.
+- `SalesService` сохраняет строки продажи, ищет их по идентификатору и удаляет строки отложенного чека.
+- `PaymentReceiptService` создаёт обычные, долговые, возвратные и отложенные чеки; связывает чек с открытой сменой; объединяет отложенный чек; рассчитывает суммы смены.
+- `QuickProductService` добавляет или удаляет товар из быстрого доступа и возвращает товары в порядке настройки.
+
+При оплате `PaymentReceiptService` получает открытую смену, преобразует элементы корзины в `Sales`, связывает их с `PaymentReceipt` и сохраняет чек одной транзакцией.
+
+### Кассовые смены
+
+- `CashShiftService` открывает и закрывает смену, регистрирует внесение и изъятие наличных, получает итоговые суммы чеков и отправляет отчёт на печать.
+
+Открыть вторую смену нельзя. Закрытие блокируется, пока существуют необработанные отложенные чеки.
+
+### Пользователи и настройки
+
+- `AuthService` проверяет активность пользователя и пароль, сохраняет текущего пользователя и публикует события входа/выхода.
+- `CurrentUserStore` хранит авторизованного пользователя для JavaFX-интерфейса.
+- `UserService` создаёт, обновляет, удаляет и ищет пользователей, контролируя уникальность логина.
+- `AppSettingService` управляет единственной записью настроек приложения.
+- `CategoryService` читает и сохраняет категории товаров.
+
+### Интеграция с 1С
+
+- `SyncWith1C` загружает категории и товары через настроенный `RestClient`, обновляет существующие записи и создаёт отсутствующие.
+
+Перед синхронизацией в настройках должны быть заданы адреса категорий и товаров, а при необходимости логин и пароль. Товары с неизвестной категорией пропускаются.
+
+### Книга задолженности
+
+- `DiaryDebtAuthService` получает и очищает токен внешнего сервиса;
+- `TokenHolder` хранит токен в памяти;
+- `DebtDiaryExecutor` выполняет запрос и один раз повторяет его после повторной авторизации при HTTP 401;
+- `DiaryDebtCustomerApi` загружает страницу клиентов, поддерживает поиск, сортировку и пагинацию;
+- `DiaryTransactionApi` отправляет операции продажи и возврата в книгу задолженности.
+
+Адрес сервиса, логин и пароль берутся из `AppSetting`.
+
+## Основные бизнес-потоки
+
+### Продажа
+
+1. Кассир добавляет товары в корзину.
+2. Выбирает способ оплаты.
+3. `PaymentReceiptService` создаёт чек и строки продаж.
+4. Чек привязывается к открытой смене.
+5. После успешного сохранения чек может быть напечатан.
+
+### Отложенный чек
+
+1. Создаётся чек со статусом `PENDING`.
+2. Текущая корзина синхронизируется со строками продаж.
+3. При повторном открытии чек можно изменить или оплатить.
+4. Пустой отложенный чек удаляется.
+
+### Возврат
+
+1. Находится исходный чек.
+2. Проверяется доступное для возврата количество.
+3. Создаётся возвратный чек со ссылкой на исходный.
+4. Возврат связывается с текущей открытой сменой.
+
+### Закрытие смены
+
+1. Проверяется отсутствие отложенных чеков.
+2. Суммируются наличные, карта, возвраты и долговые операции.
+3. Учитываются внесения и изъятия наличных.
+4. Смена закрывается и печатается итоговый отчёт.
+
+## Оборудование
+
+- сканер штрихкодов — USB/HID Keyboard с суффиксом Enter;
+- принтер чеков — ESC/POS, ширина 80 мм, используется системный принтер по умолчанию;
+- Windows 10/11 x64 — основная поддерживаемая платформа.
+
+Дополнительные инструкции:
+
+- [установка на Windows](docs/INSTALL_WINDOWS.md);
+- [печать чеков](docs/PRINTING.md);
+- [сканер штрихкодов](docs/BARCODE_SCANNER.md);
+- [настройка PostgreSQL](docs/DB_SETUP.md);
+- [формирование EXE](docs/PACKAGING_WINDOWS.md).
+
+## Лицензирование
+
+Проект распространяется по двойной модели: GNU AGPLv3 либо отдельная коммерческая лицензия. По вопросам коммерческого использования: `estai86@gmail.com`.
 
 © 2025 Yestay Yeleup. All rights reserved.
