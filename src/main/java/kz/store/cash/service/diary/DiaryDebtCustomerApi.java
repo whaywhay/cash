@@ -11,7 +11,6 @@ import kz.store.cash.model.diarydebt.PageResult;
 import kz.store.cash.model.entity.AppSetting;
 import kz.store.cash.service.AppSettingService;
 import kz.store.cash.util.StringUtils;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
@@ -39,7 +38,7 @@ public class DiaryDebtCustomerApi {
     return exec.call(() -> {
       auth.ensureToken();
       URI uri = buildCustomersUri(page, search, order);
-      var hc = fetchCustomers(uri, "GET /api/customers");
+      var hc = fetchCustomers(uri);
       return toPageResult(hc, page);
     });
   }
@@ -85,12 +84,12 @@ public class DiaryDebtCustomerApi {
   }
 
   /**
-   * Централизованный фетчер: гарантирует non-null body.
+   * Централизованный fetch: гарантирует non-null body.
    */
-  private HydraCollection<DiaryCustomer> fetchCustomers(URI uri, String context) {
+  private HydraCollection<DiaryCustomer> fetchCustomers(URI uri) {
     var body = hydraClient.get().uri(uri).retrieve().body(TYPE);
     if (body == null) {
-      throw new IllegalStateException("Пустой ответ от сервиса Книги задолженности: " + context);
+      throw new IllegalStateException("Пустой ответ от сервиса Книги задолженности: " + "GET /api/customers");
     }
     return body;
   }
