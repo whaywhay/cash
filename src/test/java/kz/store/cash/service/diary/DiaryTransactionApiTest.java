@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import kz.store.cash.handler.BusinessException;
 import kz.store.cash.model.diarydebt.DiaryTransaction;
 import kz.store.cash.model.enums.DiaryOperationType;
 import kz.store.cash.service.AppSettingService;
@@ -19,6 +20,6 @@ class DiaryTransactionApiTest {
     DiaryTransactionApi api = new DiaryTransactionApi(mock(RestClient.class), exec,
         mock(DiaryDebtAuthService.class), settings);
     assertThatThrownBy(() -> api.createSale(mock(DiaryTransaction.class), DiaryOperationType.values()[0]))
-        .isInstanceOf(Error.class);
+        .isInstanceOf(BusinessException.class);
   }
 }

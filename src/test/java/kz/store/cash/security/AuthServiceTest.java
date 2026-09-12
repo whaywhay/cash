@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
+import kz.store.cash.handler.BusinessException;
 import kz.store.cash.model.entity.User;
 import kz.store.cash.model.enums.UserRole;
 import kz.store.cash.service.UserService;
@@ -43,7 +44,7 @@ class AuthServiceTest {
   @Test void rejectsUnknownUserWithoutCheckingPassword() {
     when(userService.findByUsername("unknown")).thenReturn(Optional.empty());
     assertThatThrownBy(() -> service.login("unknown", "secret"))
-        .isInstanceOf(IllegalArgumentException.class);
+        .isInstanceOf(BusinessException.class);
     verifyNoInteractions(encoder, events);
     assertThat(store.isLoggedIn()).isFalse();
   }
@@ -51,7 +52,7 @@ class AuthServiceTest {
   @Test void rejectsBlockedUser() {
     when(userService.findByUsername("cashier")).thenReturn(Optional.of(user(false)));
     assertThatThrownBy(() -> service.login("cashier", "secret"))
-        .isInstanceOf(IllegalStateException.class);
+        .isInstanceOf(BusinessException.class);
     verifyNoInteractions(encoder, events);
   }
 
@@ -59,7 +60,7 @@ class AuthServiceTest {
     when(userService.findByUsername("cashier")).thenReturn(Optional.of(user(true)));
     when(encoder.matches("wrong", "hash")).thenReturn(false);
     assertThatThrownBy(() -> service.login("cashier", "wrong"))
-        .isInstanceOf(IllegalArgumentException.class);
+        .isInstanceOf(BusinessException.class);
     assertThat(store.isLoggedIn()).isFalse();
   }
 

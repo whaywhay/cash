@@ -1,5 +1,6 @@
 package kz.store.cash.security;
 
+import kz.store.cash.handler.BusinessException;
 import kz.store.cash.model.entity.User;
 import kz.store.cash.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +19,13 @@ public class AuthService {
 
   public void login(String username, String rawPassword) {
     User user = userService.findByUsername(username)
-        .orElseThrow(() -> new IllegalArgumentException("Неверный логин или пароль"));
+        .orElseThrow(() -> new BusinessException("Неверный логин или пароль"));
 
     if (!user.isActive()) {
-      throw new IllegalStateException("Пользователь заблокирован");
+      throw new BusinessException("Пользователь заблокирован");
     }
     if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
-      throw new IllegalArgumentException("Неверный логин или пароль");
+      throw new BusinessException("Неверный логин или пароль");
     }
     currentUserStore.set(user);
     events.publishEvent(new AuthEvents.LoginSuccess(user));

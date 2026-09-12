@@ -2,6 +2,7 @@ package kz.store.cash.util;
 
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Locale;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -12,6 +13,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UtilNumbers {
+
+  /**
+   * Единая точка конвертации денежных double в BigDecimal. BigDecimal.valueOf(double) сам по себе
+   * не округляет — он лишь переносит бинарный шум double в десятичный вид (например, 0.1*7 даёт
+   * 0.7000000000000001). Явный setScale гарантирует, что любая денежная сумма в системе всегда
+   * имеет ровно 2 знака после запятой, округлённые по одному и тому же правилу.
+   */
+  public static BigDecimal toMoney(double value) {
+    return BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP);
+  }
 
   public static double parseDoubleAmount(String text) {
     if (text == null) {

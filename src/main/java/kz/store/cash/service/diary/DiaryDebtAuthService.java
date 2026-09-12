@@ -8,10 +8,12 @@ import kz.store.cash.model.entity.AppSetting;
 import kz.store.cash.service.AppSettingService;
 import kz.store.cash.util.StringUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DiaryDebtAuthService {
@@ -32,14 +34,14 @@ public class DiaryDebtAuthService {
 
   public void authenticate(String baseAddress, String login, String password) {
     String base = StringUtils.nullToEmpty(baseAddress).trim();
-    System.out.println("Data for authenticate : " + base + "/token : " + login + " : " + password);
+    log.debug("Authenticating against debt diary at {}/token as {}", base, login);
     var res = rawHydraClient.post()
         .uri(baseAddress + "/token")
         .body(new DiaryLoginReq(login, password))
         .retrieve()
         .body(DiaryTokenRes.class);
 
-    System.out.println("DiaryTokenRes.class: " + res);
+    log.debug("Debt diary token received: {}", res != null && res.token() != null);
     if (res == null || res.token() == null || res.token().isBlank()) {
       throw new ExternalResponseError("Token missing in /token response");
     }
