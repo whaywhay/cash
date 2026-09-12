@@ -4,6 +4,12 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### Логи и креш-дампы JVM ###
+logs/
+*.log
+hs_err_pid*.log
+replay_pid*.log
+
 ### STS ###
 .apt_generated
 .classpath

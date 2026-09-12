@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      # mvnw закоммичен без исполняемого бита (репозиторий вёлся с Windows).
+      - name: Make mvnw executable
+        run: chmod +x mvnw
+
+      # Тесты сервисного слоя изолированы от PostgreSQL моками (см. README), реальная БД не нужна.
+      # Специально останавливаемся на фазе test, а не verify/package — сборка Windows EXE
+      # (jpackage + WiX) остаётся ручным релизным шагом на Windows и в CI не участвует.
+      - name: Run tests
+        run: ./mvnw --batch-mode --no-transfer-progress clean test
+
+      - name: Upload surefire reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports/

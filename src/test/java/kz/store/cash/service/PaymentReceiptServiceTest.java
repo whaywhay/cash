@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import java.util.List;
 import java.util.Optional;
 import javafx.collections.FXCollections;
+import kz.store.cash.handler.BusinessException;
 import kz.store.cash.fx.model.PaymentSumDetails;
 import kz.store.cash.fx.model.ProductItem;
 import kz.store.cash.mapper.PaymentReceiptMapper;
@@ -50,7 +51,7 @@ class PaymentReceiptServiceTest {
     when(receiptMapper.saleToPaymentReceipt(details)).thenReturn(receipt);
     when(shifts.findFirstByStatusOrderByShiftOpenedDateDesc(OPENED)).thenReturn(Optional.empty());
     assertThatThrownBy(() -> service.processPayment(details, FXCollections.observableArrayList()))
-        .isInstanceOf(RuntimeException.class);
+        .isInstanceOf(BusinessException.class);
     verify(receipts, never()).save(any());
   }
 
@@ -94,7 +95,7 @@ class PaymentReceiptServiceTest {
     ProductItem item = item(99L);
     when(sales.findById(99L)).thenReturn(Optional.empty());
     assertThatThrownBy(() -> service.mergeDeferredPaymentReceipts(new PaymentReceipt(), List.of(item)))
-        .isInstanceOf(RuntimeException.class).hasMessageContaining("99");
+        .isInstanceOf(BusinessException.class).hasMessageContaining("99");
   }
 
   @Test void aggregateMethodsDelegateToRepository() {

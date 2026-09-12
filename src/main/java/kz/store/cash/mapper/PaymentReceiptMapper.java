@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import kz.store.cash.model.diarydebt.DiaryTransaction;
 import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.fx.model.PaymentSumDetails;
+import kz.store.cash.util.UtilNumbers;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -93,6 +94,6 @@ public interface PaymentReceiptMapper {
 
   @Named("doubleToBigDecimal")
   static BigDecimal mapDoubleToBigDecimal(double value) {
-    return BigDecimal.valueOf(value);
+    return UtilNumbers.toMoney(value);
   }
 }

@@ -21,6 +21,7 @@ import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.model.entity.Sales;
 import kz.store.cash.fx.model.PaymentSumDetails;
 import kz.store.cash.fx.model.ProductItem;
+import kz.store.cash.handler.BusinessException;
 import kz.store.cash.mapper.PaymentReceiptMapper;
 import kz.store.cash.mapper.SalesMapper;
 import kz.store.cash.model.enums.CashShiftStatus;
@@ -47,7 +48,7 @@ public class PaymentReceiptService {
 
   private CashShift getOpenedCashShift() {
     return cashShiftRepository.findFirstByStatusOrderByShiftOpenedDateDesc(CashShiftStatus.OPENED)
-        .orElseThrow(() -> new RuntimeException("Нет открытой смены"));
+        .orElseThrow(() -> new BusinessException("Нет открытой смены"));
   }
 
   @Transactional
@@ -228,7 +229,7 @@ public class PaymentReceiptService {
           salesMapper.updateToSale(sale, productItem, finalReceipt);
           salesService.saveSale(sale);
         }, () -> {
-          throw new RuntimeException("sale not found by id:  " + productItem.getSalesId());
+          throw new BusinessException("sale not found by id:  " + productItem.getSalesId());
         });
       } else {
         salesService.saveSale(salesMapper.fromProductItemToSales(productItem, receipt));

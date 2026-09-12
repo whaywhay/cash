@@ -1,6 +1,7 @@
 package kz.store.cash.service.diary;
 
 import java.net.URI;
+import kz.store.cash.handler.BusinessException;
 import kz.store.cash.model.diarydebt.DiaryTransaction;
 import kz.store.cash.model.entity.AppSetting;
 import kz.store.cash.model.enums.DiaryOperationType;
@@ -25,7 +26,7 @@ public class DiaryTransactionApi { // NEW
   private URI baseUri() {
     String base = getAppSetting().getDebtDiaryBaseAddress();
     if (base == null || base.isBlank()) {
-      throw new IllegalStateException("Не задан base адрес книги задолженности");
+      throw new BusinessException("Не задан base адрес книги задолженности");
     }
     return URI.create(base);
   }
@@ -36,7 +37,7 @@ public class DiaryTransactionApi { // NEW
 
   private AppSetting getAppSetting() {
     return appSettingService.getSingleton()
-        .orElseThrow(() -> new Error("Отсутствуют настройки по кассовому приложению"));
+        .orElseThrow(() -> new BusinessException("Отсутствуют настройки по кассовому приложению"));
   }
 
   /**
