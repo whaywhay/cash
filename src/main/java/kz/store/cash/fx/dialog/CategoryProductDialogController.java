@@ -20,7 +20,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import kz.store.cash.fx.component.UiNotificationService;
 import kz.store.cash.fx.dialog.lib.CancellableDialog;
 import kz.store.cash.fx.model.ProductItem;
@@ -165,7 +164,7 @@ public class CategoryProductDialogController implements CancellableDialog {
       }
       var bc = row.product().getBarcode();
       boolean nowQuick = quickProductService.toggle(bc);
-      updateQuickButtonText(row.product());
+      updateQuickButtonText(nowQuick);
 
       uiNotificationService.showInfo("В \"БЫСТРЫЕ ТОВАР\" " + (nowQuick ? "ДОБАВЛЕН" : "УДАЛЕН"));
     });
@@ -258,17 +257,16 @@ public class CategoryProductDialogController implements CancellableDialog {
   }
 
   private void updateQuickButtonText(Product p) {
-    boolean quick = quickProductService.isQuick(p.getBarcode());
+    updateQuickButtonText(quickProductService.isQuick(p.getBarcode()));
+  }
+
+  private void updateQuickButtonText(boolean quick) {
     addQuickBtn.setText(quick ? "Убрать из быстрых" : "В быстрые товары");
   }
 
   private void chooseProduct(Product product) {
     ProductItem item = productMapper.toProductItem(product);
-    if (priceMode == PriceMode.WHOLESALE) {
-      item.setToWholesalePrice();
-    } else {
-      item.setToOriginalPrice();
-    }
+    item.applyPriceMode(priceMode);
     if (onProductChosen != null) {
       onProductChosen.accept(item);
     }
@@ -281,8 +279,7 @@ public class CategoryProductDialogController implements CancellableDialog {
 
   @Override
   public void handleClose() {
-    Stage stage = (Stage) root.getScene().getWindow();
-    stage.close();
+    closeWindowOf(root);
   }
 
   private enum RowType {CATEGORY, PRODUCT}

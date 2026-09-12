@@ -5,9 +5,11 @@ import java.util.Collection;
 import java.util.List;
 import kz.store.cash.config.ProductProperties;
 import kz.store.cash.fx.model.ProductItem;
+import kz.store.cash.handler.BusinessException;
 import kz.store.cash.mapper.ProductMapper;
 import kz.store.cash.model.entity.Product;
 import kz.store.cash.repository.ProductRepository;
+import kz.store.cash.util.UtilNumbers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -49,7 +51,11 @@ public class ProductService {
     }
     productRepository.findFirstByBarcode(barcode)
         .ifPresent(prod -> {
-          prod.setOriginalPrice(BigDecimal.valueOf(retailPrice));
+          BigDecimal newPrice = UtilNumbers.toMoney(retailPrice);
+          if (prod.getWholesalePrice() != null && newPrice.compareTo(prod.getWholesalePrice()) < 0) {
+            throw new BusinessException("Розничная цена не может быть меньше оптовой цены");
+          }
+          prod.setOriginalPrice(newPrice);
           productRepository.save(prod);
         });
   }

@@ -207,7 +207,7 @@ public class TransactionReturnController implements TabController {
   private void createDiaryDebtReturnBlocking(PaymentSumDetails returnPaymentDetails) {
     final int amount = (int) Math.round(returnPaymentDetails.getTotalToPay());
     String customerId = returnPayment.getDiaryDebtCustomerId();
-    final DiaryTransaction diaryTransaction = createDebtTransaction(customerId, amount);
+    final DiaryTransaction diaryTransaction = new DiaryTransaction(customerId, amount);
 
     var resp = diaryTransactionApi.createSale(diaryTransaction, DiaryOperationType.RETURN);
 
@@ -216,10 +216,6 @@ public class TransactionReturnController implements TabController {
       throw new IllegalStateException("Не удалось записать возврат в Книгу задолженности. " +
           "Код: " + (resp == null ? "N/A" : resp.getStatusCode()));
     }
-  }
-
-  private DiaryTransaction createDebtTransaction(String customer, int amount) {
-    return new DiaryTransaction(String.valueOf(customer), amount);
   }
 
   private int getLimitQuantity(ProductItem productItem) {
@@ -294,7 +290,7 @@ public class TransactionReturnController implements TabController {
 
   private void resetValues() {
     cart.clear();
-    if (returnSales != null && !returnSales.isEmpty()) {
+    if (returnSales != null) {
       returnSales.clear();
     }
     returnPayment = null;

@@ -7,7 +7,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import kz.store.cash.fx.dialog.lib.CancellableDialog;
 import kz.store.cash.util.UtilNumbers;
 import lombok.Getter;
@@ -81,6 +80,6 @@ public class UniversalProductDialogController implements CancellableDialog {
 
   @Override
   public void handleClose() {
-    ((Stage) priceField.getScene().getWindow()).close();
+    closeWindowOf(priceField);
   }
 }

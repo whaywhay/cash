@@ -76,24 +76,26 @@ class PaymentReceiptServiceTest {
     when(shifts.findFirstByStatusOrderByShiftOpenedDateDesc(OPENED)).thenReturn(Optional.of(opened));
     when(receipts.save(any())).thenAnswer(i -> i.getArgument(0));
     ProductItem item = item(null); Sales mapped = new Sales();
+    when(sales.findAllById(List.of())).thenReturn(List.of());
     when(salesMapper.fromProductItemToSales(eq(item), any(PaymentReceipt.class))).thenReturn(mapped);
     service.mergeDeferredPaymentReceipts(null, List.of(item));
     verify(sales).deleteSalesByPaymentReceipt(any(PaymentReceipt.class));
-    verify(sales).saveSale(mapped);
+    verify(sales).saveAll(List.of(mapped));
   }
 
   @Test void mergeUpdatesExistingSale() {
-    PaymentReceipt receipt = new PaymentReceipt(); ProductItem item = item(8L); Sales existing = new Sales();
-    when(sales.findById(8L)).thenReturn(Optional.of(existing));
+    PaymentReceipt receipt = new PaymentReceipt(); ProductItem item = item(8L);
+    Sales existing = new Sales(); existing.setId(8L);
+    when(sales.findAllById(List.of(8L))).thenReturn(List.of(existing));
     service.mergeDeferredPaymentReceipts(receipt, List.of(item));
     verify(sales).deleteSalesByIdNotInAndPaymentReceipt(receipt, List.of(8L));
     verify(salesMapper).updateToSale(existing, item, receipt);
-    verify(sales).saveSale(existing);
+    verify(sales).saveAll(List.of(existing));
   }
 
   @Test void mergeFailsWhenReferencedSaleIsMissing() {
     ProductItem item = item(99L);
-    when(sales.findById(99L)).thenReturn(Optional.empty());
+    when(sales.findAllById(List.of(99L))).thenReturn(List.of());
     assertThatThrownBy(() -> service.mergeDeferredPaymentReceipts(new PaymentReceipt(), List.of(item)))
         .isInstanceOf(BusinessException.class).hasMessageContaining("99");
   }

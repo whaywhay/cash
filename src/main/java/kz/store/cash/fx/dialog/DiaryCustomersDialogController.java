@@ -10,7 +10,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
 import kz.store.cash.fx.component.FxAsyncRunner;
 import kz.store.cash.fx.component.UiNotificationService;
 import kz.store.cash.fx.dialog.lib.CancellableDialog;
@@ -150,8 +149,7 @@ public class DiaryCustomersDialogController implements CancellableDialog {
 
   @Override
   public void handleClose() {
-    Stage stage = (Stage) root.getScene().getWindow();
-    stage.close();
+    closeWindowOf(root);
   }
 
   @FXML
@@ -178,7 +176,7 @@ public class DiaryCustomersDialogController implements CancellableDialog {
     // Сумма для API — целые тены. Округляем до ближайшего целого.
     final int amount = (int) Math.round(totalToPay);
     final long customerId = selected.id();
-    diaryTransaction = createDebtTransaction(customerId, amount);
+    diaryTransaction = new DiaryTransaction(String.valueOf(customerId), amount);
     fx.runWithLoader(root, "Записываем долг...",
         () -> txApi.createSale(diaryTransaction, DiaryOperationType.DEBT_SALE),
         resp -> {
@@ -195,8 +193,5 @@ public class DiaryCustomersDialogController implements CancellableDialog {
         });
   }
 
-  private DiaryTransaction createDebtTransaction(long customer, int amount) {
-    return new DiaryTransaction(String.valueOf(customer), amount);
-  }
 }
 

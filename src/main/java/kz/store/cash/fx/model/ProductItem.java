@@ -8,6 +8,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import kz.store.cash.model.enums.PriceMode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -77,6 +78,14 @@ public class ProductItem {
 
   public void setToWholesalePrice() {
     price.set(wholesalePrice.get());
+  }
+
+  public void applyPriceMode(PriceMode mode) {
+    if (mode == PriceMode.WHOLESALE) {
+      setToWholesalePrice();
+    } else {
+      setToOriginalPrice();
+    }
   }
 
   public void increaseQuantity() {

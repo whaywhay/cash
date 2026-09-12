@@ -5,7 +5,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import kz.store.cash.fx.dialog.lib.CancellableDialog;
 import kz.store.cash.fx.model.ProductItem;
 import kz.store.cash.util.UtilNumbers;
@@ -88,6 +87,6 @@ public class QuantitySetDialogController implements CancellableDialog {
 
   @Override
   public void handleClose() {
-    ((Stage) quantityField.getScene().getWindow()).close();
+    closeWindowOf(quantityField);
   }
 }

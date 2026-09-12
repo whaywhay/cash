@@ -35,8 +35,15 @@ public class TableViewProductConfigService {
     checkboxCol.setCellFactory(CheckBoxTableCell.forTableColumn(checkboxCol));
     checkboxCol.setEditable(true);
 
-    indexCol.setCellValueFactory(
-        cell -> new ReadOnlyObjectWrapper<>(table.getItems().indexOf(cell.getValue()) + 1));
+    // Номер строки берём из TableCell.getIndex() — O(1); indexOf(cell.getValue()) в
+    // cellValueFactory был бы O(n) на строку и O(n^2) на всю таблицу при каждом обновлении.
+    indexCol.setCellFactory(col -> new TableCell<>() {
+      @Override
+      protected void updateItem(Number value, boolean empty) {
+        super.updateItem(value, empty);
+        setText(empty ? null : String.valueOf(getIndex() + 1));
+      }
+    });
 
     nameCol.setCellValueFactory(cell -> cell.getValue().productNameProperty());
     priceCol.setCellValueFactory(cell -> cell.getValue().priceProperty());
