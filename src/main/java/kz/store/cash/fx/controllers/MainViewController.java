@@ -50,12 +50,19 @@ public class MainViewController {
 
   private final Map<Tab, Node> tabContentCache = new HashMap<>();
   private final Map<Tab, Object> tabControllerCache = new HashMap<>();
+  private Map<Tab, String> fxmlPathByTab;
 
   private boolean loggedIn = false;
   private boolean isAdmin = false;
 
   @FXML
   public void initialize() {
+    fxmlPathByTab = Map.of(
+        salesTab, "/fxml/sales.fxml",
+        returnTab, "/fxml/transaction_return_view.fxml",
+        shiftChangeTab, "/fxml/shift_change.fxml",
+        salesHistoryTab, "/fxml/sale_history.fxml",
+        adminTab, "/fxml/admin.fxml");
     applyAuthState(false, false);
 
     tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
@@ -182,26 +189,12 @@ public class MainViewController {
         tc.onTabSelected();
       }
     } catch (IOException e) {
-      System.out.println("Ошибка загрузки вкладки: " + e.getMessage());
+      log.error("Ошибка загрузки вкладки: ", e);
+      uiNotificationService.showError(e.getMessage());
     }
   }
 
   private String getFxmlPath(Tab tab) {
-    if (tab == salesTab) {
-      return "/fxml/sales.fxml";
-    }
-    if (tab == returnTab) {
-      return "/fxml/transaction_return_view.fxml";
-    }
-    if (tab == shiftChangeTab) {
-      return "/fxml/shift_change.fxml";
-    }
-    if (tab == salesHistoryTab) {
-      return "/fxml/sale_history.fxml";
-    }
-    if (tab == adminTab) {
-      return "/fxml/admin.fxml";
-    }
-    return null;
+    return fxmlPathByTab.get(tab);
   }
 }

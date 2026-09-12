@@ -251,7 +251,6 @@ public class SalesController {
   }
 
   public void initTableView() {
-    //          updateHeaderCheckboxState();
     tableViewProductConfigService.configure(salesTable, checkboxCol, indexCol, nameCol, priceCol,
         qtyCol, totalCol, cart, headerCheckBox,
         this::updateTotal
@@ -303,11 +302,7 @@ public class SalesController {
   private void switchPriceMode(PriceMode mode) {
     this.currentPriceMode = mode;
     for (ProductItem item : cart) {
-      if (mode == PriceMode.ORIGINAL) {
-        item.setToOriginalPrice();
-      } else {
-        item.setToWholesalePrice();
-      }
+      item.applyPriceMode(mode);
     }
     priceHeaderLabel.setText(currentPriceMode.getDisplayName());
     updateTotal();
@@ -316,11 +311,7 @@ public class SalesController {
 
   private void switchPriceModeForOneItem(ProductItem productItem) {
     if (productItem != null) {
-      if (currentPriceMode == PriceMode.WHOLESALE) {
-        productItem.setToWholesalePrice();
-      } else {
-        productItem.setToOriginalPrice();
-      }
+      productItem.applyPriceMode(currentPriceMode);
     }
   }
 

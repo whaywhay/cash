@@ -7,7 +7,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import kz.store.cash.config.ProductProperties;
 import kz.store.cash.fx.dialog.lib.CancellableDialog;
 import kz.store.cash.fx.model.ProductItem;
@@ -98,7 +97,7 @@ public class EditProductDialogController implements CancellableDialog {
   @FXML
   private void onApply() {
     if (checkAndInitializeUpdateProduct()) {
-      ((Stage) productName.getScene().getWindow()).close();
+      closeWindowOf(productName);
     } else {
       throw new ValidationException("Розничная цена должна быть больше чем оптовая цена");
     }
@@ -122,6 +121,6 @@ public class EditProductDialogController implements CancellableDialog {
 
   @Override
   public void handleClose() {
-    ((Stage) productName.getScene().getWindow()).close();
+    closeWindowOf(productName);
   }
 }

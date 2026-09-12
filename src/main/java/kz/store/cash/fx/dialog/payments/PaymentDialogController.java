@@ -16,7 +16,6 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
 import kz.store.cash.fx.dialog.lib.CancellableDialog;
 import kz.store.cash.fx.model.PaymentSumDetails;
 import kz.store.cash.handler.ValidationException;
@@ -119,7 +118,6 @@ public class PaymentDialogController implements CancellableDialog {
     cardViewController.cardAmountField.setText(String.valueOf(total));
     paymentSumDetails.setReceivedPayment(total);
     updateLabelValues();
-//    hookActiveField(cardViewController.cardAmountField, false); // ← ввод с клавы запрещён
   }
 
   @FXML
@@ -194,17 +192,17 @@ public class PaymentDialogController implements CancellableDialog {
   private boolean checkPaymentSumEnough() {
     if (cashButton.isSelected()) {
       fillPaymentSumDetails(PaymentType.CASH, paymentSumDetails.getTotalToPay(), 0);
-      return paymentSumDetails.getTotalToPay() <= paymentSumDetails.getReceivedPayment();
     } else if (cardButton.isSelected()) {
       fillPaymentSumDetails(PaymentType.CARD, 0.0, paymentSumDetails.getTotalToPay());
-      return paymentSumDetails.getTotalToPay() <= paymentSumDetails.getReceivedPayment();
     } else if (mixedButton.isSelected()) {
       double cash = UtilNumbers.parseDoubleAmount(mixedViewController.mixedCashField.getText());
       double card = UtilNumbers.parseDoubleAmount(mixedViewController.mixedCardField.getText());
       fillPaymentSumDetails(PaymentType.MIXED, cash, card);
       return (cash + card) == paymentSumDetails.getTotalToPay();
+    } else {
+      return false;
     }
-    return false;
+    return paymentSumDetails.getTotalToPay() <= paymentSumDetails.getReceivedPayment();
   }
 
   private void fillPaymentSumDetails(PaymentType paymentType, double cash, double card) {
@@ -280,7 +278,6 @@ public class PaymentDialogController implements CancellableDialog {
 
   @Override
   public void handleClose() {
-    Stage stage = (Stage) paymentWindow.getScene().getWindow();
-    stage.close();
+    closeWindowOf(paymentWindow);
   }
 }

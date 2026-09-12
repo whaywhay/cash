@@ -57,10 +57,10 @@ public class DiaryDebtCustomerApi {
         .path("/api/customers")
         .queryParam("page", Math.max(1, page));
 
-    Optional.ofNullable(trimToNull(search))
+    Optional.ofNullable(StringUtils.trimSafely(search))
         .ifPresent(s -> b.queryParam("search", s));
 
-    Optional.ofNullable(trimToNull(order))
+    Optional.ofNullable(StringUtils.trimSafely(order))
         .map(this::normalizeOrder)
         .ifPresent(o -> b.queryParam("order[" + o.field + "]", o.dir));
 
@@ -123,9 +123,5 @@ public class DiaryDebtCustomerApi {
     }
     var m = PAGE_RE.matcher(url);
     return m.find() ? Integer.parseInt(m.group(1)) : 0;
-  }
-
-  private static String trimToNull(String s) {
-    return StringUtils.trimSafely(s);
   }
 }

@@ -54,11 +54,14 @@ class OneCSyncWriter {
         .stream()
         .collect(Collectors.toMap(Category::getCategoryCode, Function.identity()));
 
-    long updatedCount = categoryDtosByCodeMap.entrySet().stream()
-        .filter(e -> existingCategoryByCodeMap.containsKey(e.getKey()))
-        .peek(e -> categoryMapper.updateToCategory(existingCategoryByCodeMap.get(e.getKey()),
-            e.getValue()))
-        .count();
+    long updatedCount = 0;
+    for (var e : categoryDtosByCodeMap.entrySet()) {
+      Category existing = existingCategoryByCodeMap.get(e.getKey());
+      if (existing != null) {
+        categoryMapper.updateToCategory(existing, e.getValue());
+        updatedCount++;
+      }
+    }
 
     List<Category> newCategoryList = categoryDtosByCodeMap.entrySet().stream()
         .filter(e -> !existingCategoryByCodeMap.containsKey(e.getKey()))
@@ -84,7 +87,7 @@ class OneCSyncWriter {
 
     Set<String> categoryCodesInProductDtos = productDtosByBarcodeMap.values().stream()
         .map(ProductDto::categoryRefId)
-        .map(OneCSyncWriter::trimToNull)
+        .map(StringUtils::trimSafely)
         .filter(Objects::nonNull)
         .collect(Collectors.toSet());
     Map<String, Category> categoriesByCode = categoryCodesInProductDtos.isEmpty()
@@ -94,41 +97,43 @@ class OneCSyncWriter {
         ? Map.of() : productService.findByBarcodeIn(productDtosByBarcodeMap.keySet()).stream()
         .collect(Collectors.toMap(Product::getBarcode, Function.identity()));
 
-    long skippedNoCategoryCount = productDtosByBarcodeMap.entrySet().stream()
-        .filter(e -> {
-          String categoryCode = trimToNull(e.getValue().categoryRefId());
-          return categoryCode != null && !categoriesByCode.containsKey(categoryCode);
-        })
-        .peek(e -> log.warn("Пропуск товара barcode={} — категория {} не найдена",
-            e.getKey(), trimToNull(e.getValue().categoryRefId())))
-        .count();
+    long skippedNoCategoryCount = 0;
+    for (var e : productDtosByBarcodeMap.entrySet()) {
+      String categoryCode = StringUtils.trimSafely(e.getValue().categoryRefId());
+      if (categoryCode != null && !categoriesByCode.containsKey(categoryCode)) {
+        log.warn("Пропуск товара barcode={} — категория {} не найдена", e.getKey(), categoryCode);
+        skippedNoCategoryCount++;
+      }
+    }
 
-    long updatedCount = productDtosByBarcodeMap.entrySet().stream()
-        .filter(e -> existingProductsByBarcode.containsKey(e.getKey()))
-        .filter(e -> {
-          String categoryCode = trimToNull(e.getValue().categoryRefId());
-          return categoryCode == null || categoriesByCode.containsKey(categoryCode);
-        })
-        .peek(e -> {
-          var productDto = e.getValue();
-          var category = categoriesByCode.get(trimToNull(productDto.categoryRefId()));
-          var product = existingProductsByBarcode.get(e.getKey());
-          productMapper.updateToProduct(product, productDto, category);
-          if (product.getOriginalPrice() == null) {
-            product.setOriginalPrice(BigDecimal.ZERO);
-          }
-        })
-        .count();
+    long updatedCount = 0;
+    for (var e : productDtosByBarcodeMap.entrySet()) {
+      if (!existingProductsByBarcode.containsKey(e.getKey())) {
+        continue;
+      }
+      String categoryCode = StringUtils.trimSafely(e.getValue().categoryRefId());
+      if (categoryCode != null && !categoriesByCode.containsKey(categoryCode)) {
+        continue;
+      }
+      var productDto = e.getValue();
+      var category = categoriesByCode.get(categoryCode);
+      var product = existingProductsByBarcode.get(e.getKey());
+      productMapper.updateToProduct(product, productDto, category);
+      if (product.getOriginalPrice() == null) {
+        product.setOriginalPrice(BigDecimal.ZERO);
+      }
+      updatedCount++;
+    }
 
     List<Product> newProductList = productDtosByBarcodeMap.entrySet().stream()
         .filter(e -> !existingProductsByBarcode.containsKey(e.getKey()))
         .filter(e -> {
-          String catCode = trimToNull(e.getValue().categoryRefId());
+          String catCode = StringUtils.trimSafely(e.getValue().categoryRefId());
           return catCode == null || categoriesByCode.containsKey(catCode);
         })
         .map(e -> {
           var dto = e.getValue();
-          var cat = categoriesByCode.get(trimToNull(dto.categoryRefId()));
+          var cat = categoriesByCode.get(StringUtils.trimSafely(dto.categoryRefId()));
           var p = productMapper.productDtoToProduct(dto, cat);
           if (p.getOriginalPrice() == null) {
             p.setOriginalPrice(BigDecimal.ZERO);
@@ -141,9 +146,5 @@ class OneCSyncWriter {
       productService.saveAll(newProductList);
     }
     return new SyncCounts(newProductList.size(), updatedCount, skippedNoCategoryCount);
-  }
-
-  private static String trimToNull(String s) {
-    return StringUtils.trimSafely(s);
   }
 }

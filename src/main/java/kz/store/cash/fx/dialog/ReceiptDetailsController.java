@@ -7,7 +7,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import kz.store.cash.config.ProductProperties;
 import kz.store.cash.model.entity.PaymentReceipt;
 import kz.store.cash.fx.component.ReceiptPrintService;
@@ -128,6 +127,6 @@ public class ReceiptDetailsController implements CancellableDialog {
 
   @Override
   public void handleClose() {
-    ((Stage) closeBtn.getScene().getWindow()).close();
+    closeWindowOf(closeBtn);
   }
 }

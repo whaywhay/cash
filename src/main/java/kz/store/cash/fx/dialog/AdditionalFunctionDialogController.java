@@ -3,7 +3,6 @@ package kz.store.cash.fx.dialog;
 
 import javafx.fxml.FXML;
 import javafx.scene.layout.FlowPane;
-import javafx.stage.Stage;
 import kz.store.cash.fx.component.FxAsyncRunner;
 import kz.store.cash.fx.component.ReceiptPrintService;
 import kz.store.cash.fx.dialog.lib.CancellableDialog;
@@ -28,8 +27,7 @@ public class AdditionalFunctionDialogController implements CancellableDialog {
 
   @Override
   public void handleClose() {
-    Stage stage = (Stage) additionalFunctionPane.getScene().getWindow();
-    stage.close();
+    closeWindowOf(additionalFunctionPane);
   }
 
   public void onClose() {

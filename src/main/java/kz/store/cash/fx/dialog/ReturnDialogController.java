@@ -4,7 +4,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
 import kz.store.cash.fx.dialog.lib.CancellableDialog;
 import kz.store.cash.fx.model.PaymentSumDetails;
 import kz.store.cash.model.entity.PaymentReceipt;
@@ -47,7 +46,7 @@ public class ReturnDialogController implements CancellableDialog {
 
   @Override
   public void handleClose() {
-    ((Stage) closeBtn.getScene().getWindow()).close();
+    closeWindowOf(closeBtn);
   }
 
   public void onReturn() {

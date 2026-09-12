@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import kz.store.cash.fx.model.SalesWithProductName;
@@ -221,20 +222,25 @@ public class PaymentReceiptService {
     } else {
       salesService.deleteSalesByIdNotInAndPaymentReceipt(receipt, listSalesId);
     }
-    for (ProductItem productItem : currentCart) {
-      if (productItem.getSalesId() != null) {
-        var saleOpt = salesService.findById(productItem.getSalesId());
-        PaymentReceipt finalReceipt = receipt;
-        saleOpt.ifPresentOrElse(sale -> {
+
+    Map<Long, Sales> existingSalesById = salesService.findAllById(listSalesId).stream()
+        .collect(Collectors.toMap(Sales::getId, Function.identity()));
+
+    PaymentReceipt finalReceipt = receipt;
+    List<Sales> toSave = currentCart.stream()
+        .map(productItem -> {
+          if (productItem.getSalesId() == null) {
+            return salesMapper.fromProductItemToSales(productItem, finalReceipt);
+          }
+          Sales sale = existingSalesById.get(productItem.getSalesId());
+          if (sale == null) {
+            throw new BusinessException("sale not found by id:  " + productItem.getSalesId());
+          }
           salesMapper.updateToSale(sale, productItem, finalReceipt);
-          salesService.saveSale(sale);
-        }, () -> {
-          throw new BusinessException("sale not found by id:  " + productItem.getSalesId());
-        });
-      } else {
-        salesService.saveSale(salesMapper.fromProductItemToSales(productItem, receipt));
-      }
-    }
+          return sale;
+        })
+        .toList();
+    salesService.saveAll(toSave);
   }
 
   public PaymentReceipt getNewestSalePaymentReceipt() {

@@ -10,7 +10,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import kz.store.cash.fx.dialog.lib.CancellableDialog;
 import kz.store.cash.fx.model.ProductItem;
 import kz.store.cash.mapper.ProductMapper;
@@ -93,8 +92,6 @@ public class QuickProductsDialogController implements CancellableDialog {
       boolean has = newV != null;
       chooseBtn.setDisable(!has);
       removeBtn.setDisable(!has);
-      // upBtn.setDisable(!has);
-      // downBtn.setDisable(!has);
     });
   }
 
@@ -113,9 +110,6 @@ public class QuickProductsDialogController implements CancellableDialog {
         loadData();
       }
     });
-    // upBtn.setOnAction(e -> {/* TODO сортировка */});
-    // downBtn.setOnAction(e -> {/* TODO сортировка */});
-
     chooseBtn.setDisable(true);
     removeBtn.setDisable(true);
   }
@@ -127,11 +121,7 @@ public class QuickProductsDialogController implements CancellableDialog {
 
   private void choose(Product p) {
     ProductItem item = productMapper.toProductItem(p);
-    if (priceMode == PriceMode.WHOLESALE) {
-      item.setToWholesalePrice();
-    } else {
-      item.setToOriginalPrice();
-    }
+    item.applyPriceMode(priceMode);
     if (onProductChosen != null) {
       onProductChosen.accept(item);
     }
@@ -140,7 +130,6 @@ public class QuickProductsDialogController implements CancellableDialog {
 
   @Override
   public void handleClose() {
-    Stage stage = (Stage) root.getScene().getWindow();
-    stage.close();
+    closeWindowOf(root);
   }
 }

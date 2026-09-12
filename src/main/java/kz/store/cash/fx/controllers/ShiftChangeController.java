@@ -134,7 +134,7 @@ public class ShiftChangeController implements TabController {
     ensureAuth();
     BigDecimal amount = parseMoney(movementAmountField.getText());
     CashMovementType type = movementTypeCombo.getValue();
-    String reason = trimToNull(movementReasonField.getText());
+    String reason = StringUtils.trimSafely(movementReasonField.getText());
     try {
       if (amount == null || amount.signum() <= 0) {
         movementAmountField.requestFocus();
@@ -155,7 +155,7 @@ public class ShiftChangeController implements TabController {
   public void onCloseShift() {
     ensureAuth();
     BigDecimal left = parseMoney(closingLeftField.getText());
-    String note = trimToNull(closingNoteField.getText());
+    String note = StringUtils.trimSafely(closingNoteField.getText());
     if (left == null || left.signum() < 0) {
       closingLeftField.requestFocus();
       throw new IllegalArgumentException("Остаток не может быть отрицательным или пустым");
@@ -231,10 +231,6 @@ public class ShiftChangeController implements TabController {
     } catch (Exception e) {
       return null;
     }
-  }
-
-  private static String trimToNull(String s) {
-    return StringUtils.trimSafely(s);
   }
 
   private static String fmt(LocalDateTime dt) {

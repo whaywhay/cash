@@ -44,17 +44,9 @@ public class CashShiftService {
     return cashMovementRepository.findAllByCashShiftIdOrderByCreatedDesc(shiftId);
   }
 
-  private BigDecimal findMovementsInOperation(Long shiftId) {
-    return findMovements(shiftId).stream()
-        .filter(m -> m.getType() == CashMovementType.IN)
-        .map(CashMovement::getAmount)
-        .filter(Objects::nonNull)
-        .reduce(BigDecimal.ZERO, BigDecimal::add);
-  }
-
-  private BigDecimal findMovementsOutOperation(Long shiftId) {
-    return findMovements(shiftId).stream()
-        .filter(m -> m.getType() == CashMovementType.OUT)
+  private BigDecimal sumMovementsByType(List<CashMovement> movements, CashMovementType type) {
+    return movements.stream()
+        .filter(m -> m.getType() == type)
         .map(CashMovement::getAmount)
         .filter(Objects::nonNull)
         .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -109,8 +101,9 @@ public class CashShiftService {
     BigDecimal sumReturnedCard = paymentReceiptService.getReturnedSumCard(cashShift);
     BigDecimal sumDebt = paymentReceiptService.getDebtSum(cashShift);
     BigDecimal sumDebtReturn = paymentReceiptService.getDebtReturnSum(cashShift);
-    BigDecimal depositedFunds = findMovementsInOperation(shiftId);
-    BigDecimal withdrawalFunds = findMovementsOutOperation(shiftId);
+    List<CashMovement> movements = findMovements(shiftId);
+    BigDecimal depositedFunds = sumMovementsByType(movements, CashMovementType.IN);
+    BigDecimal withdrawalFunds = sumMovementsByType(movements, CashMovementType.OUT);
     cashShiftMapper.toCloseCashShift(cashShift, closedBy, leftInDrawer, sumCash,
         sumCard, sumReturnedCash, sumReturnedCard, note, sumDebt, sumDebtReturn);
     cashShift = cashShiftRepository.save(cashShift);

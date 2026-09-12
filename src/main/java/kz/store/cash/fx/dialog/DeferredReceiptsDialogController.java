@@ -14,7 +14,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.FlowPane;
 
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 import kz.store.cash.fx.dialog.lib.CancellableDialog;
 import kz.store.cash.fx.model.ProductItem;
@@ -155,8 +154,7 @@ public class DeferredReceiptsDialogController implements CancellableDialog {
 
   @Override
   public void handleClose() {
-    Stage stage = (Stage) buttonPane.getScene().getWindow();
-    stage.close();
+    closeWindowOf(buttonPane);
   }
 
   public void onClose() {

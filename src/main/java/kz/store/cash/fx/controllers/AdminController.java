@@ -124,7 +124,7 @@ public class AdminController {
 
   @FXML
   public void onSearchUsers() {
-    String searchFieldText = trimToNull(searchUserField.getText());
+    String searchFieldText = StringUtils.trimSafely(searchUserField.getText());
     if (searchFieldText == null) {
       refreshUsers();
       return;
@@ -226,9 +226,9 @@ public class AdminController {
         .filter(s -> !s.isEmpty() && s.chars().allMatch(Character::isDigit))
         .map(Long::valueOf)
         .orElse(null);             // безопасно
-    String username = trimToNull(usernameField.getText());
-    String displayName = trimToNull(displayNameField.getText());
-    String password = trimToNull(passwordField.getText());            // null если пусто
+    String username = StringUtils.trimSafely(usernameField.getText());
+    String displayName = StringUtils.trimSafely(displayNameField.getText());
+    String password = StringUtils.trimSafely(passwordField.getText());            // null если пусто
     UserRole role = roleCombo.getValue();
     Boolean active = activeCheck.isSelected();
     return new UserDto(id, username, password, displayName, role, active);
@@ -291,17 +291,17 @@ public class AdminController {
       String oldLogin = StringUtils.nullToEmpty(currentSetting.getDebtDiaryLogin());
       String oldPass = StringUtils.nullToEmpty(currentSetting.getDebtDiaryPassword());
 
-      currentSetting.setOrgName(trimOrNull(orgNameField.getText()));
-      currentSetting.setBin(trimOrNull(binField.getText()));
-      currentSetting.setAddress(trimOrNull(addressField.getText()));
-      currentSetting.setSaleStore(trimOrNull(saleStoreField.getText()));
-      currentSetting.setCategoryWebAddress(trimOrNull(categoryWebAddressField.getText()));
-      currentSetting.setProductWebAddress(trimOrNull(productWebAddressField.getText()));
-      currentSetting.setWebLogin(trimOrNull(webLoginField.getText()));
-      currentSetting.setWebPassword(trimOrNull(webAddressPasswordField.getText()));
-      currentSetting.setDebtDiaryBaseAddress(trimOrNull(debtDiaryBaseAddress.getText()));
-      currentSetting.setDebtDiaryLogin(trimOrNull(debtDiaryLogin.getText()));
-      currentSetting.setDebtDiaryPassword(trimOrNull(debtDiaryPassword.getText()));
+      currentSetting.setOrgName(StringUtils.trimSafely(orgNameField.getText()));
+      currentSetting.setBin(StringUtils.trimSafely(binField.getText()));
+      currentSetting.setAddress(StringUtils.trimSafely(addressField.getText()));
+      currentSetting.setSaleStore(StringUtils.trimSafely(saleStoreField.getText()));
+      currentSetting.setCategoryWebAddress(StringUtils.trimSafely(categoryWebAddressField.getText()));
+      currentSetting.setProductWebAddress(StringUtils.trimSafely(productWebAddressField.getText()));
+      currentSetting.setWebLogin(StringUtils.trimSafely(webLoginField.getText()));
+      currentSetting.setWebPassword(StringUtils.trimSafely(webAddressPasswordField.getText()));
+      currentSetting.setDebtDiaryBaseAddress(StringUtils.trimSafely(debtDiaryBaseAddress.getText()));
+      currentSetting.setDebtDiaryLogin(StringUtils.trimSafely(debtDiaryLogin.getText()));
+      currentSetting.setDebtDiaryPassword(StringUtils.trimSafely(debtDiaryPassword.getText()));
       currentSetting = appSettingService.saveSingleton(currentSetting);
 
       // Если что-то из параметров авторизации изменилось — сбрасываем токен
@@ -317,14 +317,6 @@ public class AdminController {
       log.error("Ошибка при сохранении настроек по организации", e);
       ui.showError(e.getMessage());
     }
-  }
-
-  private static String trimOrNull(String s) {
-    return StringUtils.trimSafely(s);
-  }
-
-  private static String trimToNull(String s) {
-    return StringUtils.trimSafely(s);
   }
 
   public void onTestDebtDiary() {

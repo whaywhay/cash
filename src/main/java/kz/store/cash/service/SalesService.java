@@ -1,5 +1,6 @@
 package kz.store.cash.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +34,16 @@ public class SalesService {
 
   public Optional<Sales> findById(Long salesId) {
     return salesRepository.findById(salesId);
+  }
+
+  public List<Sales> findAllById(Collection<Long> salesIds) {
+    List<Sales> result = new ArrayList<>();
+    salesRepository.findAllById(salesIds).forEach(result::add);
+    return result;
+  }
+
+  public void saveAll(Collection<Sales> sales) {
+    salesRepository.saveAll(sales);
   }
 
   public void deleteSalesByIdNotInAndPaymentReceipt(PaymentReceipt receipt,
