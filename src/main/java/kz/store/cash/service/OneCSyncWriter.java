@@ -116,7 +116,7 @@ class OneCSyncWriter {
         continue;
       }
       var productDto = e.getValue();
-      var category = categoriesByCode.get(categoryCode);
+      var category = categoryCode == null ? null : categoriesByCode.get(categoryCode);
       var product = existingProductsByBarcode.get(e.getKey());
       productMapper.updateToProduct(product, productDto, category);
       if (product.getOriginalPrice() == null) {
@@ -133,7 +133,8 @@ class OneCSyncWriter {
         })
         .map(e -> {
           var dto = e.getValue();
-          var cat = categoriesByCode.get(StringUtils.trimSafely(dto.categoryRefId()));
+          var catCode = StringUtils.trimSafely(dto.categoryRefId());
+          var cat = catCode == null ? null : categoriesByCode.get(catCode);
           var p = productMapper.productDtoToProduct(dto, cat);
           if (p.getOriginalPrice() == null) {
             p.setOriginalPrice(BigDecimal.ZERO);

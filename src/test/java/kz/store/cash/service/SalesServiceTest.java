@@ -23,6 +23,25 @@ class SalesServiceTest {
     assertThat(service.findById(2L)).contains(sale);
   }
 
+  @Test void findAllByIdCollectsRepositoryIterableIntoList() {
+    Sales a = new Sales(), b = new Sales();
+    when(repository.findAllById(List.of(1L, 2L))).thenReturn(List.of(a, b));
+    assertThat(service.findAllById(List.of(1L, 2L))).containsExactly(a, b);
+  }
+
+  @Test void findAllByIdReturnsMutableEmptyListWhenNothingFound() {
+    when(repository.findAllById(List.of())).thenReturn(List.of());
+    List<Sales> result = service.findAllById(List.of());
+    assertThat(result).isEmpty();
+    result.add(new Sales());
+  }
+
+  @Test void saveAllDelegatesToRepository() {
+    List<Sales> batch = List.of(new Sales(), new Sales());
+    service.saveAll(batch);
+    verify(repository).saveAll(batch);
+  }
+
   @Test void getSaleByIdReturnsNullWhenMissingAndMutationsDelegate() {
     when(repository.findById(9L)).thenReturn(Optional.empty());
     assertThat(service.getSaleById(9L)).isNull();

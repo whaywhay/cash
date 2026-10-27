@@ -2,16 +2,23 @@ spring:
   application:
     name: Cash Store Application
   datasource:
-    url: jdbc:postgresql://localhost:5432/cash_store
-    username: postgres
-    password: postgres
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:sqlite:cash_store.db?foreign_keys=on&journal_mode=WAL&busy_timeout=5000
+    driver-class-name: org.sqlite.JDBC
+    hikari:
+      # SQLite — однопользовательская база с одним писателем; отдельный пул соединений
+      # только создаёт риск "database is locked" при конкурентных запросах.
+      maximum-pool-size: 1
   main:
     web-application-type: none
 
   jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
     hibernate:
-      ddl-auto: validate    # или validate, create, create-drop
+      # SQLite не имеет отдельных SQL-типов INTEGER/BIGINT — только "type affinity", поэтому
+      # ddl-auto: validate падает на любом Long-поле ("found INTEGER, but expecting BIGINT"),
+      # хотя схема корректна. Источник истины — Flyway-миграции; их правильность проверяет
+      # SqliteSchemaIntegrationTest реальными операциями с БД, а не сверкой типов колонок.
+      ddl-auto: none
     show-sql: true
 
 logging:

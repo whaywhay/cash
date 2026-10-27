@@ -1,6 +1,6 @@
 # Cash POS System
 
-Десктопная кассовая система на JavaFX, Spring Boot и PostgreSQL. Приложение поддерживает продажи, возвраты, отложенные чеки, кассовые смены, наличную и безналичную оплату, быстрые товары и синхронизацию с внешними системами.
+Десктопная кассовая система на JavaFX, Spring Boot и SQLite. Приложение поддерживает продажи, возвраты, отложенные чеки, кассовые смены, наличную и безналичную оплату, быстрые товары и синхронизацию с внешними системами.
 
 ## Технологии
 
@@ -8,7 +8,7 @@
 - JavaFX 21.0.7;
 - Spring Boot 3.5.3;
 - Spring Data JPA;
-- PostgreSQL;
+- SQLite (файловая БД, отдельный сервер не нужен);
 - Flyway;
 - MapStruct и Lombok;
 - JUnit 5, AssertJ и Mockito;
@@ -19,7 +19,6 @@
 
 - Windows 10/11 x64;
 - JDK 21, переменная `JAVA_HOME` должна указывать на JDK 21;
-- PostgreSQL 15 или новее;
 - WiX Toolset 3.x для формирования Windows EXE;
 - подключение к интернету при первом запуске Maven для загрузки зависимостей.
 
@@ -37,19 +36,17 @@ where.exe light.exe
 
 ## Настройка базы данных
 
-Параметры подключения находятся в `src/main/resources/application.yml`:
+Отдельно ставить и настраивать ничего не нужно — БД в `src/main/resources/application.yml` задана как файл SQLite рядом с приложением:
 
 ```yaml
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/cash_store
-    username: postgres
-    password: postgres
+    url: jdbc:sqlite:cash_store.db?foreign_keys=on&journal_mode=WAL&busy_timeout=5000
 ```
 
-При запуске Flyway применяет миграции из `src/main/resources/db/migration`. Hibernate работает в режиме `ddl-auto: validate`, поэтому структура базы должна соответствовать миграциям.
+При первом запуске Flyway создаёт файл `cash_store.db` и применяет миграции из `src/main/resources/db/migration`.
 
-Подробности: [настройка PostgreSQL](docs/DB_SETUP.md).
+Подробности: [настройка БД](docs/DB_SETUP.md).
 
 ## Запуск проекта
 
@@ -87,7 +84,7 @@ spring:
 .\mvnw.cmd -Dtest=PaymentReceiptServiceTest#createsAndDeletesDeferredReceipt test
 ```
 
-Тесты сервисного слоя изолированы от PostgreSQL и внешних серверов: зависимости заменяются Mockito-моками. Если тест падает, Maven не переходит к упаковке приложения.
+Тесты сервисного слоя изолированы от БД и внешних серверов: зависимости заменяются Mockito-моками. Отдельно `SqliteSchemaIntegrationTest` поднимает настоящий Spring-контекст на временном файле SQLite и реально прогоняет Flyway-миграции — это единственный тест, проверяющий саму схему БД. Если тест падает, Maven не переходит к упаковке приложения.
 
 ## Сборка JAR и Windows EXE
 
@@ -125,7 +122,7 @@ spring:
 - `fx.component` — переиспользуемая UI- и кассовая логика;
 - `service` — бизнес-операции;
 - `service.diary` — интеграция с книгой задолженности;
-- `repository` — доступ к PostgreSQL через Spring Data JPA;
+- `repository` — доступ к SQLite через Spring Data JPA;
 - `mapper` — преобразования MapStruct;
 - `model.entity` — JPA-сущности;
 - `model` — DTO и модели обмена;
@@ -136,7 +133,7 @@ spring:
 Типичный поток вызова:
 
 ```text
-JavaFX Controller -> Service -> Mapper/Repository -> PostgreSQL
+JavaFX Controller -> Service -> Mapper/Repository -> SQLite
                          |
                          +-> RestClient -> внешний сервис
 ```
@@ -226,7 +223,7 @@ JavaFX Controller -> Service -> Mapper/Repository -> PostgreSQL
 - [установка на Windows](docs/INSTALL_WINDOWS.md);
 - [печать чеков](docs/PRINTING.md);
 - [сканер штрихкодов](docs/BARCODE_SCANNER.md);
-- [настройка PostgreSQL](docs/DB_SETUP.md);
+- [настройка БД](docs/DB_SETUP.md);
 - [формирование EXE](docs/PACKAGING_WINDOWS.md).
 
 ## Лицензирование

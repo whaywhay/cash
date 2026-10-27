@@ -24,7 +24,7 @@ import lombok.ToString.Exclude;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "sales", schema = "main")
+@Table(name = "sales")
 public class Sales extends BaseEntity {
 
   @Id

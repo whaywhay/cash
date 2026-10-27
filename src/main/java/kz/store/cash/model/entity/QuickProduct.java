@@ -19,7 +19,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "quick_product", schema = "main")
+@Table(name = "quick_product")
 public class QuickProduct extends BaseEntity {
 
   @Id

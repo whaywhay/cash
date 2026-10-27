@@ -22,8 +22,17 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <javafx.version>21.0.7</javafx.version>
     <lombok.version>1.18.34</lombok.version>
-    <app.name>CashStore</app.name>
-    <installer.version>0.0.7</installer.version>
+    <!-- Патч-версии внутри линейки Boot 3.5.16 (BOM даёт jackson 2.21.4 / logback 1.5.34):
+         закрывают замечания Mend.io. Убрать переопределения, когда BOM Boot догонит. -->
+    <jackson-bom.version>2.21.8</jackson-bom.version>
+    <logback.version>1.5.38</logback.version>
+    <!-- Отдельное имя на время перехода на SQLite: разное имя -> разный каталог установки
+         и разный ярлык в Пуск, чтобы установка этой сборки не трогала уже работающую версию
+         на Postgres. Когда переход завершится и старая версия будет выведена из
+         эксплуатации, верните "CashStore" обратно, чтобы новые сборки обновляли себя же,
+         а не копились рядом как отдельные продукты. -->
+    <app.name>CashStore-SQLite</app.name>
+    <installer.version>0.0.1</installer.version>
   </properties>
 
   <dependencies>
@@ -43,9 +52,15 @@
       <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
+      <groupId>org.xerial</groupId>
+      <artifactId>sqlite-jdbc</artifactId>
+      <version>3.53.4.0</version>
       <scope>runtime</scope>
+    </dependency>
+    <!-- SQLite Hibernate-диалект — не входит в hibernate-core, версия берётся из BOM Spring Boot -->
+    <dependency>
+      <groupId>org.hibernate.orm</groupId>
+      <artifactId>hibernate-community-dialects</artifactId>
     </dependency>
 
     <dependency>
@@ -77,15 +92,10 @@
       <version>12.3.1</version>
     </dependency>
 
-    <!-- Flyway -->
+    <!-- Flyway: SQLite поддерживается прямо в flyway-core, отдельный модуль не нужен -->
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
-      <version>11.10.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.flywaydb</groupId>
-      <artifactId>flyway-database-postgresql</artifactId>
       <version>11.10.1</version>
     </dependency>
 
@@ -141,6 +151,27 @@
             <arg>-Amapstruct.defaultComponentModel=spring</arg>
           </compilerArgs>
         </configuration>
+      </plugin>
+
+      <!-- Покрытие тестами: отчёт в target/site/jacoco после mvn verify -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.12</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
       <!-- Spring Boot: делаем fat-jar -->
@@ -235,6 +266,10 @@
           <winPerUserInstall>true</winPerUserInstall>
           <destination>${project.build.directory}/dist</destination>
           <removeDestination>true</removeDestination>
+          <!-- Отдельный UpgradeCode для этой (SQLite) сборки — гарантирует, что Windows
+               Installer видит её как самостоятельный продукт, а не как обновление уже
+               установленной версии на Postgres, и не трогает её файлы/ярлык при установке. -->
+          <winUpgradeUuid>7c57f709-6251-473d-840e-11ce10e0c6d1</winUpgradeUuid>
 
           <icon>${project.basedir}/src/main/resources/icons/app.ico</icon>
 

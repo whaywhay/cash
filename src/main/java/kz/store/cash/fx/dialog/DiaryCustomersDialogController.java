@@ -49,6 +49,8 @@ public class DiaryCustomersDialogController implements CancellableDialog {
   @FXML
   private TableColumn<DiaryCustomer, String> placeCol;
   @FXML
+  private TableColumn<DiaryCustomer, String> contactCol;
+  @FXML
   private TableColumn<DiaryCustomer, String> marketTitleCol;
   @FXML
   private TableColumn<DiaryCustomer, String> totalCol;
@@ -77,6 +79,8 @@ public class DiaryCustomersDialogController implements CancellableDialog {
         c -> new ReadOnlyObjectWrapper<>(StringUtils.nullToEmpty(c.getValue().name())));
     placeCol.setCellValueFactory(
         c -> new ReadOnlyObjectWrapper<>(StringUtils.nullToEmpty(c.getValue().place())));
+    contactCol.setCellValueFactory(
+        c -> new ReadOnlyObjectWrapper<>(StringUtils.nullToEmpty(c.getValue().contact())));
     marketTitleCol.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(
         c.getValue().market() != null && c.getValue().market().title() != null ? c.getValue()
             .market().title() : "")

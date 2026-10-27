@@ -10,6 +10,12 @@ logs/
 hs_err_pid*.log
 replay_pid*.log
 
+### Локальная база SQLite и файл блокировки одного экземпляра (создаются при запуске) ###
+*.db
+*.db-wal
+*.db-shm
+cash-store.lock
+
 ### STS ###
 .apt_generated
 .classpath
