@@ -18,7 +18,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "app_settings", schema = "main")
+@Table(name = "app_settings")
 public class AppSetting extends BaseEntity {
 
   @Id

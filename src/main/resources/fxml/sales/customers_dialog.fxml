@@ -39,6 +39,7 @@
           <TableColumn fx:id="idCol" text="ID"/>
           <TableColumn fx:id="nameCol" text="Имя" prefWidth="220"/>
           <TableColumn fx:id="placeCol" text="Место" prefWidth="180"/>
+          <TableColumn fx:id="contactCol" text="Телефон" prefWidth="140"/>
           <TableColumn fx:id="marketTitleCol" text="Точка" prefWidth="200"/>
           <TableColumn fx:id="totalCol" text="Итого" prefWidth="140"/>
           <TableColumn fx:id="lastCol" text="Последняя операция" prefWidth="160"/>

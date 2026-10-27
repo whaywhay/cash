@@ -25,7 +25,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "cash_movement", schema = "main")
+@Table(name = "cash_movement")
 public class CashMovement extends BaseEntity {
 
   @Id
@@ -49,7 +49,7 @@ public class CashMovement extends BaseEntity {
   private String reason;
 
   /**
-   * Кто сделал действие (ссылка на main."user".id)
+   * Кто сделал действие (ссылка на user.id)
    */
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "created_by_id", nullable = false)

@@ -1,20 +1,46 @@
-# PostgreSQL: Database Setup
+# База данных: SQLite
 
-## Option A — SQL directly
-```sql
-CREATE USER cash WITH PASSWORD 'StrongPass123!';
-CREATE DATABASE cash_store OWNER cash;
-GRANT ALL PRIVILEGES ON DATABASE cash_store TO cash;
+Отдельный сервер БД не нужен — SQLite это один файл рядом с приложением.
 
-## Ensure PostgreSQL is listening on localhost:5432
-## Change in application.yml username and password 
+## Расположение файла
+
+Настройка в `src/main/resources/application.yml`:
+
+```yaml
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/cash_store
-    username: cash
-    password: StrongPass123!
-  jpa:
-    hibernate:
-      ddl-auto: none
-  flyway:
-    enabled: true
+    url: jdbc:sqlite:cash_store.db?foreign_keys=on&journal_mode=WAL&busy_timeout=5000
+```
+
+Файл `cash_store.db` создаётся автоматически при первом запуске в рабочем каталоге приложения
+(там же, где лежит EXE/JAR). При первом запуске Flyway применяет миграции из
+`src/main/resources/db/migration`.
+
+Параметры в URL — не декорация:
+
+- `foreign_keys=on` — без этого SQLite **не проверяет** внешние ключи вообще (это выключено по
+  умолчанию для каждого нового соединения). Без этого параметра ссылочная целостность (например,
+  запрет удалить категорию, на которую ссылаются товары) молча не работает.
+- `journal_mode=WAL` — Write-Ahead Logging, позволяет читать базу, пока идёт запись (без него
+  каждая запись блокирует все чтения).
+- `busy_timeout=5000` — если файл на миг занят другим соединением, драйвер подождёт до 5 секунд
+  вместо немедленной ошибки `SQLITE_BUSY`.
+
+## Почему не нужен пул соединений
+
+В `application.yml` пул Hikari специально ограничен одним соединением
+(`spring.datasource.hikari.maximum-pool-size: 1`). SQLite — однопользовательская база с одним
+писателем; больший пул только создаёт риск блокировок между потоками одного и того же приложения,
+не давая никакой реальной параллельности.
+
+## Бэкап
+
+Резервная копия — это просто копия файла `cash_store.db` (в режиме WAL заодно скопируйте
+`cash_store.db-wal` и `cash_store.db-shm`, если они существуют, либо предварительно выполните
+`PRAGMA wal_checkpoint;`, чтобы слить их в основной файл).
+
+## Просмотр базы вручную
+
+Любой SQLite-клиент подходит — например [DB Browser for SQLite](https://sqlitebrowser.org/) или
+плагин работы с БД в IntelliJ IDEA (драйвер SQLite нужно подключить отдельно, Postgres-драйвер
+для этого файла не подходит).

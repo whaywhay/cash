@@ -25,7 +25,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "product", schema = "main")
+@Table(name = "product")
 public class Product extends BaseEntity {
 
   @Id

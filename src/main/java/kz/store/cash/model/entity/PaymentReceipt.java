@@ -30,7 +30,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "payment_receipt", schema = "main")
+@Table(name = "payment_receipt")
 public class PaymentReceipt extends BaseEntity {
 
   @Id

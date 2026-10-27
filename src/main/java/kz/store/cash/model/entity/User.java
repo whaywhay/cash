@@ -21,7 +21,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "user", schema = "main")
+@Table(name = "user")
 public class User extends BaseEntity {
   public User(
       String username,

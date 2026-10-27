@@ -26,7 +26,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "cash_shift", schema = "main")
+@Table(name = "cash_shift")
 public class CashShift extends BaseEntity {
 
   @Id
