@@ -5,8 +5,8 @@
 Для создания EXE необходимы:
 
 - Windows 10/11 x64;
-- JDK 21 с утилитой `jpackage`;
-- WiX Toolset 3.x (`candle.exe` и `light.exe`);
+- JDK 21 с утилитами `jpackage` и `jlink` (именно 21: рантайм установщика собирается из того JDK, на котором запущен Maven);
+- WiX Toolset 3.x (`candle.exe` и `light.exe`), каталог `bin` WiX должен быть в `PATH`;
 - Maven Wrapper из проекта.
 
 Проверка:
@@ -23,15 +23,19 @@ where.exe light.exe
 
 ```powershell
 $env:JAVA_HOME = "C:\Program Files\Java\jdk-21"
-$env:Path = "$env:JAVA_HOME\bin;$env:Path"
+$env:Path = "$env:JAVA_HOME\bin;C:\Program Files (x86)\WiX Toolset v3.11\bin;$env:Path"
 ```
+
+Вторая часть `Path` нужна, если WiX установлен, но его `bin` не добавлен в системный `PATH`
+(`jpackage` ищет `candle.exe` именно там). Чтобы не делать этого каждый раз, добавьте каталог WiX в
+системный `PATH` и перезапустите консоль.
 
 ## Версия установщика
 
 Откройте `pom.xml` и измените значение перед новым релизом:
 
 ```xml
-<installer.version>0.0.8</installer.version>
+<installer.version>0.0.1</installer.version>
 ```
 
 Версия должна состоять только из чисел и точек в формате, который принимает Windows Installer.
@@ -67,11 +71,11 @@ $env:Path = "$env:JAVA_HOME\bin;$env:Path"
 ## Результаты сборки
 
 - `target/app/cash-0.0.1-SNAPSHOT.jar` — Spring Boot fat-JAR;
-- `target/dist/CashStore-<installer.version>.exe` — установщик Windows.
+- `target/dist/CashStore-SQLite-<installer.version>.exe` — установщик Windows (имя файла = `app.name` + `installer.version` из `pom.xml`).
 
 Настройки берутся из `pom.xml`:
 
-- имя приложения: `CashStore`;
+- имя приложения: `CashStore-SQLite` (свойство `app.name`; отдельное имя и `winUpgradeUuid` нужны, чтобы эта сборка не перезаписывала установленную версию на Postgres);
 - главный JAR: `cash-0.0.1-SNAPSHOT.jar`;
 - главный класс упакованного Boot-приложения: `org.springframework.boot.loader.launch.JarLauncher`;
 - тип пакета: `EXE`;
@@ -79,6 +83,76 @@ $env:Path = "$env:JAVA_HOME\bin;$env:Path"
 - иконка: `src/main/resources/icons/app.ico`.
 
 Параметр `removeDestination=true` очищает каталог `target/dist` перед созданием нового установщика. Дополнительно `clean` удаляет весь старый `target`.
+
+## Java-рантайм внутри установщика (jlink)
+
+В установщик попадает не копия всего JDK (около 315 МБ, из них `jmods` и `src.zip` приложению не
+нужны), а рантайм из нужных модулей, который `jpackage` собирает через `jlink`. В `pom.xml` для этого
+заданы `addModules` и `jLinkOptions` (`--strip-debug`, `--no-header-files`, `--no-man-pages`,
+`--compress=zip-6`); параметр `runtimeImage` не используется. Такой рантайм весит около 59 МБ, а
+установщик — около 110 МБ вместо около 138 МБ.
+
+Список модулей получен командой `jdeps` по fat-JAR плюс модули, которых `jdeps` не видит, потому что
+они подключаются через `ServiceLoader`:
+
+| Модуль | Зачем нужен |
+|---|---|
+| `jdk.localedata` | русская локаль: без неё даты и числа форматируются по-английски (`27 Oct 2026`, `1,234,567.50`) |
+| `jdk.crypto.ec` | эллиптические шифры TLS (ECDSA, X25519): без них HTTPS к 1С и книге задолженности может не работать |
+| `jdk.unsupported.desktop`, `jdk.xml.dom` | зависимости JavaFX |
+
+Кодировки `CP1251`/`IBM866`, которыми печатаются чеки, входят в `java.base` и отдельного модуля не
+требуют.
+
+### Когда список нужно дополнить
+
+Признак — установленное приложение падает при запуске или в конкретном действии с
+`NoClassDefFoundError`, `ClassNotFoundException` или `ServiceConfigurationError`, хотя из JAR
+(`java -jar`) то же самое работает. Это означает, что новой зависимости нужен модуль JDK, которого
+нет в `addModules`. Чтобы найти его:
+
+```powershell
+$w = "$env:TEMP\cash-jar"; Remove-Item $w -Recurse -Force -ErrorAction SilentlyContinue
+Expand-Archive target\app\cash-0.0.1-SNAPSHOT.jar $w
+$libs = (Get-ChildItem "$w\BOOT-INF\lib\*.jar" | ForEach-Object FullName) -join ';'
+& "$env:JAVA_HOME\bin\jdeps.exe" --multi-release 21 --ignore-missing-deps --print-module-deps `
+  --class-path $libs "$w\BOOT-INF\classes"
+```
+
+Добавьте недостающие модули в `addModules` и пересоберите. `jdeps` не находит модули, подключаемые по
+имени или через `ServiceLoader` (локали, криптопровайдеры, кодировки, драйверы), — их нужно
+проверять отдельно.
+
+### Проверка рантайма без установки
+
+Можно собрать такой же рантайм вручную и запустить на нём JAR из пустой папки (не из каталога с
+рабочей БД, чтобы не создать там `cash_store.db` и `cash-store.lock`):
+
+```powershell
+$mods = "java.base,java.compiler,java.desktop,java.instrument,java.logging,java.management,java.naming,java.net.http,java.prefs,java.rmi,java.scripting,java.sql,java.sql.rowset,java.transaction.xa,java.xml,jdk.crypto.ec,jdk.jfr,jdk.localedata,jdk.unsupported,jdk.unsupported.desktop,jdk.xml.dom"
+& "$env:JAVA_HOME\bin\jlink.exe" --add-modules $mods --strip-debug --no-header-files --no-man-pages --compress=zip-6 --output "$env:TEMP\cash-rt"
+New-Item -ItemType Directory "$env:TEMP\cash-run" -Force | Out-Null; cd "$env:TEMP\cash-run"
+& "$env:TEMP\cash-rt\bin\java.exe" "-Djavafx.preloader=kz.store.cash.config.AppPreloader" -jar D:\dev-spring-boot\cash\target\app\cash-0.0.1-SNAPSHOT.jar
+```
+
+В логе должно появиться `Successfully applied 2 migrations` и `Started application`. Список модулей в
+команде должен совпадать с `addModules` в `pom.xml`.
+
+## Размер установщика
+
+Установщик состоит из Java-рантайма (около 59 МБ) и fat-JAR приложения (около 66 МБ до упаковки в
+EXE). Самые тяжёлые библиотеки в JAR (в сжатом виде):
+
+| Библиотека | МБ |
+|---|---|
+| `hibernate-core` | 11,5 |
+| `sqlite-jdbc` | 11,5 (нативные библиотеки SQLite для всех ОС; драйвер Postgres, который он заменил, весил около 1) |
+| `byte-buddy` | 8,6 |
+| `javafx-graphics` | 5,7 |
+| `javafx-controls` | 2,5 |
+| `aspectjweaver` | 2,1 |
+
+Посмотреть состав JAR можно командой `jar tf target\app\cash-0.0.1-SNAPSHOT.jar | findstr BOOT-INF/lib`.
 
 ## Запуск только тестов
 
@@ -127,3 +201,20 @@ java -jar target\app\cash-0.0.1-SNAPSHOT.jar
 ### Старый EXE остался в каталоге
 
 Используйте `clean` и убедитесь, что никакой процесс не удерживает файл из `target/dist`.
+
+### Установленное приложение падает с `NoClassDefFoundError` или `ServiceConfigurationError`
+
+Из JAR (`java -jar`) то же самое работает, а из установленного EXE — нет: в урезанный рантайм не
+вошёл нужный модуль JDK. Найдите его по разделу «Когда список нужно дополнить» выше и добавьте в
+`addModules` в `pom.xml`.
+
+### Русские даты и числа показываются по-английски или не работает HTTPS
+
+В рантайме нет `jdk.localedata` (локали) или `jdk.crypto.ec` (эллиптические шифры TLS). Проверьте,
+что оба модуля остались в `addModules`.
+
+### Сборка прошла на другом JDK
+
+Maven не откажется собирать на JDK 22 и т. п. (код компилируется с `release 21`), но Java-рантайм в
+установщик попадёт из того JDK, на котором запущен Maven. Проверьте, что `.\mvnw.cmd -version`
+показывает Java 21.
